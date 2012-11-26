@@ -1,0 +1,13 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>at.ac.tuwien.infosys</groupId>
+    <artifactId>jaxb-facets</artifactId>
+    <version>2.2.7-facets</version>
+    <packaging>pom</packaging>
+
+    <modules>
+	<module>jaxb-api</module>
+	<module>jaxb-impl</module>
+	<module>schemavalidation</module>
+    </modules>
+</project>
