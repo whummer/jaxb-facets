@@ -260,13 +260,19 @@ public class XmlSchemaEnhancer {
 		return getXsdAnnotationAnnotation(ci.getType());
 	}
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(T type) {
-		if(!(type instanceof Class<?>))
-			return null;
-		Class<?> clazz = (Class<?>)type;
-		javax.xml.bind.annotation.Annotation anno = clazz.getAnnotation(javax.xml.bind.annotation.Annotation.class);
-		AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
-		Documentation doc = clazz.getAnnotation(Documentation.class);
-		return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc, appinfo);
+	        // jpell - probably a better way than this!
+	        if (type instanceof EnumConstant) {
+	            Documentation doc = AnnotationUtils.getDocumentation((EnumConstant) type);
+	            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(null, doc, null);
+	        } else {
+        		if(!(type instanceof Class<?>))
+        			return null;
+        		Class<?> clazz = (Class<?>)type;
+        		javax.xml.bind.annotation.Annotation anno = clazz.getAnnotation(javax.xml.bind.annotation.Annotation.class);
+        		AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
+        		Documentation doc = clazz.getAnnotation(Documentation.class);
+        		return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc, appinfo);
+	        }
 	}
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(TypeRef<T,C> t) {
 		return getXsdAnnotationAnnotation(t.getSource());
