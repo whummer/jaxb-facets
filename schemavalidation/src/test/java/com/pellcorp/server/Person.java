@@ -15,6 +15,8 @@ public class Person {
 
     @XmlElement(required = true, name = "lastName")
     private String lastName;
+    
+    
 
     public Person() {
     }

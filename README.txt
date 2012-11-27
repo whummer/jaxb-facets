@@ -13,3 +13,10 @@ A jaxb jira is outstanding to integrate this stuff directly into JAXB RI.  If an
 will be obselete (which I am looking forward to!)
 
 http://java.net/jira/browse/JAXB-917
+
+Maven Repository
+----------------
+
+The 2.2.6 API and 2.2.7 IMPL are deployed to a maven repo located here:
+
+http://pellcorp.github.com/docs/maven2/releases
