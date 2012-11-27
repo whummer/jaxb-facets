@@ -56,4 +56,34 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:simpleType[@name='Age']/xs:restriction/xs:maxInclusive/@value", doc);
         assertEquals("120", value);
     }
+    
+    @Test
+    public void testComplexTypeBuddyDocs() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+        
+        String value = engine.evaluate("//xs:complexType[@name='Buddy']/xs:annotation/xs:documentation", doc);
+        assertEquals("A Buddy.", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='Buddy']/xs:sequence/xs:element/xs:annotation/xs:documentation", doc);
+        assertEquals("Name of buddy.", value);
+    }
+    
+    @Test
+    public void testComplexTypeTestRequest() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+        
+        String value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:appinfo[@source='src 1']", doc);
+        assertEquals("appinfo 1", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:documentation[@source='src 1']", doc);
+        assertEquals("doc 1", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:documentation[2]", doc);
+        assertEquals("doc 2", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:documentation[3]", doc);
+        assertEquals("doc 3", value);
+    }
 }
