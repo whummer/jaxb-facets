@@ -15,7 +15,6 @@
 		<module>testutils</module>
 		<module>jaxb-api</module>
 		<module>jaxb-impl</module>
-		<module>schemavalidation</module>
     </modules>
 
 	<!-- FIXME fix up the dirs below so they are relative -->
