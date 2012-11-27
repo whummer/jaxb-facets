@@ -15,5 +15,5 @@ public interface PersonService {
     @WebMethod(operationName = "saveInheritEndpoint")
     void save(@WebParam(name = "Person") Person data);
     
-    void foo(TestRequest r);
+    void foo(@WebParam(name = "TestRequest") TestRequest r);
 }

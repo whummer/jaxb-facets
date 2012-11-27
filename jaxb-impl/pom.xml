@@ -50,7 +50,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.bind</groupId>
     <artifactId>jaxb-impl</artifactId>
-    <version>2.2.6-facets-1.1</version>
+    <version>2.2.6-facets-1.2</version>
     <packaging>jar</packaging>
 
     <name>JAXB Reference Implementation</name>
@@ -148,10 +148,17 @@
         </dependency>
         
         <dependency>
+        	<groupId>com.pellcorp.jaxb-facets</groupId>
+    		<artifactId>testutils</artifactId>
+    		<version>0.1</version>
+    		<scope>test</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 			<version>2.2.6</version>
-			<scope>provided</scope>
+			<scope>test</scope>
         </dependency>
     </dependencies>
 	

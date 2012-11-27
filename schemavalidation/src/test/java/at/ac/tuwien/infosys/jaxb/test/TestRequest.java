@@ -9,13 +9,18 @@ import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.MaxOccurs;
 import javax.xml.bind.annotation.MinOccurs;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "foo")
+@XmlType(name = "TestRequest")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Annotation(id = "id123", documentation = {
     @Documentation(value = "doc 1", lang = "en", source = "src 1"), @Documentation("doc 2")
 })

@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.pellcorp</groupId>
-    <artifactId>schemavalidation</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <groupId>com.pellcorp.jaxb-facets</groupId>
+    <artifactId>testutils</artifactId>
+    <version>0.1</version>
 
 	<parent>
          <groupId>at.ac.tuwien.infosys</groupId>
@@ -33,18 +33,6 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <version>2.7.1-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-        	<groupId>com.pellcorp.jaxb-facets</groupId>
-    		<artifactId>testutils</artifactId>
-    		<version>0.1</version>
-        </dependency>
-        
-        <dependency>
-        	 <groupId>com.sun.xml.bind</groupId>
-    		<artifactId>jaxb-impl</artifactId>
-    		<version>2.2.6-facets-1.2</version>
         </dependency>
         
         <dependency>
@@ -115,21 +103,12 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
-			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-testutils</artifactId>
             <version>2.7.1-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
-    
-    <repositories>
-		<repository>
-			<id>jaxb-facets</id>
-			<url>http://pellcorp.github.com/docs/maven2/releases</url>
-		</repository>
-	</repositories>
 </project>

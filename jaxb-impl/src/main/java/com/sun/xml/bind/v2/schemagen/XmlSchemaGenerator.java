@@ -40,19 +40,20 @@
 
 package com.sun.xml.bind.v2.schemagen;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,20 +64,17 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
-// jaxb-facets
-import at.ac.tuwien.infosys.jaxb.XmlSchemaEnhancer;
-// jaxb-facets
+import org.xml.sax.SAXParseException;
 
-import com.sun.istack.Nullable;
+import at.ac.tuwien.infosys.jaxb.XmlSchemaEnhancer;
+
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.bind.Util;
 import com.sun.xml.bind.api.CompositeStructure;
 import com.sun.xml.bind.api.ErrorListener;
 import com.sun.xml.bind.v2.TODO;
 import com.sun.xml.bind.v2.WellKnownNamespace;
-import com.sun.xml.bind.v2.util.CollisionCheckStack;
-import com.sun.xml.bind.v2.util.StackRecorder;
-import static com.sun.xml.bind.v2.WellKnownNamespace.XML_SCHEMA;
 import com.sun.xml.bind.v2.model.core.Adapter;
 import com.sun.xml.bind.v2.model.core.ArrayInfo;
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
@@ -100,17 +98,20 @@ import com.sun.xml.bind.v2.model.core.WildcardMode;
 import com.sun.xml.bind.v2.model.impl.ClassInfoImpl;
 import com.sun.xml.bind.v2.model.nav.Navigator;
 import com.sun.xml.bind.v2.runtime.SwaRefAdapter;
-import static com.sun.xml.bind.v2.schemagen.Util.*;
+import com.sun.xml.bind.v2.schemagen.episode.Bindings;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Any;
 import com.sun.xml.bind.v2.schemagen.xmlschema.AttrDecls;
+import com.sun.xml.bind.v2.schemagen.xmlschema.AttributeType;
 import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexExtension;
 import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexType;
 import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexTypeHost;
+import com.sun.xml.bind.v2.schemagen.xmlschema.ContentModelContainer;
 import com.sun.xml.bind.v2.schemagen.xmlschema.ExplicitGroup;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Import;
 import com.sun.xml.bind.v2.schemagen.xmlschema.List;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
+import com.sun.xml.bind.v2.schemagen.xmlschema.NoFixedFacet;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Schema;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleExtension;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestrictionModel;
@@ -118,18 +119,22 @@ import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleType;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleTypeHost;
 import com.sun.xml.bind.v2.schemagen.xmlschema.TopLevelAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.TopLevelElement;
-import com.sun.xml.bind.v2.schemagen.xmlschema.TypeHost;
-import com.sun.xml.bind.v2.schemagen.xmlschema.ContentModelContainer;
 import com.sun.xml.bind.v2.schemagen.xmlschema.TypeDefParticle;
-import com.sun.xml.bind.v2.schemagen.xmlschema.AttributeType;
-import com.sun.xml.bind.v2.schemagen.episode.Bindings;
+import com.sun.xml.bind.v2.schemagen.xmlschema.TypeHost;
+import com.sun.xml.bind.v2.util.CollisionCheckStack;
+import com.sun.xml.bind.v2.util.StackRecorder;
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TxwException;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.ResultFactory;
 import com.sun.xml.txw2.output.XmlSerializer;
-import java.util.Collection;
-import org.xml.sax.SAXParseException;
+
+import static com.sun.xml.bind.v2.WellKnownNamespace.XML_SCHEMA;
+import static com.sun.xml.bind.v2.schemagen.Util.equal;
+import static com.sun.xml.bind.v2.schemagen.Util.equalsIgnoreCase;
+import static com.sun.xml.bind.v2.schemagen.Util.escapeURI;
+import static com.sun.xml.bind.v2.schemagen.Util.getParentUriPath;
+import static com.sun.xml.bind.v2.schemagen.Util.normalizeUriPath;
 
 /**
  * Generates a set of W3C XML Schema documents from a set of Java classes.
@@ -865,9 +870,15 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
             SimpleRestrictionModel base = st.restriction();
             writeTypeRef(base, e.getBaseType(), "base");
-
+            
             for (EnumConstant c : e.getConstants()) {
-                base.enumeration().value(c.getLexicalValue());
+                //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                NoFixedFacet enumeration = base.enumeration();
+                
+                //XmlSchemaEnhancer.addEnumConstantAnnotations(c, enumeration);
+                //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
+                
+                enumeration.value(c.getLexicalValue());
             }
             st.commit();
         }

@@ -12,6 +12,7 @@
     </parent>
 
     <modules>
+		<module>testutils</module>
 		<module>jaxb-api</module>
 		<module>jaxb-impl</module>
 		<module>schemavalidation</module>
@@ -29,4 +30,12 @@
 	        <url>file:///home/jason/Development/docs/maven2/snapshots</url>
 	    </snapshotRepository>
 	</distributionManagement>
+
+	 
+    <repositories>
+		<repository>
+			<id>jaxb-facets</id>
+			<url>http://pellcorp.github.com/docs/maven2/releases</url>
+		</repository>
+	</repositories>
 </project>

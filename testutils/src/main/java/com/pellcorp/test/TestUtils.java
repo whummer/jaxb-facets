@@ -1,4 +1,4 @@
-package com.pellcorp.jaxb.schemagen;
+package com.pellcorp.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,18 +10,7 @@ public final class TestUtils {
     private TestUtils() {
     }
     
-    public static String readSchema(String url) throws IOException {
-        String c = readURL(url);
-        if(c.contains("schemaLocation=")) {
-                String schema = c.substring(c.indexOf("schemaLocation="));
-                schema = schema.substring(schema.indexOf("\"") + 1);
-                schema = schema.substring(0, schema.indexOf("\""));
-                c = readURL(schema);
-        }
-        return c;
-    }
-    
-    private static String readURL(String url) throws IOException {
+    public static String readURL(String url) throws IOException {
         return readStream(new URL(url).openStream());
     }
 

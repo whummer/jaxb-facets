@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
 import com.sun.xml.bind.v2.model.core.ClassInfo;
+import com.sun.xml.bind.v2.model.core.EnumConstant;
 import com.sun.xml.bind.v2.model.core.PropertyInfo;
 import com.sun.xml.bind.v2.model.core.TypeRef;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
@@ -138,8 +139,6 @@ public class XmlSchemaEnhancer {
 		}
 	}
 
-	
-	
 	public static <T> void addXsdAnnotations(T type, TypedXmlWriter w) {
 		if(!hasXsdAnnotations(type))
 			return;
