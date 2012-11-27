@@ -4,6 +4,12 @@
     <artifactId>schemavalidation</artifactId>
     <version>0.1-SNAPSHOT</version>
 
+	<parent>
+         <groupId>at.ac.tuwien.infosys</groupId>
+    	 <artifactId>jaxb-facets</artifactId>
+    	 <version>2.2.7-facets</version>
+    </parent>
+
     <build>
         <plugins>
             <plugin>
@@ -107,4 +113,11 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <repositories>
+		<repository>
+			<id>jaxb-facets</id>
+			<url>http://pellcorp.github.com/docs/maven2/releases</url>
+		</repository>
+	</repositories>
 </project>

@@ -5,9 +5,28 @@
     <version>2.2.7-facets</version>
     <packaging>pom</packaging>
 
+	<parent>
+        <groupId>net.java</groupId>
+        <artifactId>jvnet-parent</artifactId>
+        <version>1</version>
+    </parent>
+
     <modules>
-	<module>jaxb-api</module>
-	<module>jaxb-impl</module>
-	<module>schemavalidation</module>
+		<module>jaxb-api</module>
+		<module>jaxb-impl</module>
+		<module>schemavalidation</module>
     </modules>
+
+	<!-- FIXME fix up the dirs below so they are relative -->
+    <distributionManagement>
+	    <repository>
+	        <id>repo</id>
+	        <url>file:///home/jason/Development/docs/maven2/releases</url>
+	    </repository>
+
+	    <snapshotRepository>
+	        <id>snapshot-repo</id>
+	        <url>file:///home/jason/Development/docs/maven2/snapshots</url>
+	    </snapshotRepository>
+	</distributionManagement>
 </project>

@@ -42,9 +42,9 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0">
     <parent>
-        <groupId>net.java</groupId>
-        <artifactId>jvnet-parent</artifactId>
-        <version>1</version>
+         <groupId>at.ac.tuwien.infosys</groupId>
+    	 <artifactId>jaxb-facets</artifactId>
+    	 <version>2.2.7-facets</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
@@ -170,7 +170,8 @@
         </dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
+<!--	
     <repositories>
         <repository>
             <id>releases.java.net</id>
@@ -183,4 +184,5 @@
             <layout>default</layout>
         </repository>
     </repositories>
+-->
 </project>
