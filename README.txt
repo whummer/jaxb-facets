@@ -17,7 +17,7 @@ http://java.net/jira/browse/JAXB-917
 Maven Repository
 ----------------
 
-The 2.2.6-facets-1.0 API and 2.2.6-facets-1.2 IMPL are deployed to a maven repo located here:
+The 2.2.7-facets-1.0 api and 2.2.6-facets-1.0.3 impl are deployed to a maven repo located here:
 
 http://pellcorp.github.com/docs/maven2/releases
 
@@ -46,7 +46,7 @@ use the maven dependency plugin, and the configure the maven compiler and surefi
 					<artifactItem>
 						<groupId>javax.xml.bind</groupId>
 						<artifactId>jaxb-api</artifactId>
-						<version>2.2.6-facets-1.0</version>
+						<version>2.2.6-facets-1.0.3</version>
 						<overWrite>true</overWrite>
 						<destFileName>jaxb-api.jar</destFileName>
 					</artifactItem>
