@@ -44,7 +44,7 @@
         <dependency>
         	 <groupId>com.sun.xml.bind</groupId>
     		<artifactId>jaxb-impl</artifactId>
-    		<version>2.2.6-facets-1.2</version>
+    		<version>2.2.6-facets-1.0.3</version>
         </dependency>
         
         <dependency>
@@ -110,20 +110,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-testutils</artifactId>
-            <version>2.7.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     
     <repositories>

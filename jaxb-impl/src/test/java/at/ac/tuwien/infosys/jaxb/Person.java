@@ -19,7 +19,18 @@ public class Person {
     @XmlElement(required = true, name = "gender")
     private Gender gender;
     
+    @XmlElement(required = true, name = "age")
+    private Age age;
+    
     public Person() {
+    }
+    
+    public Age getAge() {
+        return age;
+    }
+
+    public void setAge(Age age) {
+        this.age = age;
     }
     
     public Gender getGender() {

@@ -24,6 +24,6 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     @Test
     public void testEnumLiteralDocumentation() throws IOException {
         String schemaDoc = readWsdl(PersonService.class);
-        //System.out.println(schemaDoc);
+        System.out.println(schemaDoc);
     }
 }

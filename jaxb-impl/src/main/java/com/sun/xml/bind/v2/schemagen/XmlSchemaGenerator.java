@@ -116,6 +116,7 @@ import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
 import com.sun.xml.bind.v2.schemagen.xmlschema.NoFixedFacet;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Schema;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleExtension;
+import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestriction;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestrictionModel;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleType;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleTypeHost;
@@ -903,15 +904,22 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                     ValuePropertyInfo<T,C> vp = (ValuePropertyInfo<T,C>)c.getProperties().get(0);
                     SimpleType st = ((SimpleTypeHost)parent).simpleType();
                     writeName(c, st);
-
+                    
 		    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                     XmlSchemaEnhancer.addXsdAnnotations(c, st);
                     //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
                     if(vp.isCollection()) {
                         writeTypeRef(st.list(),vp.getTarget(),"itemType");
+                        
+                        // TODO - what do we do if its a collection????
                     } else {
-                        writeTypeRef(st.restriction(),vp.getTarget(),"base");
+                        SimpleRestriction sr = st.restriction();
+                        writeTypeRef(sr,vp.getTarget(),"base");
+                        
+                        //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                        XmlSchemaEnhancer.addFacets(vp, sr);
+                        //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                     }
                     return;
                 } else {
@@ -1139,10 +1147,11 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                             e.name(tn.getLocalPart());
 			    
 			    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                            if(!XmlSchemaEnhancer.hasFacets(t))
+                            if(!XmlSchemaEnhancer.hasFacets(t)) {
                             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
-
-                            writeTypeRef(e,t, "type");
+                                writeTypeRef(e,t, "type");
+                            }
+                            
                             elementFormDefault.writeForm(e,tn);
                         }
 
@@ -1153,11 +1162,11 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                             e._default(t.getDefaultValue());
 
 			//jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                        if(!XmlSchemaEnhancer.writeCustomOccurs(t,e,isOptional,repeated))
+                        if(!XmlSchemaEnhancer.writeCustomOccurs(t,e,isOptional,repeated)) {
+                            writeOccurs(e,isOptional,repeated);
+                        }
                         //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
-
-                        writeOccurs(e,isOptional,repeated);
-
+                        
 			//jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                         XmlSchemaEnhancer.addXsdAnnotations(t, e);
                         XmlSchemaEnhancer.addFacets(t, e);
