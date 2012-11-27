@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlType(name = "Age")
 public class Age {
     @XmlValue
-    @Facets(minInclusive = "0", maxInclusive = "120")
+    @Facets(minInclusive = "5", maxInclusive = "120")
     private Integer age;
 
     public Integer getAge() {

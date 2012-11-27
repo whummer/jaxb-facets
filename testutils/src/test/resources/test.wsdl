@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://com.pellcorp/service/PersonService"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http"
+	name="PersonService" targetNamespace="http://com.pellcorp/service/PersonService">
+	<wsdl:types>
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://com.pellcorp/service/PersonService"
+			elementFormDefault="unqualified" targetNamespace="http://com.pellcorp/service/PersonService"
+			version="1.0">
+			<xs:element name="foo" nillable="true" type="xs:anyType" />
+			<xs:element name="fooResponse" type="tns:fooResponse" />
+			<xs:element name="save" type="tns:save" />
+			<xs:element name="saveResponse" type="tns:saveResponse" />
+			<xs:complexType name="save">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Person" type="tns:Person" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Person">
+				<xs:sequence>
+					<xs:element name="firstName">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:pattern value="[A-Z]+" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="lastName" type="xs:string" />
+					<xs:element name="gender" type="tns:gender" />
+					<xs:element name="age" type="tns:Age" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="Age">
+				<xs:restriction base="xs:int">
+					<xs:minInclusive value="0" />
+					<xs:maxInclusive value="120" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="saveResponse">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="foo">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="TestRequest" type="tns:TestRequest" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TestRequest">
+				<xs:annotation id="id123">
+					<xs:appinfo source="src 1">appinfo 1</xs:appinfo>
+					<xs:documentation source="src 1" xml:lang="en">doc 1</xs:documentation>
+					<xs:documentation>doc 2</xs:documentation>
+					<xs:documentation>doc 3</xs:documentation>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:element maxOccurs="10" minOccurs="2" name="bar">
+						<xs:annotation>
+							<xs:documentation>&lt;b>string bar&lt;/b></xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:pattern value="[0-9]+" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element minOccurs="0" name="bar1" type="xs:string" />
+					<xs:element minOccurs="0" name="bar2">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:pattern value="[0-9]+" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="value1">
+						<xs:simpleType>
+							<xs:restriction base="xs:anyURI">
+								<xs:pattern value="https?://.+" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="value2" type="xs:anyURI" />
+					<xs:element name="date1">
+						<xs:simpleType>
+							<xs:restriction base="xs:dateTime">
+								<xs:minInclusive value="2012-12-24T12:00:00Z" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="buddy" type="tns:Buddy" />
+				</xs:sequence>
+				<xs:attribute name="type" type="tns:chartType" />
+				<xs:attribute name="foo">
+					<xs:annotation>
+						<xs:appinfo source="src 1">appinfo 1</xs:appinfo>
+						<xs:documentation>&lt;b>string foo&lt;/b></xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="[a-z]+" />
+							<xs:length value="100" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="foo1">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">this is the first line</xs:documentation>
+						<xs:documentation xml:lang="en">this is the second
+							line</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType>
+			<xs:complexType name="Buddy">
+				<xs:annotation>
+					<xs:documentation>A Buddy.</xs:documentation>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:element minOccurs="0" name="name" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Name of buddy.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="fooResponse">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:simpleType name="gender">
+				<xs:annotation>
+					<xs:documentation>Gender Type</xs:documentation>
+				</xs:annotation>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="F">
+						<xs:annotation>
+							<xs:documentation>Female</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="M">
+						<xs:annotation>
+							<xs:documentation>Male</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="O">
+						<xs:annotation>
+							<xs:documentation>Other</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="chartType">
+				<xs:annotation>
+					<xs:documentation>Choose Chart Type</xs:documentation>
+				</xs:annotation>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="line">
+						<xs:annotation>
+							<xs:documentation>Line Graph</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="bar">
+						<xs:annotation>
+							<xs:documentation>Bar Graph</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="pie">
+						<xs:annotation>
+							<xs:documentation>Pie Graph</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="save">
+		<wsdl:part element="tns:save" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="saveResponse">
+		<wsdl:part element="tns:saveResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="fooResponse">
+		<wsdl:part element="tns:fooResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="foo">
+		<wsdl:part element="tns:foo" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="PersonService">
+		<wsdl:operation name="save">
+			<wsdl:input message="tns:save" name="save">
+			</wsdl:input>
+			<wsdl:output message="tns:saveResponse" name="saveResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="foo">
+			<wsdl:input message="tns:foo" name="foo">
+			</wsdl:input>
+			<wsdl:output message="tns:fooResponse" name="fooResponse">
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="PersonServiceSoapBinding" type="tns:PersonService">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="foo">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="foo">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="fooResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="save">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="save">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="saveResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="PersonService">
+		<wsdl:port binding="tns:PersonServiceSoapBinding" name="PersonServiceImplPort">
+			<soap:address location="http://localhost:9001/PersonService" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

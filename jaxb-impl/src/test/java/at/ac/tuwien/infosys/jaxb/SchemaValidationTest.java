@@ -1,6 +1,6 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import com.pellcorp.test.AbstractTestCase;
+import com.pellcorp.jaxb.test.AbstractTestCase;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
