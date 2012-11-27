@@ -42,6 +42,8 @@ import com.sun.xml.txw2.TypedXmlWriter;
 public class XmlSchemaEnhancer {
 
 	public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
+	public static final String NS_XML = "http://www.w3.org/XML/1998/namespace";
+	
 	public static final Logger logger = Logger.getLogger(XmlSchemaEnhancer.class.getName());
 
 
@@ -178,11 +180,11 @@ public class XmlSchemaEnhancer {
 
 		TypedXmlWriter annoEl = getXsdAnnotation(obj, anno.id(), anno.attributes());
 		for(AppInfo info : anno.appinfo()) {
-			TypedXmlWriter w = annoEl._element(new QName(NS_XSD, "appInfo"), TypedXmlWriter.class);
+			TypedXmlWriter w = annoEl._element(new QName(NS_XSD, "appinfo"), TypedXmlWriter.class);
 			if(info.source() != null && !info.source().equals("")) {
 				w._attribute(new QName("source"), info.source());
 			}
-			// TODO: use XML parser to allow XML content in appInfo
+			// TODO: use XML parser to allow XML content in appinfo
 			w._pcdata(info.value());
 		}
 		for(Documentation doc : anno.documentation()) {
@@ -191,7 +193,7 @@ public class XmlSchemaEnhancer {
 				w._attribute(new QName("source"), doc.source());
 			}
 			if(doc.lang() != null && !doc.lang().equals("")) {
-				w._attribute(new QName("lang"), doc.lang());
+				w._attribute(new QName(NS_XML, "lang"), doc.lang());
 			}
 			// TODO: use XML parser to allow XML content in documentation
 			w._pcdata(doc.value());

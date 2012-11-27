@@ -20,3 +20,60 @@ Maven Repository
 The 2.2.6 API and 2.2.7 IMPL are deployed to a maven repo located here:
 
 http://pellcorp.github.com/docs/maven2/releases
+
+
+Maven Endorsed Integration
+--------------------------
+
+The easiest way to integrate this into your maven build to override the built in jaxb impl and api is to
+use the maven dependency plugin, and the configure the maven compiler and surefire plugins.
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-dependency-plugin</artifactId>
+	<configuration>
+		<outputDirectory>${project.build.directory}/endorsed</outputDirectory>
+	</configuration>
+	<executions>
+		<execution>
+			<id>copy-endorsed</id>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>copy</goal>
+			</goals>
+			<configuration>
+				<artifactItems>
+					<artifactItem>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jaxb-api</artifactId>
+						<version>2.2.6-facets</version>
+						<overWrite>true</overWrite>
+						<destFileName>jaxb-api.jar</destFileName>
+					</artifactItem>
+				</artifactItems>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<configuration>
+		<compilerArguments>
+			<endorseddirs>${project.build.directory}/endorsed</endorseddirs>
+		</compilerArguments>
+	</configuration>
+</plugin>
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<configuration>
+		<systemPropertyVariables>
+			<java.endorsed.dirs>${project.build.directory}/endorsed</java.endorsed.dirs>
+		</systemPropertyVariables>
+	</configuration>
+</plugin>
+
