@@ -11,12 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class XmlSchemaEnhancerTest extends AbstractTestCase {
-    private static PersonService client;
-    
     @BeforeClass
     public static void startServers() throws Exception {
         createServer(PersonService.class, new PersonServiceImpl());
-        client = createClient(PersonService.class);
     }
 
     @AfterClass
@@ -27,8 +24,6 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     @Test
     public void testEnumLiteralDocumentation() throws IOException {
         String schemaDoc = readWsdl(PersonService.class);
-        System.out.println(schemaDoc);
+        //System.out.println(schemaDoc);
     }
-    
-    
 }

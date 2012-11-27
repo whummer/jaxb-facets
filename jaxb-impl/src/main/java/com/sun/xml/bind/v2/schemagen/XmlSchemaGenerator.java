@@ -59,6 +59,7 @@ import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
@@ -66,6 +67,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.SAXParseException;
 
+import at.ac.tuwien.infosys.jaxb.AnnotationUtils;
 import at.ac.tuwien.infosys.jaxb.XmlSchemaEnhancer;
 
 import com.sun.istack.NotNull;
@@ -875,9 +877,9 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                 NoFixedFacet enumeration = base.enumeration();
                 
-                //XmlSchemaEnhancer.addEnumConstantAnnotations(c, enumeration);
+                XmlSchemaEnhancer.addXsdAnnotations(c, enumeration);
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
-                
+                 
                 enumeration.value(c.getLexicalValue());
             }
             st.commit();

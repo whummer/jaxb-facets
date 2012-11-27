@@ -7,15 +7,15 @@ import javax.xml.bind.annotation.XmlEnumValue;
 @Documentation(value="Gender Type")
 @XmlEnum
 public enum Gender {
-    @Documentation(value="Female")
     @XmlEnumValue(value = "F")
+    @Documentation(value="Female")
     F, 
     
-    @Documentation(value="Male")
     @XmlEnumValue(value = "M")
+    @Documentation(value="Male")
     M, 
     
-    @Documentation(value="Other")
     @XmlEnumValue(value = "O")
+    @Documentation(value="Other")
     O
 }
