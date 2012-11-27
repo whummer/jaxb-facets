@@ -1,16 +1,12 @@
-package com.pellcorp.jaxb.schemagen;
-
-import javax.xml.ws.soap.SOAPFaultException;
+package at.ac.tuwien.infosys.jaxb;
 
 import com.pellcorp.test.AbstractTestCase;
-import com.pellcorp.test.TestUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-// Copied from cxf systests/jaxws
-public class JaxbFacetsSchemaValidationTest extends AbstractTestCase {
+public class SchemaValidationTest extends AbstractTestCase {
     private static PersonService client;
 
     @BeforeClass
@@ -33,14 +29,8 @@ public class JaxbFacetsSchemaValidationTest extends AbstractTestCase {
         try {
             client.save(person);
             fail("Expected exception");
-        } catch (SOAPFaultException sfe) {
+        } catch (Exception sfe) {
             assertTrue(sfe.getMessage().contains("Unmarshalling Error: cvc-pattern-valid"));
         }
-    }
-    
-    @Test
-    public void testDocumentation() throws Exception {
-        String schemaDoc = readWsdl(PersonService.class);
-        System.out.println(schemaDoc);
     }
 }
