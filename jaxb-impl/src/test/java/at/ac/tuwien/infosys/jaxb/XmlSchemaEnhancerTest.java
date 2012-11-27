@@ -85,5 +85,20 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:documentation[3]", doc);
         assertEquals("doc 3", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:sequence/xs:element[@name='bar']/xs:annotation/xs:documentation", doc);
+        assertEquals("<b>string bar</b>", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:appinfo[@source='src 1']", doc);
+        assertEquals("appinfo 1", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:documentation", doc);
+        assertEquals("<b>string foo</b>", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo1']/xs:annotation/xs:documentation[1]", doc);
+        assertEquals("this is the first line", value);
+        
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo1']/xs:annotation/xs:documentation[2]", doc);
+        assertEquals("this is the second line", value);
     }
 }
