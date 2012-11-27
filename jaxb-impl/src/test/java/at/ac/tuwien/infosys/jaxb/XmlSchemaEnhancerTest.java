@@ -29,7 +29,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     }
     
     @Test
-    public void testGenderEnumDocumentation() throws Exception {
+    public void testGenderEnumDocs() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonService.class));
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
         String value = engine.evaluate("//xs:simpleType[@name='gender']/xs:annotation/xs:documentation", doc);
