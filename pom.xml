@@ -5,6 +5,11 @@
     <version>2.2.7-facets</version>
     <packaging>pom</packaging>
 
+	<properties>
+		<!-- FIXME fix up the dirs below so they are relative -->
+		<devHome>file:///home/jason/Development</devHome>
+	</properties>
+
 	<parent>
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
@@ -16,20 +21,18 @@
 		<module>jaxb-api</module>
 		<module>jaxb-impl</module>
     </modules>
-
-	<!-- FIXME fix up the dirs below so they are relative -->
+	
     <distributionManagement>
 	    <repository>
 	        <id>repo</id>
-	        <url>file:///home/jason/Development/docs/maven2/releases</url>
+	        <url>${devHome}/docs/maven2/releases</url>
 	    </repository>
 
 	    <snapshotRepository>
 	        <id>snapshot-repo</id>
-	        <url>file:///home/jason/Development/docs/maven2/snapshots</url>
+	        <url>${devHome}/docs/maven2/snapshots</url>
 	    </snapshotRepository>
 	</distributionManagement>
-
 	 
     <repositories>
 		<repository>
