@@ -43,7 +43,6 @@ import com.sun.xml.txw2.TypedXmlWriter;
  */
 @SuppressWarnings("all")
 public class XmlSchemaEnhancer {
-
 	public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
 	public static final String NS_XML = "http://www.w3.org/XML/1998/namespace";
 	
@@ -83,7 +82,6 @@ public class XmlSchemaEnhancer {
         }
 	
 	public static <T,C> void addFacets(TypeRef<T,C> t, LocalElement e) {
-		
 		if(!hasFacets(t))
 			return;
 		
@@ -107,7 +105,6 @@ public class XmlSchemaEnhancer {
 						_attribute("value", facetValue);
 			}
 		}
-		
 	}
 
 	public static <T,C> void addFacets(AttributePropertyInfo<T,C> info, LocalAttribute attr) {
@@ -185,27 +182,22 @@ public class XmlSchemaEnhancer {
 	}
 
 	public static <T,C> void addXsdAnnotations(AttributePropertyInfo<T,C> _info, LocalAttribute _attr) {
-
 		if(!hasXsdAnnotations(_info))
 			return;
 
 		javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(_info);
-
 		addXsdAnnotations(anno, _attr);
 	}
 
 	public static <T,C> void addXsdAnnotations(TypeRef<T,C> t, LocalElement e) {
-
 		if(!hasXsdAnnotations(t))
 			return;
 
 		javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(t);
-
 		addXsdAnnotations(anno, e);
 	}
 
 	public static <T,C> void addXsdAnnotations(javax.xml.bind.annotation.Annotation anno, TypedXmlWriter obj) {
-
 		TypedXmlWriter annoEl = getXsdAnnotation(obj, anno.id(), anno.attributes());
 		for(AppInfo info : anno.appinfo()) {
 			TypedXmlWriter w = annoEl._element(new QName(NS_XSD, "appinfo"), TypedXmlWriter.class);
@@ -249,7 +241,6 @@ public class XmlSchemaEnhancer {
 	}
 	
 	public static <T,C> boolean writeCustomOccurs(TypeRef<T,C> t, LocalElement e, boolean isOptional, boolean repeated) {
-		
 		MaxOccurs max = null;
 		MinOccurs min = null;
 		try {
@@ -288,6 +279,7 @@ public class XmlSchemaEnhancer {
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(ClassInfo<T,C> ci) {
 		return getXsdAnnotationAnnotation(ci.getType());
 	}
+	
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(T type) {
 	        // jpell - probably a better way than this!
 	        if (type instanceof EnumConstant) {
@@ -303,12 +295,15 @@ public class XmlSchemaEnhancer {
         		return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc, appinfo);
 	        }
 	}
+	
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(TypeRef<T,C> t) {
 		return getXsdAnnotationAnnotation(t.getSource());
 	}
+	
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(AttributePropertyInfo<T,C> t) {
 		return getXsdAnnotationAnnotation(t.getSource());
 	}
+	
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(PropertyInfo<T,C> t) {
 		javax.xml.bind.annotation.Annotation anno = null;
 		AppInfo appinfo = null;
@@ -346,11 +341,17 @@ public class XmlSchemaEnhancer {
 
 	protected static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
 			javax.xml.bind.annotation.Annotation _anno, Documentation _doc, AppInfo _appinfo) {
-		javax.xml.bind.annotation.Annotation anno = null;
 		ClassLoader cl = _anno != null ? _anno.getClass().getClassLoader() :
-						_doc != null ? _doc.getClass().getClassLoader() :
-						_appinfo != null ? _appinfo.getClass().getClassLoader() : 
-							ClassLoader.getSystemClassLoader();
+				_doc != null ? _doc.getClass().getClassLoader() :
+				_appinfo != null ? _appinfo.getClass().getClassLoader() : 
+				null;
+
+		// if none of Annotation, AppInfo or Documentation are not null, whats the
+		// point of falling back to the system classloader
+		if (cl == null) {
+		        return null;
+		}
+		
 		final Map<String,Object> annoValues = new HashMap<String,Object>();
 		annoValues.put("appinfo", new AppInfo[]{});
 		annoValues.put("attributes", new String[]{});
@@ -360,8 +361,10 @@ public class XmlSchemaEnhancer {
 				return annoValues.get(m.getName());
 			}
 		};
-		anno = (javax.xml.bind.annotation.Annotation)Proxy.newProxyInstance(
-				cl, new Class<?>[]{javax.xml.bind.annotation.Annotation.class}, h);
+		
+		javax.xml.bind.annotation.Annotation anno = 
+		    (javax.xml.bind.annotation.Annotation)Proxy.newProxyInstance(
+			cl, new Class<?>[]{javax.xml.bind.annotation.Annotation.class}, h);
 
 		boolean hasAnno = false;
 
@@ -497,18 +500,18 @@ public class XmlSchemaEnhancer {
 			} catch (Exception e) {
 				/* swallow */ 
 			}
-//			if(anno instanceof Proxy) {
-//				try {
-//					Object handler = Proxy.getInvocationHandler(anno);
-//					if(handler instanceof AnnotationInvocationHandler) {
-//						T annoObj = convertToAnnotation(
-//								(AnnotationInvocationHandler)handler, annoClass);
-//						return (T)annoObj;
-//					}
-//				} catch (Exception e) {
-//					/* swallow */
-//				}
-//			}
+			if(anno instanceof Proxy) {
+                                try {
+                                        Object handler = Proxy.getInvocationHandler(anno);
+                                        if(handler instanceof InvocationHandler) {
+                                                T annoObj = convertToAnnotation(
+                                                                (InvocationHandler)handler, annoClass);
+                                                return (T)annoObj;
+                                        }
+                                } catch (Exception e) {
+                                        /* swallow */
+                                }
+                        }
 			if(annoClass.equals(anno.getClass()) || 
 					annoClass.isAssignableFrom(anno.getClass())) {
 				return (T)anno;

@@ -131,7 +131,7 @@
 							<Implementation-Vendor>Oracle Corporation</Implementation-Vendor>
 							<Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
 							<Extension-Name>com.sun.xml.bind</Extension-Name>
-							<Build-Id>hudson-jaxb-ri-2.2.6-promote-release-10</Build-Id>
+							<Build-Id>${project.artifactId} ${project.version}</Build-Id>
 							<Class-Path>jaxb-api.jar</Class-Path>
 						</manifestEntries>
 					</archive>
