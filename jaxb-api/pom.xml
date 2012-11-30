@@ -50,7 +50,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>javax.xml.bind</groupId>
     <artifactId>jaxb-api</artifactId>
-    <version>2.2.7-facets-1.0</version>
+    <version>2.2.7-facets-1.1</version>
     <packaging>jar</packaging>
 
     <name>Java Architecture for XML Binding</name>
@@ -146,85 +146,16 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Extension-Name>javax.xml.bind</Extension-Name>
-                        </manifestEntries>
-                        <manifest>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
+					<archive>
+						<manifestEntries>
+							<Specification-Title>Java Architecture for XML Binding</Specification-Title>
+							<Specification-Version>2.2.7</Specification-Version>
+							<Specification-Vendor>Oracle Corporation</Specification-Vendor>
+							<Extension-Name>javax.xml.bind</Extension-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
             </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
-                <configuration>
-                    <nodeprecated>false</nodeprecated>
-                    <use>false</use>
-                    <author>true</author>
-                    <version>true</version>
-                    <doctitle><![CDATA[<br>
-JAXB ${project.version} Runtime Library</h2>
-${project.name} specification, ${release.spec.date}<br>
-Comments to: <i><a href='mailto:${release.spec.feedback}'>${release.spec.feedback}</a></i><br>
-More information at: <i><a target='_top'
-href='http://jaxb.java.net'>http://jaxb.java.net</a></i><br>
-&nbsp;<br>&nbsp;<br><hr width='65%'><h1>${project.name}</h1><hr width='75%'>
-<br>&nbsp;<br>]]>
-                    </doctitle>
-                    <header><![CDATA[JAXB<br>v${project.version}]]>
-                    </header>
-                    <bottom><![CDATA[<font size=-1>
-<br>Comments to: <a href='mailto:${release.spec.feedback}'><i>${release.spec.feedback}</i></a>
-<br>More information at: <a target='_top'
-href='http://jaxb.java.net'><i>http://jaxb.java.net</i></a>
-<p>Copyright &copy; 2004-2011 Oracle </font>]]>
-                    </bottom>
-                    <detectJavaApiLink>false</detectJavaApiLink>
-                    <offlineLinks>
-                        <offlineLink>
-                            <url>http://download.oracle.com/javase/6/docs/api/</url>
-                            <location>${basedir}/offline-javadoc</location>
-                        </offlineLink>
-                    </offlineLinks>
-                </configuration>  
-            </plugin>
-      
         </plugins>
-
     </build>    
-
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.1</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
 </project>
