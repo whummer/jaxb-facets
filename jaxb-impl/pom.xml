@@ -189,6 +189,13 @@
 			<version>2.2.6</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- for JSR-303 validation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator-annotation-processor</artifactId>
+			<version>4.1.0.Final</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
