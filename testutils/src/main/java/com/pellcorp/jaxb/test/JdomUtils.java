@@ -19,8 +19,8 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
 
 public final class JdomUtils {
-	
-	public static final String NS_WSDL = "http://schemas.xmlsoap.org/wsdl/";
+    
+    public static final String NS_WSDL = "http://schemas.xmlsoap.org/wsdl/";
 
     private JdomUtils() {
     }
@@ -56,24 +56,24 @@ public final class JdomUtils {
             toList(wsdlDoc.getDescendants(new ElementFilter("schema", Namespace.getNamespace(XMLConstants.W3C_XML_SCHEMA_NS_URI))));
         
         if(schemaList.isEmpty()) {
-        	List<Element> importList = 
+            List<Element> importList = 
                     toList(wsdlDoc.getDescendants(new ElementFilter("import", Namespace.getNamespace(NS_WSDL))));
-        	for(Element imp : importList) {
-        		String location = imp.getAttributeValue("location");
-        		//System.out.println("Loading schema from WSDL location: " + location);
+            for(Element imp : importList) {
+                String location = imp.getAttributeValue("location");
+                //System.out.println("Loading schema from WSDL location: " + location);
                 try {
-            		SAXBuilder builder = new SAXBuilder();
-					org.jdom2.Document wsdlDocImported = builder.build(new URL(location));
-					// TODO: circular dependencies not handled (--> we might end up in an infinite loop; unlikely, but possible)
-					schemaList.add(getWsdlSchema(wsdlDocImported).getRootElement());
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-        	}
+                    SAXBuilder builder = new SAXBuilder();
+                    org.jdom2.Document wsdlDocImported = builder.build(new URL(location));
+                    // TODO: circular dependencies not handled (--> we might end up in an infinite loop; unlikely, but possible)
+                    schemaList.add(getWsdlSchema(wsdlDocImported).getRootElement());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         
         if(schemaList.size() != 1) {
-        	throw new RuntimeException("Unexpected number of schema elements in WSDL. Expected 1, got " + schemaList.size());
+            throw new RuntimeException("Unexpected number of schema elements in WSDL. Expected 1, got " + schemaList.size());
         }
         org.jdom2.Document schemaDoc = new org.jdom2.Document();
         schemaDoc.setRootElement(schemaList.get(0).detach());

@@ -62,7 +62,7 @@ public abstract class AbstractTestCase extends Assert {
     }
     
     @SuppressWarnings("unchecked")
-	protected static <T> T createClient(Class<T> serviceClass) {
+    protected static <T> T createClient(Class<T> serviceClass) {
         JaxWsProxyFactoryBean clientFactory = new JaxWsProxyFactoryBean();
         clientFactory.setServiceClass(serviceClass);
 

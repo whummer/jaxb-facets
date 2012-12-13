@@ -401,7 +401,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
      * Writes out the episode file.
      */
     public void writeEpisodeFile(XmlSerializer out) {
-	/* added by hummer@infosys.tuwien.ac.at */
+        /* added by hummer@infosys.tuwien.ac.at */
     	logger.fine("Started JAXB-Facets enabled XmlSchemaGenerator.");
     	/* end added by hummer@infosys.tuwien.ac.at */
 

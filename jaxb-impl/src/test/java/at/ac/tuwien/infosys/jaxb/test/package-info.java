@@ -1,5 +1,5 @@
 @Annotation(
-		documentation = @Documentation(XmlSchemaEnhancerTest.DOC_SCHEMALEVEL_1)
+    documentation = @Documentation(XmlSchemaEnhancerTest.DOC_SCHEMALEVEL_1)
 )
 @Documentation(XmlSchemaEnhancerTest.DOC_SCHEMALEVEL_2)
 @AppInfo(XmlSchemaEnhancerTest.APPINFO_SCHEMALEVEL)

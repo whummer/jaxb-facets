@@ -13,7 +13,7 @@ public final class ResourceUtils {
 
     private ResourceUtils() {
     }
-    
+
     public static Reader loadResourceAsReader(String path) throws IOException {
             InputStream is = loadResourceAsInputStream(path);
             return new InputStreamReader(is, DEFAULT_CHARSET);

@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "Person")
 public class Person {
     @XmlElement(required = true, name = "firstName")
-    @Facets(pattern="[A-Z]+")
+    @Facets(pattern = "[A-Z]+")
     private String firstName;
 
     @XmlElement(required = true, name = "lastName")
@@ -18,13 +18,13 @@ public class Person {
 
     @XmlElement(required = true, name = "gender")
     private Gender gender;
-    
+
     @XmlElement(required = true, name = "age")
     private Age age;
-    
+
     public Person() {
     }
-    
+
     public Age getAge() {
         return age;
     }
@@ -32,7 +32,7 @@ public class Person {
     public void setAge(Age age) {
         this.age = age;
     }
-    
+
     public Gender getGender() {
         return gender;
     }

@@ -9,8 +9,8 @@ import com.sun.xml.bind.v2.model.core.EnumConstant;
 public final class AnnotationUtils {
     private AnnotationUtils() {
     }
-    
-    public static <T,C> Documentation getDocumentation(EnumConstant<T,C> c) {
+
+    public static <T, C> Documentation getDocumentation(EnumConstant<T, C> c) {
         try {
             Class<?> enumClazz = (Class<?>) c.getEnclosingClass().getClazz();
             Field field = enumClazz.getField(c.getName());

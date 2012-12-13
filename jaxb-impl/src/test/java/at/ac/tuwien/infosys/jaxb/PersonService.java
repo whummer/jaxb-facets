@@ -14,6 +14,6 @@ import at.ac.tuwien.infosys.jaxb.test.TestRequest;
 public interface PersonService {
     @WebMethod(operationName = "save")
     void save(@WebParam(name = "Person") Person data);
-    
+
     void foo(@WebParam(name = "TestRequest") TestRequest r);
 }
