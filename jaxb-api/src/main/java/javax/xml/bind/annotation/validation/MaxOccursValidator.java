@@ -21,7 +21,7 @@ public class MaxOccursValidator implements ConstraintValidator<MaxOccurs, Object
 
 	public boolean isValid(Object value, ConstraintValidatorContext context) {
 		// TODO: implement
-		throw new RuntimeException("MinOccurs validation not yet implemented.");
+		throw new RuntimeException("MaxOccurs validation not yet implemented.");
 	}
 
 }
