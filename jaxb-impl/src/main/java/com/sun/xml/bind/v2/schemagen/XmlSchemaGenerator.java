@@ -154,6 +154,7 @@ import static com.sun.xml.bind.v2.schemagen.Util.normalizeUriPath;
  * @author Ryan Shoemaker
  * @author Kohsuke Kawaguchi (kk@kohsuke.org)
  */
+@SuppressWarnings("all") // jaxb-facets: added by hummer@infosys.tuwien.ac.at
 public final class XmlSchemaGenerator<T,C,F,M> {
 
     private static final Logger logger = Util.getClassLogger();
@@ -682,6 +683,11 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
                 schema._pcdata(newline);
 
+                //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                // add <documentation> to <schema> top level element (package-level @Documentation)
+                XmlSchemaEnhancer.addXsdAnnotations(classes, enums, arrays, schema);
+                //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
+                
                 // refer to other schemas
                 for( Namespace n : depends ) {
                     Import imp = schema._import();

@@ -12,4 +12,8 @@ import javax.xml.bind.annotation.XmlType;
 public class Buddy {
     @Documentation("Name of buddy.")
     private String name;
+    
+    public String getName() {
+		return name;
+	}
 }

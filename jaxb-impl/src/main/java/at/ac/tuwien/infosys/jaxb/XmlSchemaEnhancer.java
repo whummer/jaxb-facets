@@ -7,9 +7,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,9 +26,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.namespace.QName;
 
+import com.sun.xml.bind.v2.model.core.ArrayInfo;
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
 import com.sun.xml.bind.v2.model.core.ClassInfo;
 import com.sun.xml.bind.v2.model.core.EnumConstant;
+import com.sun.xml.bind.v2.model.core.EnumLeafInfo;
 import com.sun.xml.bind.v2.model.core.PropertyInfo;
 import com.sun.xml.bind.v2.model.core.TypeRef;
 import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
@@ -173,6 +177,32 @@ public class XmlSchemaEnhancer {
 		addXsdAnnotations(anno, w);
 	}
 
+	public static <T,C> void addXsdAnnotations(
+			Set<ClassInfo<T,C>> classes,
+			Set<EnumLeafInfo<T,C>> enums,
+			Set<ArrayInfo<T,C>> arrays,
+			TypedXmlWriter w) {
+		Set<Package> annotatedPackages = new HashSet<Package>();
+        for(ClassInfo<T,C> c: classes) {
+        	Class<?> cl = (Class<?>)c.getType();
+            Package pkg = cl.getPackage();
+        	annotatedPackages.add(pkg);
+        }
+        for(EnumLeafInfo<T,C> c: enums) {
+        	Class<?> cl = (Class<?>)c.getType();
+            Package pkg = cl.getPackage();
+        	annotatedPackages.add(pkg);
+        }
+        for(ArrayInfo<T,C> c: arrays) {
+        	Class<?> cl = (Class<?>)c.getType();
+            Package pkg = cl.getPackage();
+        	annotatedPackages.add(pkg);
+        }
+        for(Package p : annotatedPackages) {
+            XmlSchemaEnhancer.addXsdAnnotations(p, w);
+        }
+	}
+
 	public static <T,C> void addXsdAnnotations(ClassInfo<T, C> ci, TypedXmlWriter w) {
 		if(!hasXsdAnnotations(ci))
 			return;
@@ -281,19 +311,28 @@ public class XmlSchemaEnhancer {
 	}
 	
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(T type) {
-	        // jpell - probably a better way than this!
-	        if (type instanceof EnumConstant) {
-	            Documentation doc = AnnotationUtils.getDocumentation((EnumConstant) type);
-	            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(null, doc, null);
-	        } else {
-        		if(!(type instanceof Class<?>))
-        			return null;
+        // jpell - probably a better way than this!
+        if (type instanceof EnumConstant) {
+            Documentation doc = AnnotationUtils.getDocumentation((EnumConstant) type);
+            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(null, doc, null);
+        } else {
+        	javax.xml.bind.annotation.Annotation anno = null;
+    		if(type instanceof Class<?>) {
         		Class<?> clazz = (Class<?>)type;
-        		javax.xml.bind.annotation.Annotation anno = clazz.getAnnotation(javax.xml.bind.annotation.Annotation.class);
+        		anno = clazz.getAnnotation(javax.xml.bind.annotation.Annotation.class);
         		AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
         		Documentation doc = clazz.getAnnotation(Documentation.class);
         		return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc, appinfo);
-	        }
+    		} else if(type instanceof Package) {
+    			Package pkg = (Package)type;
+        		anno = pkg.getAnnotation(javax.xml.bind.annotation.Annotation.class);
+        		AppInfo appinfo = pkg.getAnnotation(AppInfo.class);
+        		Documentation doc = pkg.getAnnotation(Documentation.class);
+        		return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc, appinfo);
+    		} else {
+    			return null;
+    		}
+        }
 	}
 	
 	private static <T,C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(TypeRef<T,C> t) {

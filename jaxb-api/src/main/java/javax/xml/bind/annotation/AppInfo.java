@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * @author Waldemar Hummer (hummer@infosys.tuwien.ac.at)
  * @since JAXB-Facets version 0.4
  */
-@Target(value={ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
+@Target(value={ElementType.FIELD, ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE})
 @Retention(value=RetentionPolicy.RUNTIME)
 @Documented
 public @interface AppInfo {

@@ -1,13 +1,12 @@
 package com.pellcorp.jaxb.test;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Document;
+import javax.xml.XMLConstants;
 
 import org.apache.cxf.annotations.SchemaValidation.SchemaValidationType;
 import org.apache.cxf.endpoint.Server;
@@ -19,8 +18,8 @@ import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-
 import org.junit.Assert;
+import org.w3c.dom.Document;
 
 public abstract class AbstractTestCase extends Assert {
     private static Map<String, String> m = new HashMap<String, String>();
@@ -31,7 +30,8 @@ public abstract class AbstractTestCase extends Assert {
     private static List<Server> serverList = new ArrayList<Server>();
     
     static {
-        m.put("xs", "http://www.w3.org/2001/XMLSchema");
+        m.put("xs", XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        m.put("wsdl", JdomUtils.NS_WSDL);
         ctx = new SimpleNamespaceContext(m);
         
         engine.setNamespaceContext(ctx);
@@ -61,7 +61,8 @@ public abstract class AbstractTestCase extends Assert {
         return TestUtils.readURL(getAddress(serviceClass) + "?wsdl");
     }
     
-    protected static <T> T createClient(Class<T> serviceClass) {
+    @SuppressWarnings("unchecked")
+	protected static <T> T createClient(Class<T> serviceClass) {
         JaxWsProxyFactoryBean clientFactory = new JaxWsProxyFactoryBean();
         clientFactory.setServiceClass(serviceClass);
 

@@ -1,26 +1,23 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.pellcorp.jaxb.test.AbstractTestCase;
 
-import org.custommonkey.xmlunit.NamespaceContext;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 public class XmlSchemaEnhancerTest extends AbstractTestCase {
+
+    public static final String DOC_SCHEMALEVEL_1 = "schema-level doc 123";
+    public static final String DOC_SCHEMALEVEL_2 = "schema-level doc 234";
+    public static final String APPINFO_SCHEMALEVEL = "schema-level appinfo 1234";
+
+	
     @BeforeClass
     public static void startServers() throws Exception {
         createServer(PersonService.class, new PersonServiceImpl());
+        createServer(PersonServiceNoNS.class, new PersonServiceNoNSImpl());
     }
 
     @AfterClass
@@ -68,7 +65,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:complexType[@name='Buddy']/xs:sequence/xs:element/xs:annotation/xs:documentation", doc);
         assertEquals("Name of buddy.", value);
     }
-    
+
     @Test
     public void testComplexTypeTestRequest() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonService.class));
@@ -100,5 +97,21 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo1']/xs:annotation/xs:documentation[2]", doc);
         assertEquals("this is the second line", value);
+    }
+
+    @Test
+    public void testPackageLevelXSDAnnotations() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonServiceNoNS.class));
+        Document doc = getWsdlSchemaAsDocument(PersonServiceNoNS.class);
+
+        String value = engine.evaluate("/xs:schema/xs:annotation/xs:appinfo[1]", doc);
+        assertEquals(APPINFO_SCHEMALEVEL, value);
+
+        value = engine.evaluate("/xs:schema/xs:annotation/xs:documentation[1]", doc);
+        assertEquals(DOC_SCHEMALEVEL_1, value);
+
+        value = engine.evaluate("/xs:schema/xs:annotation/xs:documentation[2]", doc);
+        assertEquals(DOC_SCHEMALEVEL_2, value);
+
     }
 }
