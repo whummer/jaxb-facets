@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import at.ac.tuwien.infosys.jaxb.TimeZoneOffset;
+
 @XmlRootElement(name = "foo")
 @XmlType(name = "TestRequest")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -52,7 +54,7 @@ public class TestRequest {
     @Facets(pattern = "[0-9]+")
     private String barX;
 
-    /* Thanks to Yossi Cohen for the following two test cases..! */
+    /* Thanks to Yossi Cohen for the following test cases..! */
     @XmlElement(required = true)
     @XmlSchemaType(name = "anyURI")
     @Facets(pattern = "https?://.+")
@@ -60,6 +62,8 @@ public class TestRequest {
     @XmlElement(required = true)
     @XmlSchemaType(name = "anyURI")
     public java.net.URI value2;
+    @XmlElement
+    public TimeZoneOffset value3;
 
     /* Thanks to Jason Pell for point out the need for min/max facets of type String..! */
     @XmlElement(required = true)

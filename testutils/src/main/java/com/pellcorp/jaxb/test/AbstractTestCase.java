@@ -54,6 +54,7 @@ public abstract class AbstractTestCase extends Assert {
     
     protected static Document getWsdlSchemaAsDocument(Class<?> serviceClass) throws IOException {
         String wsdlContent = readWsdl(serviceClass);
+        //System.out.println(wsdlContent);
         return JdomUtils.getWsdlSchemaAsW3CDocument(wsdlContent);
     }
     

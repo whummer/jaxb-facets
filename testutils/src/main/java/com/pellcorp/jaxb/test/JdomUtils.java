@@ -63,8 +63,12 @@ public final class JdomUtils {
                 //System.out.println("Loading schema from WSDL location: " + location);
                 try {
                     SAXBuilder builder = new SAXBuilder();
+                    //String schema = TestUtils.readURL(location);
+                    //System.out.println(schema);
                     org.jdom2.Document wsdlDocImported = builder.build(new URL(location));
-                    // TODO: circular dependencies not handled (--> we might end up in an infinite loop; unlikely, but possible)
+                    // TODO (whu): circular dependencies not handled 
+                    // (--> we might end up in an infinite loop; 
+                    // unlikely, but possible)
                     schemaList.add(getWsdlSchema(wsdlDocImported).getRootElement());
                 } catch (Exception e) {
                     throw new RuntimeException(e);

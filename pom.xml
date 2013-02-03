@@ -7,7 +7,15 @@
     <packaging>pom</packaging>
 
 	<build>
-	<!-- use this to tell m2e Maven Eclipse Plugin to 
+		<!-- required for deployment via SSH -->
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
+		<!-- use this to tell m2e Maven Eclipse Plugin to 
 			ignore the maven-dependency-plugin execution -->
 		<pluginManagement>
 			<plugins>
@@ -70,17 +78,24 @@
     </modules>
 	
     <distributionManagement>
-	    <repository>
-	        <id>repo</id>
-	        <url>${devHome}/docs/maven2/releases</url>
-	    </repository>
+<!-- 	    <repository> -->
+<!-- 	        <id>repo</id> -->
+<!-- 	        <url>${devHome}/docs/maven2/releases</url> -->
+<!-- 	    </repository> -->
+		<repository>
+			<id>infosys-repo</id>
+			<name>infosys-repo</name>
+			<uniqueVersion>false</uniqueVersion>
+			<url>scp://hummer@www.infosys.tuwien.ac.at/web/website/mvn</url>
+		</repository>
 
 	    <snapshotRepository>
 	        <id>snapshot-repo</id>
 	        <url>${devHome}/docs/maven2/snapshots</url>
 	    </snapshotRepository>
+
 	</distributionManagement>
-	 
+
     <repositories>
 		<repository>
 			<id>jaxb-facets</id>

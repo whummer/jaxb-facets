@@ -100,6 +100,14 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     }
 
     @Test
+    public void testFacetOnXmlValue() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:simpleType[@name='TimeZoneOffset']/xs:restriction/@base", doc);
+        assertTrue(value != null && value.endsWith("integer"));
+    }
+
+    @Test
     public void testPackageLevelXSDAnnotations() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonServiceNoNS.class));
         Document doc = getWsdlSchemaAsDocument(PersonServiceNoNS.class);

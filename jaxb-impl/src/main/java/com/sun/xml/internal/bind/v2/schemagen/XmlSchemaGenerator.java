@@ -1,31 +1,27 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
- *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
- *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
  *
  * Contributor(s):
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -38,22 +34,24 @@
  * holder.
  */
 
-package com.sun.xml.bind.v2.schemagen;
+package com.sun.xml.internal.bind.v2.schemagen;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.io.File;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,79 +63,69 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
-import org.xml.sax.SAXParseException;
-
-import at.ac.tuwien.infosys.jaxb.AnnotationUtils;
 import at.ac.tuwien.infosys.jaxb.XmlSchemaEnhancer;
 
-import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.bind.Util;
-import com.sun.xml.bind.api.CompositeStructure;
-import com.sun.xml.bind.api.ErrorListener;
-import com.sun.xml.bind.v2.TODO;
-import com.sun.xml.bind.v2.WellKnownNamespace;
-import com.sun.xml.bind.v2.model.core.Adapter;
-import com.sun.xml.bind.v2.model.core.ArrayInfo;
-import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
-import com.sun.xml.bind.v2.model.core.ClassInfo;
-import com.sun.xml.bind.v2.model.core.Element;
-import com.sun.xml.bind.v2.model.core.ElementInfo;
-import com.sun.xml.bind.v2.model.core.ElementPropertyInfo;
-import com.sun.xml.bind.v2.model.core.EnumConstant;
-import com.sun.xml.bind.v2.model.core.EnumLeafInfo;
-import com.sun.xml.bind.v2.model.core.MapPropertyInfo;
-import com.sun.xml.bind.v2.model.core.MaybeElement;
-import com.sun.xml.bind.v2.model.core.NonElement;
-import com.sun.xml.bind.v2.model.core.NonElementRef;
-import com.sun.xml.bind.v2.model.core.PropertyInfo;
-import com.sun.xml.bind.v2.model.core.ReferencePropertyInfo;
-import com.sun.xml.bind.v2.model.core.TypeInfo;
-import com.sun.xml.bind.v2.model.core.TypeInfoSet;
-import com.sun.xml.bind.v2.model.core.TypeRef;
-import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
-import com.sun.xml.bind.v2.model.core.WildcardMode;
-import com.sun.xml.bind.v2.model.impl.ClassInfoImpl;
-import com.sun.xml.bind.v2.model.nav.Navigator;
-import com.sun.xml.bind.v2.runtime.SwaRefAdapter;
-import com.sun.xml.bind.v2.schemagen.episode.Bindings;
-import com.sun.xml.bind.v2.schemagen.xmlschema.Any;
-import com.sun.xml.bind.v2.schemagen.xmlschema.AttrDecls;
-import com.sun.xml.bind.v2.schemagen.xmlschema.AttributeType;
-import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexExtension;
-import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexType;
-import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexTypeHost;
-import com.sun.xml.bind.v2.schemagen.xmlschema.ContentModelContainer;
-import com.sun.xml.bind.v2.schemagen.xmlschema.ExplicitGroup;
-import com.sun.xml.bind.v2.schemagen.xmlschema.Import;
-import com.sun.xml.bind.v2.schemagen.xmlschema.List;
-import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
-import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
-import com.sun.xml.bind.v2.schemagen.xmlschema.NoFixedFacet;
-import com.sun.xml.bind.v2.schemagen.xmlschema.Schema;
-import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleExtension;
-import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestriction;
-import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestrictionModel;
-import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleType;
-import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleTypeHost;
-import com.sun.xml.bind.v2.schemagen.xmlschema.TopLevelAttribute;
-import com.sun.xml.bind.v2.schemagen.xmlschema.TopLevelElement;
-import com.sun.xml.bind.v2.schemagen.xmlschema.TypeDefParticle;
-import com.sun.xml.bind.v2.schemagen.xmlschema.TypeHost;
-import com.sun.xml.bind.v2.util.CollisionCheckStack;
-import com.sun.xml.bind.v2.util.StackRecorder;
-import com.sun.xml.txw2.TXW;
-import com.sun.xml.txw2.TxwException;
-import com.sun.xml.txw2.TypedXmlWriter;
-import com.sun.xml.txw2.output.ResultFactory;
-import com.sun.xml.txw2.output.XmlSerializer;
+import com.sun.istack.NotNull;
+import com.sun.xml.internal.bind.Util;
+import com.sun.xml.internal.bind.api.CompositeStructure;
+import com.sun.xml.internal.bind.api.ErrorListener;
+import com.sun.xml.internal.bind.v2.TODO;
+import com.sun.xml.internal.bind.v2.WellKnownNamespace;
+import com.sun.xml.internal.bind.v2.util.CollisionCheckStack;
+import com.sun.xml.internal.bind.v2.util.StackRecorder;
+import static com.sun.xml.internal.bind.v2.WellKnownNamespace.XML_SCHEMA;
+import com.sun.xml.internal.bind.v2.model.core.Adapter;
+import com.sun.xml.internal.bind.v2.model.core.ArrayInfo;
+import com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo;
+import com.sun.xml.internal.bind.v2.model.core.ClassInfo;
+import com.sun.xml.internal.bind.v2.model.core.Element;
+import com.sun.xml.internal.bind.v2.model.core.ElementInfo;
+import com.sun.xml.internal.bind.v2.model.core.ElementPropertyInfo;
+import com.sun.xml.internal.bind.v2.model.core.EnumConstant;
+import com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo;
+import com.sun.xml.internal.bind.v2.model.core.MapPropertyInfo;
+import com.sun.xml.internal.bind.v2.model.core.NonElement;
+import com.sun.xml.internal.bind.v2.model.core.NonElementRef;
+import com.sun.xml.internal.bind.v2.model.core.PropertyInfo;
+import com.sun.xml.internal.bind.v2.model.core.ReferencePropertyInfo;
+import com.sun.xml.internal.bind.v2.model.core.TypeInfo;
+import com.sun.xml.internal.bind.v2.model.core.TypeInfoSet;
+import com.sun.xml.internal.bind.v2.model.core.TypeRef;
+import com.sun.xml.internal.bind.v2.model.core.ValuePropertyInfo;
+import com.sun.xml.internal.bind.v2.model.core.WildcardMode;
+import com.sun.xml.internal.bind.v2.model.nav.Navigator;
+import com.sun.xml.internal.bind.v2.runtime.SwaRefAdapter;
+import static com.sun.xml.internal.bind.v2.schemagen.Util.*;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Any;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.AttrDecls;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ComplexExtension;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ComplexType;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ComplexTypeHost;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ExplicitGroup;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Import;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalAttribute;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Schema;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.SimpleExtension;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.SimpleRestrictionModel;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.SimpleType;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.SimpleTypeHost;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TopLevelAttribute;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TopLevelElement;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TypeHost;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ContentModelContainer;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TypeDefParticle;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.AttributeType;
+import com.sun.xml.internal.bind.v2.schemagen.episode.Bindings;
+import com.sun.xml.internal.txw2.TXW;
+import com.sun.xml.internal.txw2.TxwException;
+import com.sun.xml.internal.txw2.TypedXmlWriter;
+import com.sun.xml.internal.txw2.output.ResultFactory;
+import com.sun.xml.internal.txw2.output.XmlSerializer;
 
-import static com.sun.xml.bind.v2.WellKnownNamespace.XML_SCHEMA;
-import static com.sun.xml.bind.v2.schemagen.Util.equal;
-import static com.sun.xml.bind.v2.schemagen.Util.equalsIgnoreCase;
-import static com.sun.xml.bind.v2.schemagen.Util.escapeURI;
-import static com.sun.xml.bind.v2.schemagen.Util.getParentUriPath;
-import static com.sun.xml.bind.v2.schemagen.Util.normalizeUriPath;
+import org.xml.sax.SAXParseException;
 
 /**
  * Generates a set of W3C XML Schema documents from a set of Java classes.
@@ -154,7 +142,7 @@ import static com.sun.xml.bind.v2.schemagen.Util.normalizeUriPath;
  * @author Ryan Shoemaker
  * @author Kohsuke Kawaguchi (kk@kohsuke.org)
  */
-@SuppressWarnings("all") // jaxb-facets: added by hummer@infosys.tuwien.ac.at
+@SuppressWarnings("all")
 public final class XmlSchemaGenerator<T,C,F,M> {
 
     private static final Logger logger = Util.getClassLogger();
@@ -196,7 +184,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
     private final CollisionCheckStack<ClassInfo<T,C>> collisionChecker = new CollisionCheckStack<ClassInfo<T,C>>();
 
     public XmlSchemaGenerator( Navigator<T,C,F,M> navigator, TypeInfoSet<T,C,F,M> types ) {
-        this.navigator = navigator;
+    	this.navigator = navigator;
         this.types = types;
 
         this.stringType = types.getTypeInfo(navigator.ref(String.class));
@@ -261,7 +249,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
         // search properties for foreign namespace references
         for( PropertyInfo<T,C> p : clazz.getProperties()) {
-            n.processForeignNamespaces(p, 1);
+            n.processForeignNamespaces(p);
             if (p instanceof AttributePropertyInfo) {
                 AttributePropertyInfo<T,C> ap = (AttributePropertyInfo<T,C>) p;
                 String aUri = ap.getXmlName().getNamespaceURI();
@@ -284,12 +272,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
             if(generateSwaRefAdapter(p))
                 n.useSwaRef = true;
-
-            MimeType mimeType = p.getExpectedMimeType();
-            if( mimeType != null ) {
-                n.useMimeNs = true;
-            }
-
         }
 
         // recurse on baseTypes to make sure that we can refer to them in the schema
@@ -325,11 +307,11 @@ public final class XmlSchemaGenerator<T,C,F,M> {
         } else {
             nillable = xmlElem.nillable();
         }
-
+        
         n.elementDecls.put(name.getLocalPart(),n.new ElementWithType(nillable, elem.getContentType()));
 
         // search for foreign namespace references
-        n.processForeignNamespaces(elem.getProperty(), 1);
+        n.processForeignNamespaces(elem.getProperty());
     }
 
     public void add( EnumLeafInfo<T,C> envm ) {
@@ -385,7 +367,9 @@ public final class XmlSchemaGenerator<T,C,F,M> {
      */
     public void add( QName tagName, boolean isNillable, NonElement<T,C> type ) {
 
-        if(type!=null && type.getType()==navigator.ref(CompositeStructure.class))
+    	com.sun.xml.internal.bind.v2.model.core.ClassInfo<T,C> t = 
+    			(com.sun.xml.internal.bind.v2.model.core.ClassInfo<T,C>)type;
+    	if(type!=null && type.getType()==navigator.ref(CompositeStructure.class))
             return; // this is a special class we introduced for JAX-WS that we *don't* want in the schema
 
 
@@ -401,10 +385,9 @@ public final class XmlSchemaGenerator<T,C,F,M> {
      * Writes out the episode file.
      */
     public void writeEpisodeFile(XmlSerializer out) {
-        /* added by hummer@infosys.tuwien.ac.at */
-    	logger.fine("Started JAXB-Facets enabled XmlSchemaGenerator.");
+    	/* added by hummer@infosys.tuwien.ac.at */
+    	logger.info("Started JAXB-Facets enabled XmlSchemaGenerator.");
     	/* end added by hummer@infosys.tuwien.ac.at */
-
         Bindings root = TXW.create(Bindings.class, out);
 
         if(namespaces.containsKey("")) // otherwise jaxb binding NS should be the default namespace
@@ -566,12 +549,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          * statement.
          */
         private boolean useSwaRef;
-        
-        /** 
-         * Import for mime namespace needs to be generated.
-         * See #856
-         */
-        private boolean useMimeNs;
 
         public Namespace(String uri) {
             this.uri = uri;
@@ -587,19 +564,15 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          *
          * @param p the PropertyInfo
          */
-        private void processForeignNamespaces(PropertyInfo<T, C> p, int processingDepth) {
-            for (TypeInfo<T, C> t : p.ref()) {
-                if ((t instanceof ClassInfo) && (processingDepth > 0)) {
-                    java.util.List<PropertyInfo> l = ((ClassInfo) t).getProperties();
-                    for (PropertyInfo subp : l) {
-                        processForeignNamespaces(subp, --processingDepth);
-                    }
+        private void processForeignNamespaces(PropertyInfo<T, C> p) {
+            // TODO: missing the correct handling of anonymous type,
+            // which requires recursive checks
+            for( TypeInfo<T, C> t : p.ref()) {
+                if(t instanceof Element) {
+                    addDependencyTo(((Element)t).getElementName());
                 }
-                if (t instanceof Element) {
-                    addDependencyTo(((Element) t).getElementName());
-                }
-                if (t instanceof NonElement) {
-                    addDependencyTo(((NonElement) t).getTypeName());
+                if(t instanceof NonElement) {
+                    addDependencyTo(((NonElement)t).getTypeName());
                 }
             }
         }
@@ -608,23 +581,20 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             // even though the Element interface says getElementName() returns non-null,
             // ClassInfo always implements Element (even if an instance of ClassInfo might not be an Element).
             // so this check is still necessary
-            if (qname==null) {
-                return;
-            }
+            if(qname==null)   return;
 
             String nsUri = qname.getNamespaceURI();
 
-            if (nsUri.equals(XML_SCHEMA)) {
+            if(nsUri.equals(XML_SCHEMA))
                 // no need to explicitly refer to XSD namespace
                 return;
-            }
 
-            if (nsUri.equals(uri)) {
+            if(nsUri.equals(uri)) {
                 selfReference = true;
                 return;
             }
 
-            // found a type in a foreign namespace, so make sure we generate an import for it
+        	// found a type in a foreign namespace, so make sure we generate an import for it
             depends.add(getNamespace(nsUri));
         }
 
@@ -647,9 +617,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
                 if(useSwaRef)
                     schema._namespace(WellKnownNamespace.SWA_URI,"swaRef");
-
-                if(useMimeNs)
-                    schema._namespace(WellKnownNamespace.XML_MIME_URI,"xmime");
 
                 attributeFormDefault = Form.get(types.getAttributeFormDefault(uri));
                 attributeFormDefault.declare("attributeFormDefault",schema);
@@ -684,7 +651,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 schema._pcdata(newline);
 
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                // add <documentation> to <schema> top level element (package-level @Documentation)
+                // add <documentation> to <schema> top level element
                 XmlSchemaEnhancer.addXsdAnnotations(classes, enums, arrays, schema);
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                 
@@ -702,9 +669,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 }
                 if(useSwaRef) {
                     schema._import().namespace(WellKnownNamespace.SWA_URI).schemaLocation("http://ws-i.org/profiles/basic/1.1/swaref.xsd");
-                }
-                if(useMimeNs) {
-                    schema._import().namespace(WellKnownNamespace.XML_MIME_URI).schemaLocation("http://www.w3.org/2005/05/xmlmime");
                 }
 
                 // then write each component
@@ -814,39 +778,21 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          *      The name of the attribute used when referencing a type by QName.
          */
         private void writeTypeRef(TypeHost th, NonElement<T,C> type, String refAttName) {
-            Element e = null;
-            if (type instanceof MaybeElement) {
-                MaybeElement me = (MaybeElement)type;
-                boolean isElement = me.isElement();
-                if (isElement) e = me.asElement();
-            }
-            if (type instanceof Element) {
-                e = (Element)type;
-            }
-            if (type.getTypeName()==null) {
-                if ((e != null) && (e.getElementName() != null)) {
-                    th.block(); // so that the caller may write other attributes
-                    if(type instanceof ClassInfo) {
+            if(type.getTypeName()==null) {
+                // anonymous
+                th.block(); // so that the caller may write other attribuets
+                if(type instanceof ClassInfo) {
+                    if(collisionChecker.push((ClassInfo<T,C>)type)) {
+                        errorListener.error(new SAXParseException(
+                            Messages.ANONYMOUS_TYPE_CYCLE.format(collisionChecker.getCycleString()),
+                            null
+                        ));
+                    } else {
                         writeClass( (ClassInfo<T,C>)type, th );
-                    } else {
-                        writeEnum( (EnumLeafInfo<T,C>)type, (SimpleTypeHost)th);
                     }
+                    collisionChecker.pop();
                 } else {
-                    // anonymous
-                    th.block(); // so that the caller may write other attributes
-                    if(type instanceof ClassInfo) {
-                        if(collisionChecker.push((ClassInfo<T,C>)type)) {
-                            errorListener.warning(new SAXParseException(
-                                Messages.ANONYMOUS_TYPE_CYCLE.format(collisionChecker.getCycleString()),
-                                null
-                            ));
-                        } else {
-                            writeClass( (ClassInfo<T,C>)type, th );
-                        }
-                        collisionChecker.pop();
-                    } else {
-                        writeEnum( (EnumLeafInfo<T,C>)type, (SimpleTypeHost)th);
-                    }
+                    writeEnum( (EnumLeafInfo<T,C>)type, (SimpleTypeHost)th);
                 }
             } else {
                 th._attribute(refAttName,type.getTypeName());
@@ -872,21 +818,20 @@ public final class XmlSchemaGenerator<T,C,F,M> {
         private void writeEnum(EnumLeafInfo<T, C> e, SimpleTypeHost th) {
             SimpleType st = th.simpleType();
             writeName(e,st);
-
             //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
             XmlSchemaEnhancer.addXsdAnnotations(e.getType(), st);
             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
             SimpleRestrictionModel base = st.restriction();
             writeTypeRef(base, e.getBaseType(), "base");
-            
+
             for (EnumConstant c : e.getConstants()) {
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                NoFixedFacet enumeration = base.enumeration();
+                com.sun.xml.internal.bind.v2.schemagen.xmlschema.NoFixedFacet enumeration = base.enumeration();
                 XmlSchemaEnhancer.addXsdAnnotations(c, enumeration);
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                  
-                enumeration.value(c.getLexicalValue());
+                base.enumeration().value(c.getLexicalValue());
             }
             st.commit();
         }
@@ -898,7 +843,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          * @param parent the writer of the parent element into which the type will be defined
          */
         private void writeClass(ClassInfo<T,C> c, TypeHost parent) {
-            // special handling for value properties
+        	// special handling for value properties
             if (containsValueProp(c)) {
                 if (c.getProperties().size() == 1) {
                     // [RESULT 2 - simpleType if the value prop is the only prop]
@@ -909,19 +854,17 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                     ValuePropertyInfo<T,C> vp = (ValuePropertyInfo<T,C>)c.getProperties().get(0);
                     SimpleType st = ((SimpleTypeHost)parent).simpleType();
                     writeName(c, st);
-                    
+
                     //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                     XmlSchemaEnhancer.addXsdAnnotations(c, st);
                     //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
                     if(vp.isCollection()) {
                         writeTypeRef(st.list(),vp.getTarget(),"itemType");
-                        
-                        // TODO - what do we do if its a collection????
                     } else {
-                        SimpleRestriction sr = st.restriction();
+                        com.sun.xml.internal.bind.v2.schemagen.xmlschema.SimpleRestriction sr = st.restriction();
                         writeTypeRef(sr,vp.getTarget(),"base");
-                        
+
                         //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                         XmlSchemaEnhancer.addFacets(vp, sr);
                         //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
@@ -977,7 +920,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 // so return.
                 return;
             }
-
+            
             // we didn't fall into the special case for value props, so we
             // need to initialize the ct.
             // generate the complexType
@@ -1024,6 +967,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         ct.mixed(true);
                     }
                     Tree t = buildPropertyContentModel(p);
+
                     if(t!=null)
                         children.add(t);
                 }
@@ -1105,6 +1049,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         QName tn = t.getTagName();
                         e.name(tn.getLocalPart());
                         List lst = e.simpleType().list();
+                        
                         writeTypeRef(lst,t, "itemType");
                         elementFormDefault.writeForm(e,tn);
                         writeOccurs(e,isOptional||!ep.isRequired(),repeated);
@@ -1120,43 +1065,17 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
                         QName tn = t.getTagName();
 
-                        PropertyInfo propInfo = t.getSource();
-                        TypeInfo parentInfo = (propInfo == null) ? null : propInfo.parent();
-
-                        if (canBeDirectElementRef(t, tn, parentInfo)) {
-                            if ((!t.getTarget().isSimpleType()) && (t.getTarget() instanceof ClassInfo) && collisionChecker.findDuplicate((ClassInfo<T, C>) t.getTarget())) {
-                                e.ref(new QName(uri, tn.getLocalPart()));
-                            } else {
-
-                                QName elemName = null;
-                                if (t.getTarget() instanceof Element) {
-                                    Element te = (Element) t.getTarget();
-                                    elemName = te.getElementName();
-                                }
-
-                                Collection<TypeInfo> refs = propInfo.ref();
-                                TypeInfo ti;
-                                if ((refs != null) && (!refs.isEmpty()) && (elemName != null)
-                                        && ((ti = refs.iterator().next()) == null || ti instanceof ClassInfoImpl)) {
-                                    ClassInfoImpl cImpl = (ClassInfoImpl)ti;
-                                    if ((cImpl != null) && (cImpl.getElementName() != null)) {
-                                        e.ref(new QName(cImpl.getElementName().getNamespaceURI(), tn.getLocalPart()));
-                                    } else {
-                                        e.ref(new QName("", tn.getLocalPart()));
-                                    }
-                                } else {
-                                    e.ref(tn);
-                                }
-                            }
+                        NonElement target = t.getTarget();
+                        if (canBeDirectElementRef(t,tn) || ((!tn.getNamespaceURI().equals(uri) && tn.getNamespaceURI().length()>0) &&
+                                                            (!((target instanceof ClassInfo) && (target.getTypeName() == null))))) {     // see Issue 517
+                                e.ref(tn);
                         } else {
                             e.name(tn.getLocalPart());
-			    
                             //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                             if(!XmlSchemaEnhancer.hasFacets(t)) {
                             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                                 writeTypeRef(e,t, "type");
                             }
-                            
                             elementFormDefault.writeForm(e,tn);
                         }
 
@@ -1165,13 +1084,13 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         }
                         if(t.getDefaultValue()!=null)
                             e._default(t.getDefaultValue());
-
+                        
                         //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                         if(!XmlSchemaEnhancer.writeCustomOccurs(t,e,isOptional,repeated)) {
-                            //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
+                        //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                             writeOccurs(e,isOptional,repeated);
                         }
-                        
+
                         //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                         XmlSchemaEnhancer.addXsdAnnotations(t, e);
                         XmlSchemaEnhancer.addFacets(t, e);
@@ -1221,38 +1140,14 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          *
          * This is possible if we already have such declaration to begin with.
          */
-        private boolean canBeDirectElementRef(TypeRef<T, C> t, QName tn, TypeInfo parentInfo) {
-            Element te = null;
-            ClassInfo ci = null;
-            QName targetTagName = null;
-
-            if(t.isNillable() || t.getDefaultValue()!=null) {
+        private boolean canBeDirectElementRef(TypeRef<T, C> t, QName tn) {
+            if(t.isNillable() || t.getDefaultValue()!=null)
                 // can't put those attributes on <element ref>
                 return false;
-            }
 
-            if (t.getTarget() instanceof Element) {
-                te = (Element) t.getTarget();
-                targetTagName = te.getElementName();
-                if (te instanceof ClassInfo) {
-                    ci = (ClassInfo)te;
-                }
-            }
-
-            String nsUri = tn.getNamespaceURI();
-            if ((!nsUri.equals(uri) && nsUri.length()>0) && (!((parentInfo instanceof ClassInfo) && (((ClassInfo)parentInfo).getTypeName() == null)))) {
-                return true;
-            }
-
-            // there's a circular reference from an anonymous subtype to a global element
-            if ((ci != null) && ((targetTagName != null) && (te.getScope() == null))) {
-                if (targetTagName.getLocalPart().equals(tn.getLocalPart())) {
-                    return true;
-                }
-            }
-
-            // we have the precise element defined already
-            if (te != null) { // it is instanceof Element
+            if(t.getTarget() instanceof Element) {
+                Element te = (Element) t.getTarget();
+                QName targetTagName = te.getElementName();
                 return targetTagName!=null && targetTagName.equals(tn);
             }
 
@@ -1357,7 +1252,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                                 } else {
                                     if(!elementFormDefault.isEffectivelyQualified)
                                         eref.form("qualified");
-                                }
+                                    }
 
                                 local = true;
                                 eref.name(en.getLocalPart());
@@ -1490,9 +1385,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
              * Returns true if two {@link ElementDeclaration}s are representing
              * the same schema fragment.
              */
-            @Override
             public abstract boolean equals(Object o);
-            @Override
             public abstract int hashCode();
 
             /**
@@ -1517,7 +1410,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 TopLevelElement e = schema.element().name(localName);
                 if(nillable)
                     e.nillable(true);
-                if (type != null) {
+                if(type!=null) {
                     writeTypeRef(e,type, "type");
                 } else {
                     e.complexType();    // refer to the nested empty complex type
@@ -1561,7 +1454,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
     /**
      * Debug information of what's in this {@link XmlSchemaGenerator}.
      */
-    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         for (Namespace ns : namespaces.values()) {
@@ -1590,6 +1482,8 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
 
     /**
+     * TODO: JAX-WS dependency on this method - consider moving this method into com.sun.tools.jxc.util.Util
+     *
      * Relativizes a URI by using another URI (base URI.)
      *
      * <p>
@@ -1636,7 +1530,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
             if (relPath == null)
                 return uri; // recursion found no commonality in the two uris at all
-            StringBuilder relUri = new StringBuilder();
+            StringBuffer relUri = new StringBuffer();
             relUri.append(relPath);
             if (theUri.getQuery() != null)
                 relUri.append('?').append(theUri.getQuery());
