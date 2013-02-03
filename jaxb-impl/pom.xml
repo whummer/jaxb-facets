@@ -160,14 +160,14 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>2.2.7-facets-1.0.2</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.pellcorp.jaxb-facets</groupId>
 			<artifactId>testutils</artifactId>
 			<version>0.1</version>
 			<scope>test</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>

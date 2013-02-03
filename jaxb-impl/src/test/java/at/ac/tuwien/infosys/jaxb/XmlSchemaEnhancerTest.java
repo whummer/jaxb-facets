@@ -12,7 +12,6 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     public static final String DOC_SCHEMALEVEL_1 = "schema-level doc 123";
     public static final String DOC_SCHEMALEVEL_2 = "schema-level doc 234";
     public static final String APPINFO_SCHEMALEVEL = "schema-level appinfo 1234";
-
 	
     @BeforeClass
     public static void startServers() throws Exception {
