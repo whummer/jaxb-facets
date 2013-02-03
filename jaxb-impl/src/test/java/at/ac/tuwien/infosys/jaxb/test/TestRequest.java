@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import at.ac.tuwien.infosys.jaxb.Country;
 import at.ac.tuwien.infosys.jaxb.TimeZoneOffset;
 
 @XmlRootElement(name = "foo")
@@ -64,8 +65,10 @@ public class TestRequest {
     public java.net.URI value2;
     @XmlElement
     public TimeZoneOffset value3;
+    @XmlElement
+    public Country country;
 
-    /* Thanks to Jason Pell for point out the need for min/max facets of type String..! */
+    /* Thanks to Jason Pell for pointing out the need for min/max facets of type String..! */
     @XmlElement(required = true)
     @Facets(minInclusive = "2012-12-24T12:00:00Z")
     public Date date1;
