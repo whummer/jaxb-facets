@@ -11,6 +11,7 @@ import at.ac.tuwien.infosys.jaxb.test.TestRequest;
 
 @WebService(name = "PersonService", targetNamespace = "http://com.pellcorp/service/PersonService")
 @SchemaValidation(type = SchemaValidationType.BOTH)
+@SuppressWarnings("all")
 public interface PersonService {
     @WebMethod(operationName = "save")
     void save(@WebParam(name = "Person") Person data);

@@ -80,11 +80,36 @@
 									<version>2.2.6</version>
 								</artifactItem>
 							</artifactItems>
+							<overWriteIfNewer>true</overWriteIfNewer>
+<!-- 							<overWriteReleases>true</overWriteReleases> -->
 							<outputDirectory>${project.build.directory}/classes</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-compiler-plugin</artifactId> -->
+<!-- 				<configuration> -->
+<!-- 					<compilerArguments> -->
+<!-- 						<endorseddirs>${settings.localRepository}/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.5/</endorseddirs> -->
+<!-- 					</compilerArguments> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-surefire-plugin</artifactId> -->
+<!-- 				<version>2.12</version> -->
+<!-- 				<configuration> -->
+<!-- 					<systemPropertyVariables> -->
+<!-- 						<java.endorsed.dirs> -->
+<!-- 						${settings.localRepository}/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.2/: -->
+<!-- 						${settings.localRepository}/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.5/ -->
+<!-- 						</java.endorsed.dirs> -->
+<!-- 					</systemPropertyVariables> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -166,13 +191,19 @@
 			<artifactId>testutils</artifactId>
 			<version>0.1</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 			<version>2.2.6</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- for JSR-303 validation -->

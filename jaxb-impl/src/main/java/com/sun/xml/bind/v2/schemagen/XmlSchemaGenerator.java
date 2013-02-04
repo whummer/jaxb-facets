@@ -401,9 +401,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
      * Writes out the episode file.
      */
     public void writeEpisodeFile(XmlSerializer out) {
-        /* added by hummer@infosys.tuwien.ac.at */
-    	logger.fine("Started JAXB-Facets enabled XmlSchemaGenerator.");
-    	/* end added by hummer@infosys.tuwien.ac.at */
 
         Bindings root = TXW.create(Bindings.class, out);
 
@@ -635,6 +632,9 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          *      System IDs of the other schema documents. "" indicates 'implied'.
          */
         private void writeTo(Result result, Map<Namespace,String> systemIds) throws IOException {
+            /* added by hummer@infosys.tuwien.ac.at */
+            logger.info("Started JAXB-Facets enabled XmlSchemaGenerator (package com.sun.xml.bind.*).");
+            /* end added by hummer@infosys.tuwien.ac.at */
             try {
                 Schema schema = TXW.create(Schema.class,ResultFactory.createSerializer(result));
 
