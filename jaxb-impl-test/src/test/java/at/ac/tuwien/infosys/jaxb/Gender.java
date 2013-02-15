@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 
 @Documentation(value = "Gender Type")
 @XmlEnum
+@SuppressWarnings("all")
 public enum Gender {
     @XmlEnumValue(value = "F")
     @Documentation(value = "Female")

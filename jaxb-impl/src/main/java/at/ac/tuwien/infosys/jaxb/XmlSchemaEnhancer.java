@@ -57,20 +57,8 @@ public class XmlSchemaEnhancer {
         return hasFacets(t) || hasXsdAnnotations(t);
     }
 
-    /** for compatibility with Java 1.7 */
-    public static <T, C> boolean hasExtendedAnnotations(
-            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t) {
-        return hasFacets(t) || hasXsdAnnotations(t);
-    }
-
     public static <T, C> boolean hasExtendedAnnotations(
             AttributePropertyInfo<T, C> info) {
-        return hasFacets(info) || hasXsdAnnotations(info);
-    }
-
-    /** for compatibility with Java 1.7 */
-    public static <T, C> boolean hasExtendedAnnotations(
-            com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo<T, C> info) {
         return hasFacets(info) || hasXsdAnnotations(info);
     }
 
@@ -98,13 +86,6 @@ public class XmlSchemaEnhancer {
                         ._attribute("value", facetValue);
             }
         }
-    }
-
-    /** for compatibility with Java 1.7 */
-    public static <T, C> void addFacets(
-            com.sun.xml.internal.bind.v2.model.core.ValuePropertyInfo<T, C> vp,
-            com.sun.xml.internal.bind.v2.schemagen.xmlschema.SimpleRestriction sr) {
-        XmlSchemaEnhancerJava7.addFacets(vp, sr);
     }
 
     public static <T, C> void addFacets(TypeRef<T, C> t, LocalElement e) {
@@ -135,13 +116,6 @@ public class XmlSchemaEnhancer {
         }
     }
 
-    /** for compatibility with Java 1.7 */
-    public static <T, C> void addFacets(
-            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t,
-            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement e) {
-        XmlSchemaEnhancerJava7.addFacets(t, e);
-    }
-
     public static <T, C> void addFacets(AttributePropertyInfo<T, C> info,
             LocalAttribute attr) {
         if (!hasFacets(info))
@@ -169,13 +143,6 @@ public class XmlSchemaEnhancer {
         }
     }
 
-    /** for compatibility with Java 1.7 */
-    public static <T, C> void addFacets(
-            com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo<T, C> info,
-            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalAttribute attr) {
-        XmlSchemaEnhancerJava7.addFacets(info, attr);
-    }
-
     public static <T, C> void addFacets(Facets facetsAnno,
             TypedXmlWriter restriction) {
         // TODO to reduce code duplication, implement and use this
@@ -192,21 +159,9 @@ public class XmlSchemaEnhancer {
         return hasFacets(facets);
     }
 
-    /** for compatibility with Java 1.7 */
-    public static <T, C> boolean hasFacets(
-            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t) {
-        return XmlSchemaEnhancerJava7.hasFacets(t);
-    }
-
     public static <T, C> boolean hasFacets(AttributePropertyInfo<T, C> ap) {
         Facets facets = getFacetsAnnotation(ap);
         return hasFacets(facets);
-    }
-
-    /** for compatibility with Java 1.7 */
-    public static <T, C> boolean hasFacets(
-            com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo<T, C> ap) {
-        return XmlSchemaEnhancerJava7.hasFacets(ap);
     }
 
     public static <T, C> boolean hasFacets(Facets facets) {
@@ -230,12 +185,6 @@ public class XmlSchemaEnhancer {
         addXsdAnnotations(anno, w);
     }
 
-    /** for compatibility with Java 1.7 */
-    public static <T, C> void addXsdAnnotations(T type,
-            com.sun.xml.internal.txw2.TypedXmlWriter w) {
-        XmlSchemaEnhancerJava7.addXsdAnnotations(type, w);
-    }
-
     public static <T, C> void addXsdAnnotations(Set<ClassInfo<T, C>> classes,
             Set<EnumLeafInfo<T, C>> enums, Set<ArrayInfo<T, C>> arrays,
             TypedXmlWriter w) {
@@ -257,33 +206,6 @@ public class XmlSchemaEnhancer {
         }
         for (Package p : annotatedPackages) {
             XmlSchemaEnhancer.addXsdAnnotations(p, w);
-        }
-    }
-
-    /** for compatibility with Java 1.7 */
-    public static <T, C> void addXsdAnnotations(
-            Set<com.sun.xml.internal.bind.v2.model.core.ClassInfo<T, C>> classes,
-            Set<com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo<T, C>> enums,
-            Set<com.sun.xml.internal.bind.v2.model.core.ArrayInfo<T, C>> arrays,
-            com.sun.xml.internal.txw2.TypedXmlWriter w) {
-        Set<Package> annotatedPackages = new HashSet<Package>();
-        for (com.sun.xml.internal.bind.v2.model.core.ClassInfo<T, C> c : classes) {
-            Class<?> cl = (Class<?>) c.getType();
-            Package pkg = cl.getPackage();
-            annotatedPackages.add(pkg);
-        }
-        for (com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo<T, C> c : enums) {
-            Class<?> cl = (Class<?>) c.getType();
-            Package pkg = cl.getPackage();
-            annotatedPackages.add(pkg);
-        }
-        for (com.sun.xml.internal.bind.v2.model.core.ArrayInfo<T, C> c : arrays) {
-            Class<?> cl = (Class<?>) c.getType();
-            Package pkg = cl.getPackage();
-            annotatedPackages.add(pkg);
-        }
-        for (Package p : annotatedPackages) {
-            XmlSchemaEnhancerJava7.addXsdAnnotations(p, w);
         }
     }
 
@@ -400,15 +322,6 @@ public class XmlSchemaEnhancer {
         return true;
     }
 
-    /** for compatibility with Java 1.7 */
-    public static <T, C> boolean writeCustomOccurs(
-            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t,
-            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement e,
-            boolean isOptional, boolean repeated) {
-        return XmlSchemaEnhancerJava7.writeCustomOccurs(t, e, isOptional,
-                repeated);
-    }
-
     /* PRIVATE HELPER METHODS */
 
     private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
@@ -417,35 +330,66 @@ public class XmlSchemaEnhancer {
     }
 
     private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
+            EnumConstant c) {
+        Documentation doc = AnnotationUtils
+                .getDocumentation((EnumConstant) c);
+        return XmlSchemaEnhancer
+                .getXsdAnnotationAnnotation(null, doc, null);
+    }
+
+    private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
+            Class<?> clazz) {
+        javax.xml.bind.annotation.Annotation anno = clazz
+                .getAnnotation(javax.xml.bind.annotation.Annotation.class);
+        AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
+        Documentation doc = clazz.getAnnotation(Documentation.class);
+        return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
+                appinfo);
+    }
+    public static <T> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
             T type) {
-        // jpell - probably a better way than this!
-        if (type instanceof EnumConstant) {
-            Documentation doc = AnnotationUtils
-                    .getDocumentation((EnumConstant) type);
-            return XmlSchemaEnhancer
-                    .getXsdAnnotationAnnotation(null, doc, null);
+        javax.xml.bind.annotation.Annotation anno = null;
+        if (type instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) type;
+            anno = clazz
+                    .getAnnotation(javax.xml.bind.annotation.Annotation.class);
+            AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
+            Documentation doc = clazz.getAnnotation(Documentation.class);
+            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
+                    appinfo);
+        } else if (type instanceof Package) {
+            Package pkg = (Package) type;
+            anno = pkg
+                    .getAnnotation(javax.xml.bind.annotation.Annotation.class);
+            AppInfo appinfo = pkg.getAnnotation(AppInfo.class);
+            Documentation doc = pkg.getAnnotation(Documentation.class);
+            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
+                    appinfo);
         } else {
-            javax.xml.bind.annotation.Annotation anno = null;
-            if (type instanceof Class<?>) {
-                Class<?> clazz = (Class<?>) type;
-                anno = clazz
-                        .getAnnotation(javax.xml.bind.annotation.Annotation.class);
-                AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
-                Documentation doc = clazz.getAnnotation(Documentation.class);
-                return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
-                        appinfo);
-            } else if (type instanceof Package) {
-                Package pkg = (Package) type;
-                anno = pkg
-                        .getAnnotation(javax.xml.bind.annotation.Annotation.class);
-                AppInfo appinfo = pkg.getAnnotation(AppInfo.class);
-                Documentation doc = pkg.getAnnotation(Documentation.class);
-                return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
-                        appinfo);
-            } else {
-                return null;
+            try {
+                if (type instanceof EnumConstant) {
+                    Documentation doc = AnnotationUtils
+                            .getDocumentation((EnumConstant) type);
+                    return XmlSchemaEnhancer
+                            .getXsdAnnotationAnnotation(null, doc, null);
+                }
+            } catch (NoClassDefFoundError e) {
+                /* try to load com.sun.xml.internal.* class... */
+                // TODO
+//                try {
+//                    if (type instanceof com.sun.xml.internal.bind.v2.model.core.EnumConstant) {
+//                        Documentation doc = AnnotationUtils
+//                                .getDocumentation((com.sun.xml.internal.bind.v2.model.core.EnumConstant) type);
+//                        return XmlSchemaEnhancer
+//                                .getXsdAnnotationAnnotation(null, doc, null);
+//                    }
+//                } catch (NoClassDefFoundError e1) {
+                    logger.warning("Cannot load class of type EnumConstant " +
+                    		"(neither com.sun.xml.bind.* nor com.sun.xml.internal.bind.*)");
+//                }
             }
         }
+        return null;
     }
 
     private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
@@ -509,11 +453,13 @@ public class XmlSchemaEnhancer {
                         : _appinfo != null ? _appinfo.getClass()
                                 .getClassLoader() : null;
 
-        // if none of Annotation, AppInfo or Documentation are not null, whats
-        // the
-        // point of falling back to the system classloader
+        // jpell:   if none of Annotation, AppInfo or Documentation are not null, whats
+        //          the point of falling back to the system classloader
+        // whummer: Please do not edit - Java7 users have encountered problems here.
+        //          Fallback to system classloader is necessary for compatibility with
+        //          Java7 JAXB bootstrapping/overriding mechanism.
         if (cl == null) {
-            return null;
+            cl = ClassLoader.getSystemClassLoader();
         }
 
         final Map<String, Object> annoValues = new HashMap<String, Object>();
@@ -896,4 +842,114 @@ public class XmlSchemaEnhancer {
         result[result.length - 1] = second;
         return result;
     }
+    
+    
+    
+    
+    
+    /* COMPATIBILITY METHODS TO DEAL WITH com.sun.xml.internal.bind.* */
+    
+
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> boolean hasExtendedAnnotations(
+//            com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo<T, C> info) {
+//        return hasFacets(info) || hasXsdAnnotations(info);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> boolean hasExtendedAnnotations(
+//            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t) {
+//        return hasFacets(t) || hasXsdAnnotations(t);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addFacets(
+//            com.sun.xml.internal.bind.v2.model.core.ValuePropertyInfo<T, C> vp,
+//            com.sun.xml.internal.bind.v2.schemagen.xmlschema.SimpleRestriction sr) {
+//        XmlSchemaEnhancerJava7.addFacets(vp, sr);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addFacets(
+//            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t,
+//            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement e) {
+//        XmlSchemaEnhancerJava7.addFacets(t, e);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addFacets(
+//            com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo<T, C> info,
+//            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalAttribute attr) {
+//        XmlSchemaEnhancerJava7.addFacets(info, attr);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> boolean hasFacets(
+//            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t) {
+//        return XmlSchemaEnhancerJava7.hasFacets(t);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> boolean hasFacets(
+//            com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo<T, C> ap) {
+//        return XmlSchemaEnhancerJava7.hasFacets(ap);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addXsdAnnotations(T type,
+//            com.sun.xml.internal.txw2.TypedXmlWriter w) {
+//        XmlSchemaEnhancerJava7.addXsdAnnotations(type, w);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addXsdAnnotations(
+//            Set<com.sun.xml.internal.bind.v2.model.core.ClassInfo<T, C>> classes,
+//            Set<com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo<T, C>> enums,
+//            Set<com.sun.xml.internal.bind.v2.model.core.ArrayInfo<T, C>> arrays,
+//            com.sun.xml.internal.txw2.TypedXmlWriter w) {
+//        Set<Package> annotatedPackages = new HashSet<Package>();
+//        for (com.sun.xml.internal.bind.v2.model.core.ClassInfo<T, C> c : classes) {
+//            Class<?> cl = (Class<?>) c.getType();
+//            Package pkg = cl.getPackage();
+//            annotatedPackages.add(pkg);
+//        }
+//        for (com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo<T, C> c : enums) {
+//            Class<?> cl = (Class<?>) c.getType();
+//            Package pkg = cl.getPackage();
+//            annotatedPackages.add(pkg);
+//        }
+//        for (com.sun.xml.internal.bind.v2.model.core.ArrayInfo<T, C> c : arrays) {
+//            Class<?> cl = (Class<?>) c.getType();
+//            Package pkg = cl.getPackage();
+//            annotatedPackages.add(pkg);
+//        }
+//        for (Package p : annotatedPackages) {
+//            XmlSchemaEnhancerJava7.addXsdAnnotations(p, w);
+//        }
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addXsdAnnotations(
+//            com.sun.xml.internal.bind.v2.model.core.ClassInfo<T, C> ci,
+//            com.sun.xml.internal.txw2.TypedXmlWriter w) {
+//        XmlSchemaEnhancerJava7.addXsdAnnotations(ci, w);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addXsdAnnotations(
+//            com.sun.xml.internal.bind.v2.model.core.AttributePropertyInfo<T, C> _info, 
+//            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalAttribute _attr) {
+//        XmlSchemaEnhancerJava7.addXsdAnnotations(_info, _attr);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addXsdAnnotations(
+//            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> _info, 
+//            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement _el) {
+//        XmlSchemaEnhancerJava7.addXsdAnnotations(_info, _el);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> void addXsdAnnotations(
+//            javax.xml.bind.annotation.Annotation anno, 
+//            com.sun.xml.internal.txw2.TypedXmlWriter obj) {
+//        XmlSchemaEnhancerJava7.addXsdAnnotations(anno, obj);
+//    }
+//    /** for compatibility with Java 1.7 */
+//    public static <T, C> boolean writeCustomOccurs(
+//            com.sun.xml.internal.bind.v2.model.core.TypeRef<T, C> t,
+//            com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement e,
+//            boolean isOptional, boolean repeated) {
+//        return XmlSchemaEnhancerJava7.writeCustomOccurs(t, e, isOptional,
+//                repeated);
+//    }
+
 }

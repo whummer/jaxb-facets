@@ -58,11 +58,25 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 
 	<properties>
 		<!-- FIXME fix up the dirs below so they are relative -->
 		<devHome>file:///home/jason/Development</devHome>
+		
+		<jaxb.facets.api.version>2.2.7-facets-1.0.2</jaxb.facets.api.version>
+		<jaxb.facets.impl.version>2.2.6-facets-1.0.6</jaxb.facets.impl.version>
 	</properties>
 
 	<parent>
@@ -75,6 +89,7 @@
 		<module>testutils</module>
 		<module>jaxb-api</module>
 		<module>jaxb-impl</module>
+		<module>jaxb-impl-test</module>
     </modules>
 	
     <distributionManagement>

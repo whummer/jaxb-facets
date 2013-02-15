@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 /* Thanks to Yossi Cohen for providing this test case. */
 @XmlType(name="Country")
 @Documentation("The 3-letter ISO 3166-1 codes for countries")
+@SuppressWarnings("all")
 public enum Country {
     @Documentation("Australia")
        AUS,

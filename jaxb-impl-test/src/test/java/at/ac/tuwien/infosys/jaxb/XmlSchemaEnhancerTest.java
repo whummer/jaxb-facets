@@ -107,6 +107,15 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     }
 
     @Test
+    public void testPersonNameFacets() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:element[@name='firstName']//xs:restriction/xs:pattern/@value", doc);
+        assertEquals("[A-Z]+", value);
+
+    }
+
+    @Test
     public void testDocumentationOnEnum() throws Exception {
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
 

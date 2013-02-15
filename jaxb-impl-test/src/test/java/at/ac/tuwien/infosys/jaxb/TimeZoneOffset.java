@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.*;
 
 @XmlType(name = "TimeZoneOffset")
 @XmlAccessorType(XmlAccessType.FIELD)
+@SuppressWarnings("all")
 final public class TimeZoneOffset {
 
     /**

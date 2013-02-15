@@ -35,7 +35,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sun.xml.bind</groupId>
 	<artifactId>jaxb-impl</artifactId>
-	<version>2.2.6-facets-1.0.5</version>
+	<version>2.2.6-facets-1.0.6</version>
 	<packaging>jar</packaging>
 
 	<developers>
@@ -59,57 +59,71 @@
 		</license>
 	</licenses>
 
+	<properties>
+		<jaxb.facets.api.version>2.2.7-facets-1.0.2</jaxb.facets.api.version>
+		<jaxb.facets.impl.version>2.2.6-facets-1.0.6</jaxb.facets.impl.version>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>regular</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+					<version>2.2.6</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.5.1</version>
+						<executions>
+							<execution>
+								<id>unpack</id>
+								<phase>process-sources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>com.sun.xml.bind</groupId>
+											<artifactId>jaxb-impl</artifactId>
+											<version>2.2.6</version>
+										</artifactItem>
+									</artifactItems>
+									<overWriteIfNewer>true</overWriteIfNewer>
+									<overWriteReleases>true</overWriteReleases>
+									<outputDirectory>${project.build.directory}/classes</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.12</version>
+						<configuration>
+							<systemPropertyVariables> 
+								<java.endorsed.dirs>
+								${settings.localRepository}/javax/xml/bind/jaxb-api/${jaxb.facets.api.version}/:${settings.localRepository}/com/sun/xml/bind/jaxb-impl/${jaxb.facets.impl.version}/
+								</java.endorsed.dirs>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.5.1</version>
-				<executions>
-					<execution>
-						<id>unpack</id>
-						<phase>process-sources</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.sun.xml.bind</groupId>
-									<artifactId>jaxb-impl</artifactId>
-									<version>2.2.6</version>
-								</artifactItem>
-							</artifactItems>
-							<overWriteIfNewer>true</overWriteIfNewer>
-<!-- 							<overWriteReleases>true</overWriteReleases> -->
-							<outputDirectory>${project.build.directory}/classes</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-compiler-plugin</artifactId> -->
-<!-- 				<configuration> -->
-<!-- 					<compilerArguments> -->
-<!-- 						<endorseddirs>${settings.localRepository}/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.5/</endorseddirs> -->
-<!-- 					</compilerArguments> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-surefire-plugin</artifactId> -->
-<!-- 				<version>2.12</version> -->
-<!-- 				<configuration> -->
-<!-- 					<systemPropertyVariables> -->
-<!-- 						<java.endorsed.dirs> -->
-<!-- 						${settings.localRepository}/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.2/: -->
-<!-- 						${settings.localRepository}/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.5/ -->
-<!-- 						</java.endorsed.dirs> -->
-<!-- 					</systemPropertyVariables> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -183,7 +197,7 @@
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
-			<version>2.2.7-facets-1.0.2</version>
+			<version>${jaxb.facets.api.version}</version>
 		</dependency>
 		
 		<dependency>
@@ -203,7 +217,7 @@
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 			<version>2.2.6</version>
-			<scope>provided</scope>
+<!-- 			<scope>provided</scope> -->
 		</dependency>
 
 		<!-- for JSR-303 validation -->

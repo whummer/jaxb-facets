@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlValue;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Age")
+@SuppressWarnings("all")
 public class Age {
     @XmlValue
     @Facets(minInclusive = "5", maxInclusive = "120")

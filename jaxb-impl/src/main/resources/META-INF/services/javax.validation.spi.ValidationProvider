@@ -1,2 +1,0 @@
-# TODO: possibly implement own validation provider (currently we utilize the implementation from Hibernate)
-#at.ac.tuwien.infosys.jaxb.validate.AnnotationValidationProvider

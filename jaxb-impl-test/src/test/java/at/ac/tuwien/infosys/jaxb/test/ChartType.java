@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 @Documentation(value="Choose Chart Type")
 @XmlType(name = "ChartType")
 @XmlEnum
+@SuppressWarnings("all")
 public enum ChartType {
     @Documentation(value="Line Graph")
     @XmlEnumValue(value = "line")

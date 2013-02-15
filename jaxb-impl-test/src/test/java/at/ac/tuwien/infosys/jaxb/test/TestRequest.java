@@ -29,6 +29,7 @@ import at.ac.tuwien.infosys.jaxb.TimeZoneOffset;
 })
 @Documentation("doc 3")
 @AppInfo(source = "src 1", value = "appinfo 1")
+@SuppressWarnings("all")
 public class TestRequest {
     @XmlAttribute
     public ChartType type;

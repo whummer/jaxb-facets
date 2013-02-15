@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Person")
+@SuppressWarnings("all")
 public class Person {
     @XmlElement(required = true, name = "firstName")
     @Facets(pattern = "[A-Z]+")

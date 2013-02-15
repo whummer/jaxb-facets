@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Buddy")
 @Documentation("A Buddy.")
+@SuppressWarnings("all")
 public class Buddy {
     @Documentation("Name of buddy.")
     private String name;
