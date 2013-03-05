@@ -1,6 +1,7 @@
 package at.ac.tuwien.infosys.jaxb;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -34,6 +35,7 @@ import com.sun.xml.bind.v2.model.core.EnumLeafInfo;
 import com.sun.xml.bind.v2.model.core.PropertyInfo;
 import com.sun.xml.bind.v2.model.core.TypeRef;
 import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
+import com.sun.xml.bind.v2.model.runtime.RuntimeElementPropertyInfo;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestriction;
@@ -572,44 +574,28 @@ public class XmlSchemaEnhancer {
     private static <T, C> Object getAnnotationOfProperty(
             PropertyInfo<T, C> info, Class<? extends Annotation> annoClass)
             throws Exception {
-        if (annoClass == Facets.class && info.hasAnnotation(Facets.class))
+        if (annoClass == Facets.class && info.hasAnnotation(Facets.class)) {
             return info.readAnnotation(Facets.class);
-        if (info.parent() == null)
+        } else if (annoClass == MaxOccurs.class && info.hasAnnotation(MaxOccurs.class)) {
+            return info.readAnnotation(MaxOccurs.class);
+        } else if (annoClass == MinOccurs.class && info.hasAnnotation(MinOccurs.class)) {
+            return info.readAnnotation(MinOccurs.class);
+        } else if (info.parent() == null) {
             return null;
-        if (!(info.parent().getType() instanceof Class<?>))
+        } else if (!(info.parent().getType() instanceof Class<?>)) {
             return null;
-        return getAnnotationOfProperty((Class<?>) info.parent().getType(),
-                info.getName(), annoClass);
+        }
+        
+        Class<?> parent = (Class<?>) info.parent().getType();
+        String name = info.getName();
+        return getAnnotationOfProperty(parent, name, annoClass);
     }
 
     protected static <T extends Annotation> T getAnnotationOfProperty(
             Class<?> parent, String fieldName, Class<T> annoClass)
             throws Exception {
         try {
-            Field field = null;
-            for (Field f : parent.getDeclaredFields()) {
-                if (f.getName().equals(fieldName)) {
-                    field = f;
-                    break;
-                } else {
-                    if (getAnnotation(f, XmlElement.class) != null) {
-                        XmlElement e = (XmlElement) getAnnotation(f,
-                                XmlElement.class);
-                        if (fieldName.equals(e.name())) {
-                            field = f;
-                            break;
-                        }
-                    }
-                    if (getAnnotation(f, XmlAttribute.class) != null) {
-                        XmlAttribute a = (XmlAttribute) getAnnotation(f,
-                                XmlAttribute.class);
-                        if (fieldName.equals(a.name())) {
-                            field = f;
-                            break;
-                        }
-                    }
-                }
-            }
+            Field field = findAnnotatedField(parent, fieldName);
             if (field == null)
                 return null;
             Object a = getAnnotation(field, annoClass);
@@ -621,7 +607,35 @@ public class XmlSchemaEnhancer {
         }
     }
 
-    protected static <T extends Annotation> T getAnnotation(Field field,
+    private static Field findAnnotatedField(Class<?> parent, String fieldName) {
+        Field field = null;
+        for (Field f : parent.getDeclaredFields()) {
+            if (f.getName().equals(fieldName)) {
+                field = f;
+                break;
+            } else {
+                if (getAnnotation(f, XmlElement.class) != null) {
+                    XmlElement e = (XmlElement) getAnnotation(f,
+                            XmlElement.class);
+                    if (fieldName.equals(e.name())) {
+                        field = f;
+                        break;
+                    }
+                }
+                if (getAnnotation(f, XmlAttribute.class) != null) {
+                    XmlAttribute a = (XmlAttribute) getAnnotation(f,
+                            XmlAttribute.class);
+                    if (fieldName.equals(a.name())) {
+                        field = f;
+                        break;
+                    }
+                }
+            }
+        }
+        return field;
+    }
+
+    protected static <T extends Annotation> T getAnnotation(AccessibleObject field,
             Class<T> annoClass) {
         for (Annotation anno : field.getAnnotations()) {
             try {
