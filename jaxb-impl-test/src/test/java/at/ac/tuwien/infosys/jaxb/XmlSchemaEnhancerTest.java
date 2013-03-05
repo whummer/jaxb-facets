@@ -1,11 +1,13 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.pellcorp.jaxb.test.AbstractTestCase;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
@@ -133,7 +135,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMinMaxOccurs() throws Exception {
+    public void testFieldAnnotationMinMaxOccurs() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonService.class));
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
         
@@ -144,6 +146,23 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         
         minOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='firstName']/@minOccurs", doc);
         maxOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='firstName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("2", maxOccurs);
+    }
+    
+    @Test
+    @Ignore
+    public void testMemberAnnotationMinMaxOccurs() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+        
+        String minOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='lastName']/@minOccurs", doc);
+        String maxOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='lastName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("3", maxOccurs);
+        
+        minOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='firstName']/@minOccurs", doc);
+        maxOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='firstName']/@maxOccurs", doc);
         assertEquals("1", minOccurs);
         assertEquals("2", maxOccurs);
     }
@@ -161,6 +180,5 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
         value = engine.evaluate("/xs:schema/xs:annotation/xs:documentation[2]", doc);
         assertEquals(DOC_SCHEMALEVEL_2, value);
-
     }
 }

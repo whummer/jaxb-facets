@@ -14,4 +14,8 @@ public class PersonServiceImpl implements PersonService {
 
     public void foo(TestRequest r) {
     }
+
+    @Override
+    public void save(Applicant data) {
+    }
 }
