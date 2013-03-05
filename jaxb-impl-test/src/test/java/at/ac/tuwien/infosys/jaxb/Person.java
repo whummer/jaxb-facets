@@ -12,9 +12,13 @@ import javax.xml.bind.annotation.XmlType;
 public class Person {
     @XmlElement(required = true, name = "firstName")
     @Facets(pattern = "[A-Z]+")
+    @javax.xml.bind.annotation.MaxOccurs(value=2)
+    @javax.xml.bind.annotation.MinOccurs(value=1)
     private String firstName;
 
     @XmlElement(required = true, name = "lastName")
+    @javax.xml.bind.annotation.MaxOccurs(value=3)
+    @javax.xml.bind.annotation.MinOccurs(value=1)
     private String lastName;
 
     @XmlElement(required = true, name = "gender")

@@ -130,9 +130,24 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:simpleType[@name='Country']/" +
                 "xs:annotation/xs:documentation", doc);
         assertEquals("The 3-letter ISO 3166-1 codes for countries", value);
-
     }
 
+    @Test
+    public void testMinMaxOccurs() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+        
+        String minOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='lastName']/@minOccurs", doc);
+        String maxOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='lastName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("3", maxOccurs);
+        
+        minOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='firstName']/@minOccurs", doc);
+        maxOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='firstName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("2", maxOccurs);
+    }
+    
     @Test
     public void testPackageLevelXSDAnnotations() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonServiceNoNS.class));
