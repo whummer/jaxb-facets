@@ -1,14 +1,14 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import com.pellcorp.jaxb.test.AbstractTestCase;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.pellcorp.jaxb.test.AbstractTestCase;
+
 public class SchemaValidationTest extends AbstractTestCase {
     private static PersonService client;
-
+    
     @BeforeClass
     public static void startServers() throws Exception {
         createServer(PersonService.class, new PersonServiceImpl());
@@ -19,7 +19,7 @@ public class SchemaValidationTest extends AbstractTestCase {
     public static void cleanup() throws Exception {
         cleanupServers();
     }
-
+    
     @Test
     public void testInvalidFirstName() {
         Person person = new Person();
@@ -32,5 +32,6 @@ public class SchemaValidationTest extends AbstractTestCase {
         } catch (Exception sfe) {
             assertTrue(sfe.getMessage().contains("Unmarshalling Error: cvc-pattern-valid"));
         }
+       
     }
 }

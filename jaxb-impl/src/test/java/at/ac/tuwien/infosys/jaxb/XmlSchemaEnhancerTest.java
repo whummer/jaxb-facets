@@ -1,26 +1,24 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.w3c.dom.Document;
 
 import com.pellcorp.jaxb.test.AbstractTestCase;
 
-import org.custommonkey.xmlunit.NamespaceContext;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class XmlSchemaEnhancerTest extends AbstractTestCase {
+
+    public static final String DOC_SCHEMALEVEL_1 = "schema-level doc 123";
+    public static final String DOC_SCHEMALEVEL_2 = "schema-level doc 234";
+    public static final String APPINFO_SCHEMALEVEL = "schema-level appinfo 1234";
+
     @BeforeClass
     public static void startServers() throws Exception {
         createServer(PersonService.class, new PersonServiceImpl());
+        createServer(PersonServiceNoNS.class, new PersonServiceNoNSImpl());
     }
 
     @AfterClass
@@ -68,7 +66,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:complexType[@name='Buddy']/xs:sequence/xs:element/xs:annotation/xs:documentation", doc);
         assertEquals("Name of buddy.", value);
     }
-    
+
     @Test
     public void testComplexTypeTestRequest() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonService.class));
@@ -100,5 +98,71 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo1']/xs:annotation/xs:documentation[2]", doc);
         assertEquals("this is the second line", value);
+    }
+
+    @Test
+    public void testFacetOnXmlValue() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:simpleType[@name='TimeZoneOffset']/xs:restriction/@base", doc);
+        assertTrue(value != null && value.endsWith("integer"));
+    }
+
+    @Test
+    public void testPersonNameFacets() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:element[@name='firstName']//xs:restriction/xs:pattern/@value", doc);
+        assertEquals("[A-Z]+", value);
+
+    }
+
+    @Test
+    public void testDocumentationOnEnum() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:simpleType[@name='Country']//" +
+        		"xs:enumeration[@value='AUS']/xs:annotation/xs:documentation", doc);
+        assertEquals("Australia", value);
+
+        value = engine.evaluate("//xs:simpleType[@name='Country']//" +
+                "xs:enumeration[@value='AUT']/xs:annotation/xs:documentation", doc);
+        assertEquals("Austria", value);
+
+        value = engine.evaluate("//xs:simpleType[@name='Country']/" +
+                "xs:annotation/xs:documentation", doc);
+        assertEquals("The 3-letter ISO 3166-1 codes for countries", value);
+    }
+
+    @Test
+    public void testFieldAnnotationMinMaxOccurs() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+        
+        String minOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='lastName']/@minOccurs", doc);
+        String maxOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='lastName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("3", maxOccurs);
+        
+        minOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='firstName']/@minOccurs", doc);
+        maxOccurs = engine.evaluate("//xs:complexType[@name='Person']/xs:sequence/xs:element[@name='firstName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("2", maxOccurs);
+    }
+    
+    @Test
+    public void testMemberAnnotationMinMaxOccurs() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+        
+        String minOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='lastName']/@minOccurs", doc);
+        String maxOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='lastName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("3", maxOccurs);
+        
+        minOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='firstName']/@minOccurs", doc);
+        maxOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='firstName']/@maxOccurs", doc);
+        assertEquals("1", minOccurs);
+        assertEquals("2", maxOccurs);
     }
 }

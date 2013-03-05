@@ -6,30 +6,19 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Person")
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@XmlType(name = "Applicant")
 @SuppressWarnings("all")
-public class Person {
-    @XmlElement(required = true, name = "firstName")
-    @Facets(pattern = "[A-Z]+")
-    @javax.xml.bind.annotation.MaxOccurs(value=2)
-    @javax.xml.bind.annotation.MinOccurs(value=1)
+public class Applicant {
     private String firstName;
-
-    @XmlElement(required = true, name = "lastName")
-    @javax.xml.bind.annotation.MaxOccurs(value=3)
-    @javax.xml.bind.annotation.MinOccurs(value=1)
     private String lastName;
-
-    @XmlElement(required = true, name = "gender")
     private Gender gender;
-
-    @XmlElement(required = true, name = "age")
     private Age age;
 
-    public Person() {
+    public Applicant() {
     }
 
+    @XmlElement(required = true, name = "age")
     public Age getAge() {
         return age;
     }
@@ -38,6 +27,7 @@ public class Person {
         this.age = age;
     }
 
+    @XmlElement(required = true, name = "gender")
     public Gender getGender() {
         return gender;
     }
@@ -54,10 +44,17 @@ public class Person {
         this.lastName = lastName;
     }
 
+    @XmlElement(required = true, name = "firstName")
+    @Facets(pattern = "[A-Z]+")
+    @javax.xml.bind.annotation.MaxOccurs(value=2)
+    @javax.xml.bind.annotation.MinOccurs(value=1)
     public String getFirstName() {
         return firstName;
     }
 
+    @XmlElement(required = true, name = "lastName")
+    @javax.xml.bind.annotation.MaxOccurs(value=3)
+    @javax.xml.bind.annotation.MinOccurs(value=1)
     public String getLastName() {
         return lastName;
     }
