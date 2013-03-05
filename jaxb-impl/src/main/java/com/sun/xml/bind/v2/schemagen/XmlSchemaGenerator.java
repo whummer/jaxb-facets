@@ -154,6 +154,7 @@ import static com.sun.xml.bind.v2.schemagen.Util.normalizeUriPath;
  * @author Ryan Shoemaker
  * @author Kohsuke Kawaguchi (kk@kohsuke.org)
  */
+@SuppressWarnings("all") // jaxb-facets: added by hummer@infosys.tuwien.ac.at
 public final class XmlSchemaGenerator<T,C,F,M> {
 
     private static final Logger logger = Util.getClassLogger();
@@ -400,9 +401,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
      * Writes out the episode file.
      */
     public void writeEpisodeFile(XmlSerializer out) {
-	/* added by hummer@infosys.tuwien.ac.at */
-    	logger.fine("Started JAXB-Facets enabled XmlSchemaGenerator.");
-    	/* end added by hummer@infosys.tuwien.ac.at */
 
         Bindings root = TXW.create(Bindings.class, out);
 
@@ -634,6 +632,9 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          *      System IDs of the other schema documents. "" indicates 'implied'.
          */
         private void writeTo(Result result, Map<Namespace,String> systemIds) throws IOException {
+            /* added by hummer@infosys.tuwien.ac.at */
+            logger.info("Started JAXB-Facets enabled XmlSchemaGenerator (package com.sun.xml.bind.*).");
+            /* end added by hummer@infosys.tuwien.ac.at */
             try {
                 Schema schema = TXW.create(Schema.class,ResultFactory.createSerializer(result));
 
@@ -682,6 +683,11 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
                 schema._pcdata(newline);
 
+                //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                // add <documentation> to <schema> top level element (package-level @Documentation)
+                XmlSchemaEnhancer.addXsdAnnotations(classes, enums, arrays, schema);
+                //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
+                
                 // refer to other schemas
                 for( Namespace n : depends ) {
                     Import imp = schema._import();
@@ -867,7 +873,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             SimpleType st = th.simpleType();
             writeName(e,st);
 
-	    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+            //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
             XmlSchemaEnhancer.addXsdAnnotations(e.getType(), st);
             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
@@ -877,7 +883,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             for (EnumConstant c : e.getConstants()) {
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                 NoFixedFacet enumeration = base.enumeration();
-                
                 XmlSchemaEnhancer.addXsdAnnotations(c, enumeration);
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                  
@@ -905,7 +910,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                     SimpleType st = ((SimpleTypeHost)parent).simpleType();
                     writeName(c, st);
                     
-		    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                     XmlSchemaEnhancer.addXsdAnnotations(c, st);
                     //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
@@ -940,7 +945,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                     if(c.isFinal())
                         ct._final("extension restriction");
 
-		    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                     XmlSchemaEnhancer.addXsdAnnotations(c, ct);
                     //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
@@ -983,7 +988,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             if(c.isAbstract())
                 ct._abstract(true);
 
-	    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+            //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
             XmlSchemaEnhancer.addXsdAnnotations(c, ct);
             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
@@ -1146,7 +1151,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         } else {
                             e.name(tn.getLocalPart());
 			    
-			    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                            //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                             if(!XmlSchemaEnhancer.hasFacets(t)) {
                             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                                 writeTypeRef(e,t, "type");
@@ -1161,13 +1166,13 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         if(t.getDefaultValue()!=null)
                             e._default(t.getDefaultValue());
 
-			//jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                        //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                         if(!XmlSchemaEnhancer.writeCustomOccurs(t,e,isOptional,repeated)) {
+                            //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                             writeOccurs(e,isOptional,repeated);
                         }
-                        //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                         
-			//jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                        //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                         XmlSchemaEnhancer.addXsdAnnotations(t, e);
                         XmlSchemaEnhancer.addFacets(t, e);
                         //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
@@ -1290,11 +1295,11 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             if (attrURI.equals("") /*|| attrURI.equals(uri) --- those are generated as global attributes anyway, so use them.*/) {
                 localAttribute.name(ap.getXmlName().getLocalPart());
 
-		//jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                 if(!XmlSchemaEnhancer.hasExtendedAnnotations(ap)) {
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                     writeAttributeTypeRef(ap, localAttribute);
-		}
+                }
 
                 attributeFormDefault.writeForm(localAttribute,ap.getXmlName());
             } else { // generate an attr ref
@@ -1306,7 +1311,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 localAttribute.use("required");
             }
 
-	    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+            //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
             XmlSchemaEnhancer.addXsdAnnotations(ap, localAttribute);
             XmlSchemaEnhancer.addFacets(ap, localAttribute);
             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at

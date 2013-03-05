@@ -165,4 +165,19 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         assertEquals("1", minOccurs);
         assertEquals("2", maxOccurs);
     }
+    
+    @Test
+    public void testPackageLevelXSDAnnotations() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonServiceNoNS.class));
+        Document doc = getWsdlSchemaAsDocument(PersonServiceNoNS.class);
+
+        String value = engine.evaluate("/xs:schema/xs:annotation/xs:appinfo[1]", doc);
+        assertEquals(APPINFO_SCHEMALEVEL, value);
+
+        value = engine.evaluate("/xs:schema/xs:annotation/xs:documentation[1]", doc);
+        assertEquals(DOC_SCHEMALEVEL_1, value);
+
+        value = engine.evaluate("/xs:schema/xs:annotation/xs:documentation[2]", doc);
+        assertEquals(DOC_SCHEMALEVEL_2, value);
+    }
 }
