@@ -461,7 +461,11 @@ public class XmlSchemaEnhancer {
         //          Fallback to system classloader is necessary for compatibility with
         //          Java7 JAXB bootstrapping/overriding mechanism.
         if (cl == null) {
-            cl = ClassLoader.getSystemClassLoader();
+            //cl = ClassLoader.getSystemClassLoader();
+            // FIXME - falling back to system classloader causes issues with maven
+            // plugins when not using endorsed plugin.  Need to do further investigation
+            // to understand why this happens so I can enable this code again.
+            return null;
         }
 
         final Map<String, Object> annoValues = new HashMap<String, Object>();
