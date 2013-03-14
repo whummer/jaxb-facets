@@ -17,9 +17,9 @@ http://java.net/jira/browse/JAXB-917
 Maven Repository
 ----------------
 
-The 2.2.7-facets-1.0.3 api and 2.2.6-facets-1.0.7 impl are deployed to a maven repo located here:
+The 2.2.7-facets-1.0.3 api and 2.2.6-facets-1.0.8 impl are deployed to a maven repo located here:
 
-http://pellcorp.github.com/docs/maven2/releases
+http://pellcorp.github.com/maven2/releases
 
 
 Maven Endorsed Integration

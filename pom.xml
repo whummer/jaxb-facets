@@ -39,19 +39,19 @@
     <distributionManagement>
 	    <repository>
 	        <id>repo</id>
-	        <url>${devHome}/docs/maven2/releases</url>
+	        <url>${devHome}/maven2/releases</url>
 	    </repository>
 
 	    <snapshotRepository>
 	        <id>snapshot-repo</id>
-	        <url>${devHome}/docs/maven2/snapshots</url>
+	        <url>${devHome}/maven2/snapshots</url>
 	    </snapshotRepository>
 	</distributionManagement>
 	 
     <repositories>
 		<repository>
 			<id>jaxb-facets</id>
-			<url>http://pellcorp.github.com/docs/maven2/releases</url>
+			<url>http://pellcorp.github.com/maven2/releases</url>
 		</repository>
 	</repositories>
 </project>
