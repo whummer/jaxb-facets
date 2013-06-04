@@ -9,6 +9,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * Note these tests will fall over if you have jaxb-api already in your jre endorsed directory!
+ */
 public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
     public static final String DOC_SCHEMALEVEL_1 = "schema-level doc 123";
@@ -28,7 +31,6 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     
     @Test
     public void testGenderEnumDocs() throws Exception {
-        //System.out.println(getWsdlSchemaAsString(PersonService.class));
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
         String value = engine.evaluate("//xs:simpleType[@name='gender']/xs:annotation/xs:documentation", doc);
         assertEquals("Gender Type", value);
