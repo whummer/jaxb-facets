@@ -46,7 +46,13 @@ public abstract class AbstractTestCase extends Assert {
             server.stop();
         }
     }
-    
+
+    protected static void addNamespace(String prefix, String uri) {
+        m.put(prefix, uri);
+        ctx = new SimpleNamespaceContext(m);
+        engine.setNamespaceContext(ctx);
+    }
+
     protected static String getWsdlSchemaAsString(Class<?> serviceClass) throws IOException {
         String wsdlContent = readWsdl(serviceClass);
         return JdomUtils.toString(JdomUtils.getWsdlSchema(wsdlContent));
@@ -75,6 +81,16 @@ public abstract class AbstractTestCase extends Assert {
         clientFactory.setAddress(getAddress(serviceClass));
 
         return (T) clientFactory.create();
+    }
+    
+    protected static void assertEqualsInDoc(Object o1, Object o2, Document doc) {
+        try {
+            assertEquals(o1, o2);
+        } catch (AssertionError e) {
+            String d = JdomUtils.toString(doc.getDocumentElement());
+            System.out.println(d);
+            throw e;
+        }
     }
 
     protected static Server createServer(Class<?> serviceInterface, Object serviceImpl)

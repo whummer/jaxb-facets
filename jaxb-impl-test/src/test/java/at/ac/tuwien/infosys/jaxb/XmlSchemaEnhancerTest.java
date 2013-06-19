@@ -13,7 +13,14 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
     public static final String DOC_SCHEMALEVEL_1 = "schema-level doc 123";
     public static final String DOC_SCHEMALEVEL_2 = "schema-level doc 234";
-    public static final String APPINFO_SCHEMALEVEL = "schema-level appinfo 1234";
+    public static final String APPINFO_STRING = "schema-level appinfo 1234";
+    public static final String APPINFO_ELEMENT = 
+    		"<myInfo xmlns=\"ns1\" xmlns:tns=\"ns2\" attr1=\"foo\">" +
+    			APPINFO_STRING +
+    			"<tns:foo>" +
+    			APPINFO_STRING +
+    			"</tns:foo>" +
+    		"</myInfo>";
 
     @BeforeClass
     public static void startServers() throws Exception {
@@ -47,12 +54,12 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     public void testAgeDerivedTypeFacets() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonService.class));
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
-        
+
         String value = engine.evaluate("//xs:simpleType[@name='Age']/xs:restriction/xs:minInclusive/@value", doc);
-        assertEquals("5", value);
-        
+        assertEqualsInDoc("5", value, doc);
+
         value = engine.evaluate("//xs:simpleType[@name='Age']/xs:restriction/xs:maxInclusive/@value", doc);
-        assertEquals("120", value);
+        assertEqualsInDoc("120", value, doc);
     }
     
     @Test
@@ -149,7 +156,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         assertEquals("1", minOccurs);
         assertEquals("2", maxOccurs);
     }
-    
+
     @Test
     @Ignore
     public void testMemberAnnotationMinMaxOccurs() throws Exception {
@@ -166,14 +173,28 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         assertEquals("1", minOccurs);
         assertEquals("2", maxOccurs);
     }
-    
+
+    @Test
+    public void testAppinfoWithXMLContent() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+        //System.out.println(getWsdlSchemaAsString(PersonServiceNoNS.class));
+
+        addNamespace("ns1", "ns1");
+        addNamespace("ns2", "ns2");
+        String value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/xs:appinfo[1]/ns1:myInfo/text()", doc);
+        assertEquals(APPINFO_STRING, value);
+
+        value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/xs:appinfo[1]/ns1:myInfo/ns2:foo/text()", doc);
+        assertEquals(APPINFO_STRING, value);
+    }
+
     @Test
     public void testPackageLevelXSDAnnotations() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonServiceNoNS.class));
         Document doc = getWsdlSchemaAsDocument(PersonServiceNoNS.class);
 
         String value = engine.evaluate("/xs:schema/xs:annotation/xs:appinfo[1]", doc);
-        assertEquals(APPINFO_SCHEMALEVEL, value);
+        assertEquals(APPINFO_STRING, value);
 
         value = engine.evaluate("/xs:schema/xs:annotation/xs:documentation[1]", doc);
         assertEquals(DOC_SCHEMALEVEL_1, value);

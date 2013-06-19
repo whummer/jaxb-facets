@@ -1,5 +1,7 @@
 package at.ac.tuwien.infosys.jaxb;
 
+import javax.xml.bind.annotation.Annotation;
+import javax.xml.bind.annotation.AppInfo;
 import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,6 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Person")
 @SuppressWarnings("all")
+@Annotation(appinfo = @AppInfo(XmlSchemaEnhancerTest.APPINFO_ELEMENT))
 public class Person {
     @XmlElement(required = true, name = "firstName")
     @Facets(pattern = "[A-Z]+")
