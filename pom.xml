@@ -94,7 +94,7 @@
 
     <repositories>
 		<repository>
-			<id>jaxb-facets</id>
+			<id>github-repo-releases</id>
 			<url>https://raw.github.com/whummer/mvn/master/releases</url>
 		</repository>
 	</repositories>

@@ -134,7 +134,7 @@
 							<Specification-Title>Java Architecture for XML Binding</Specification-Title>
 							<Specification-Version>2.2.7</Specification-Version>
 							<Specification-Vendor>Oracle Corporation</Specification-Vendor>
-							<Implementation-Title>JAXB Reference Implementation</Implementation-Title>
+							<Implementation-Title>JAXB Reference Implementation (including JAXB-Facets support)</Implementation-Title>
 							<Implementation-Version>2.2.6</Implementation-Version>
 							<Implementation-Vendor>Oracle Corporation</Implementation-Vendor>
 							<Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
