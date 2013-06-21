@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import at.ac.tuwien.infosys.jaxb.Country;
 import at.ac.tuwien.infosys.jaxb.TimeZoneOffset;
+import at.ac.tuwien.infosys.jaxb.test.Buddy;
+import at.ac.tuwien.infosys.jaxb.test.ChartType;
 
 @XmlRootElement(name = "foo")
 @XmlType(name = "TestRequest")

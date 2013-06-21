@@ -7,14 +7,6 @@
     <packaging>pom</packaging>
 
 	<build>
-		<!-- required for deployment via SSH -->
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0-beta-6</version>
-			</extension>
-		</extensions>
 		<!-- use this to tell m2e Maven Eclipse Plugin to 
 			ignore the maven-dependency-plugin execution -->
 		<pluginManagement>
@@ -72,9 +64,6 @@
 	</build>
 
 	<properties>
-		<!-- FIXME fix up the dirs below so they are relative -->
-		<devHome>file:///home/jason/Development</devHome>
-		
 		<jaxb.facets.api.version>2.2.7-facets-1.0.2</jaxb.facets.api.version>
 		<jaxb.facets.impl.version>2.2.6-facets-1.0.6</jaxb.facets.impl.version>
 	</properties>
@@ -89,32 +78,24 @@
 		<module>testutils</module>
 		<module>jaxb-api</module>
 		<module>jaxb-impl</module>
-		<module>jaxb-impl-test</module>
     </modules>
 	
     <distributionManagement>
-<!-- 	    <repository> -->
-<!-- 	        <id>repo</id> -->
-<!-- 	        <url>${devHome}/docs/maven2/releases</url> -->
-<!-- 	    </repository> -->
 		<repository>
-			<id>infosys-repo</id>
-			<name>infosys-repo</name>
+			<id>github-repo-releases</id>
 			<uniqueVersion>false</uniqueVersion>
-			<url>scp://hummer@www.infosys.tuwien.ac.at/web/website/mvn</url>
+			<url>https://raw.github.com/whummer/mvn/master/releases</url>
 		</repository>
-
 	    <snapshotRepository>
-	        <id>snapshot-repo</id>
-	        <url>${devHome}/docs/maven2/snapshots</url>
+	        <id>github-repo-snapshots</id>
+	        <url>https://raw.github.com/whummer/mvn/master/snapshots</url>
 	    </snapshotRepository>
-
 	</distributionManagement>
 
     <repositories>
 		<repository>
 			<id>jaxb-facets</id>
-			<url>http://pellcorp.github.com/docs/maven2/releases</url>
+			<url>https://raw.github.com/whummer/mvn/master/releases</url>
 		</repository>
 	</repositories>
 </project>
