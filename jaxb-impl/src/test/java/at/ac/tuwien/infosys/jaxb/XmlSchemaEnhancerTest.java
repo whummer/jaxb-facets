@@ -21,6 +21,11 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     			APPINFO_STRING +
     			"</tns:foo>" +
     		"</myInfo>";
+    public static final String ATTR_NAME_1 = "attr1";
+    public static final String ATTR_NAMESPACE_1 = "http://example.com/attr1";
+    public static final String ATTR_VALUE_1 = "value1";
+    public static final String ATTR_NAME_2 = "attr2";
+    public static final String ATTR_VALUE_2 = "value2";
 
     @BeforeClass
     public static void startServers() throws Exception {
@@ -91,14 +96,14 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:documentation[3]", doc);
         assertEquals("doc 3", value);
         
-        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:sequence/xs:element[@name='bar']/xs:annotation/xs:documentation", doc);
-        assertEquals("<b>string bar</b>", value);
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:sequence/xs:element[@name='bar']/xs:annotation/xs:documentation/b", doc);
+        assertEquals("string bar", value);
         
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:appinfo[@source='src 1']", doc);
         assertEquals("appinfo 1", value);
         
-        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:documentation", doc);
-        assertEquals("<b>string foo</b>", value);
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:documentation/b", doc);
+        assertEquals("string foo", value);
         
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo1']/xs:annotation/xs:documentation[1]", doc);
         assertEquals("this is the first line", value);
@@ -186,6 +191,18 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
         value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/xs:appinfo[1]/ns1:myInfo/ns2:foo/text()", doc);
         assertEquals(APPINFO_STRING, value);
+    }
+
+    @Test
+    public void testAnnotationAttributes() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        addNamespace("ns1", ATTR_NAMESPACE_1);
+        String value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/@ns1:" + ATTR_NAME_1, doc);
+        assertEquals(ATTR_VALUE_1, value);
+
+        value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/@" + ATTR_NAME_2, doc);
+        assertEquals(ATTR_VALUE_2, value);
     }
 
     @Test

@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.annotation.AppInfo;
+import javax.xml.bind.annotation.Attribute;
 import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.Facets.FacetDefinition;
@@ -223,8 +224,8 @@ public class XmlSchemaEnhancer {
 
     public static <T, C> void addXsdAnnotations(
             javax.xml.bind.annotation.Annotation anno, TypedXmlWriter obj) {
-        TypedXmlWriter annoEl = getXsdAnnotation(obj, anno.id(),
-                anno.attributes());
+        TypedXmlWriter annoEl = getXsdAnnotation(obj, 
+                anno.id(), anno.attributes());
         for (AppInfo info : anno.appinfo()) {
             TypedXmlWriter w = annoEl._element(new QName(NS_XSD, "appinfo"),
                     TypedXmlWriter.class);
@@ -244,7 +245,7 @@ public class XmlSchemaEnhancer {
                 w._attribute(new QName(NS_XML, "lang"), doc.lang());
             }
             /* Use XML parser to allow XML content in documentation */
-            w._pcdata(doc.value());
+            writeXMLOrPCData(w, doc.value());
         }
     }
 
@@ -270,6 +271,14 @@ public class XmlSchemaEnhancer {
         }
     }
 
+    /**
+     * If the passed value is a valid XML root element, then we parse it and
+     * write the XML element to the given TypedXmlWriter. Otherwise, the 
+     * value will be written to TypedXmlWriter as a PCDATA string (i.e., 
+     * characters like '<', '&' etc. will be replaced by '&lt;', '&amp;' etc.).
+     * @param w
+     * @param value
+     */
     private static void writeXMLOrPCData(TypedXmlWriter w, String value) {
         Document doc = parseValueAsXML(value);
         if(doc == null) {
@@ -475,7 +484,7 @@ public class XmlSchemaEnhancer {
 
         final Map<String, Object> annoValues = new HashMap<String, Object>();
         annoValues.put("appinfo", new AppInfo[] {});
-        annoValues.put("attributes", new String[] {});
+        annoValues.put("attributes", new Attribute[] {});
         annoValues.put("documentation", new Documentation[] {});
         InvocationHandler h = new InvocationHandler() {
             public Object invoke(Object o, Method m, Object[] args)
@@ -780,15 +789,19 @@ public class XmlSchemaEnhancer {
     }
 
     private static <T, C> TypedXmlWriter getXsdAnnotation(TypedXmlWriter obj,
-            String annoID, String[] otherAttributes) {
+            String annoID, Attribute[] otherAttributes) {
         TypedXmlWriter anno = obj._element(new QName(NS_XSD, "annotation"),
                 TypedXmlWriter.class);
         if (annoID != null && !annoID.trim().isEmpty()) {
             anno._attribute(new QName("id"), annoID);
         }
         if (otherAttributes != null && otherAttributes.length > 0) {
-            // TODO implement!
-            logger.warning("Support for arbitrary attributes on xsd:annotation element not implemented yet.");
+            for(Attribute attr : otherAttributes) {
+                QName attrName = attr.namespace().isEmpty() ? 
+                        new QName(attr.name()) : 
+                            new QName(attr.namespace(), attr.name());
+                anno._attribute(attrName, attr.value());
+            }
         }
         return anno;
     }

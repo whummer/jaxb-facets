@@ -2,6 +2,7 @@ package at.ac.tuwien.infosys.jaxb;
 
 import javax.xml.bind.annotation.Annotation;
 import javax.xml.bind.annotation.AppInfo;
+import javax.xml.bind.annotation.Attribute;
 import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,7 +12,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Person")
 @SuppressWarnings("all")
-@Annotation(appinfo = @AppInfo(XmlSchemaEnhancerTest.APPINFO_ELEMENT))
+@Annotation(
+        appinfo = @AppInfo(XmlSchemaEnhancerTest.APPINFO_ELEMENT),
+        attributes = {
+            @Attribute(name=XmlSchemaEnhancerTest.ATTR_NAME_1, value=XmlSchemaEnhancerTest.ATTR_VALUE_1, namespace=XmlSchemaEnhancerTest.ATTR_NAMESPACE_1),
+            @Attribute(name=XmlSchemaEnhancerTest.ATTR_NAME_2, value=XmlSchemaEnhancerTest.ATTR_VALUE_2)
+        }
+)
 public class Person {
     @XmlElement(required = true, name = "firstName")
     @Facets(pattern = "[A-Z]+")
