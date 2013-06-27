@@ -796,6 +796,9 @@ public class XmlSchemaEnhancer {
             anno._attribute(new QName("id"), annoID);
         }
         if (otherAttributes != null && otherAttributes.length > 0) {
+            // TODO - should this support namespaced attributes?  The standard
+            // seems to suggest only non namespaced attributes should be supported,
+            // regardless this seems to break jaxp schema validation anyway.
             for(Attribute attr : otherAttributes) {
                 QName attrName = attr.namespace().isEmpty() ? 
                         new QName(attr.name()) : 

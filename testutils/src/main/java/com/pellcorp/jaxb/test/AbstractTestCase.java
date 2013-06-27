@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.xml.XMLConstants;
 
+import org.w3c.dom.Document;
+
 import org.apache.cxf.annotations.SchemaValidation.SchemaValidationType;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
@@ -18,10 +20,14 @@ import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.junit.Assert;
-import org.w3c.dom.Document;
 
 public abstract class AbstractTestCase extends Assert {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTestCase.class);
+    
     private static Map<String, String> m = new HashMap<String, String>();
     protected static NamespaceContext ctx;
     protected static XpathEngine engine = XMLUnit.newXpathEngine();
@@ -97,6 +103,8 @@ public abstract class AbstractTestCase extends Assert {
         throws IOException {
         JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(serviceImpl.getClass());
+        String address = getAddress(serviceInterface);
+        LOGGER.info("Starting server: " + address);
         svrFactory.setAddress(getAddress(serviceInterface));
         svrFactory.setServiceBean(serviceImpl);
         Server server = svrFactory.create();

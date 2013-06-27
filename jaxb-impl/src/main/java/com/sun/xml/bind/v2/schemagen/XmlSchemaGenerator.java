@@ -633,7 +633,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
          */
         private void writeTo(Result result, Map<Namespace,String> systemIds) throws IOException {
             /* added by hummer@infosys.tuwien.ac.at */
-            logger.info("Started JAXB-Facets enabled XmlSchemaGenerator (package com.sun.xml.bind.*).");
+            logger.fine("Started JAXB-Facets enabled XmlSchemaGenerator (package com.sun.xml.bind.*).");
             /* end added by hummer@infosys.tuwien.ac.at */
             try {
                 Schema schema = TXW.create(Schema.class,ResultFactory.createSerializer(result));

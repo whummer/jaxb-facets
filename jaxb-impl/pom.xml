@@ -29,13 +29,13 @@
 	<parent>
 		<groupId>at.ac.tuwien.infosys</groupId>
 		<artifactId>jaxb-facets</artifactId>
-		<version>2.2.7-facets</version>
+		<version>2.2.7-facets-1.0.1</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sun.xml.bind</groupId>
 	<artifactId>jaxb-impl</artifactId>
-	<version>2.2.6-facets-1.0.6</version>
+	<version>2.2.6-facets-1.0.7</version>
 	<packaging>jar</packaging>
 
 	<developers>
@@ -43,6 +43,11 @@
 			<name>Waldemar Hummer</name>
 			<email>hummer@dsg.tuwien.ac.at</email>
 			<organization>Vienna University of Technology</organization>
+		</developer>
+		
+		<developer>
+			<name>Jason Pell</name>
+			<email>jason@pellcorp.com</email>
 		</developer>
 	</developers>
 
@@ -59,24 +64,12 @@
 		</license>
 	</licenses>
 
-	<properties>
-		<jaxb.facets.api.version>2.2.7-facets-1.0.2</jaxb.facets.api.version>
-		<jaxb.facets.impl.version>2.2.6-facets-1.0.6</jaxb.facets.impl.version>
-	</properties>
-
 	<profiles>
 		<profile>
 			<id>regular</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-impl</artifactId>
-					<version>2.2.6</version>
-				</dependency>
-			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -98,21 +91,38 @@
 											<version>2.2.6</version>
 										</artifactItem>
 									</artifactItems>
-									<overWriteIfNewer>true</overWriteIfNewer>
-									<overWriteReleases>true</overWriteReleases>
 									<outputDirectory>${project.build.directory}/classes</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
+
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>delete</id>
+								<phase>process-sources</phase>
+								<configuration>
+									<tasks>
+										<delete dir="${project.build.directory}/classes/META-INF/maven" />
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>2.12</version>
 						<configuration>
-							<systemPropertyVariables> 
+							<systemPropertyVariables>
 								<java.endorsed.dirs>
-								${settings.localRepository}/javax/xml/bind/jaxb-api/${jaxb.facets.api.version}/:${settings.localRepository}/com/sun/xml/bind/jaxb-impl/${jaxb.facets.impl.version}/
+									${settings.localRepository}/javax/xml/bind/jaxb-api/${jaxb.facets.api.version}/:${settings.localRepository}/com/sun/xml/bind/jaxb-impl/${jaxb.facets.impl.version}/
 								</java.endorsed.dirs>
 							</systemPropertyVariables>
 						</configuration>
@@ -146,50 +156,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-
-		<!-- use this to tell m2e Maven Eclipse Plugin to 
-			ignore the maven-dependency-plugin execution -->
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-dependency-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>unpack</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-enforcer-plugin</artifactId>
-										<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>enforce</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 
 	<dependencies>
@@ -198,27 +164,20 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>${jaxb.facets.api.version}</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.pellcorp.jaxb-facets</groupId>
-			<artifactId>testutils</artifactId>
-			<version>0.1</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-impl</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
+        	<groupId>com.pellcorp.jaxb-facets</groupId>
+    		<artifactId>testutils</artifactId>
+    		<version>0.2</version>
+    		<scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 			<version>2.2.6</version>
-<!-- 			<scope>provided</scope> -->
-		</dependency>
-
+			<scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -236,5 +195,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 </project>

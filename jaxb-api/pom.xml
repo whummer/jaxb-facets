@@ -29,103 +29,67 @@
 	<parent>
 		<groupId>at.ac.tuwien.infosys</groupId>
 		<artifactId>jaxb-facets</artifactId>
-		<version>2.2.7-facets</version>
+		<version>2.2.7-facets-1.0.1</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>javax.xml.bind</groupId>
 	<artifactId>jaxb-api</artifactId>
-	<version>2.2.7-facets-1.0.2</version>
+	<version>2.2.7-facets-1.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>Java Architecture for XML Binding</name>
 	<description>JAXB (JSR 222) API</description>
 	<url>http://jaxb.java.net/</url>
 
-	<organization>
-		<name>Oracle Corporation</name>
-		<url>http://www.oracle.com/</url>
-	</organization>
-
-	<developers>
-		<developer>
-			<name>Martin Grebac</name>
-			<email>martin.grebac@oracle.com</email>
-			<organization>Oracle Corporation</organization>
-		</developer>
-	</developers>
-
-	<licenses>
-		<license>
-			<name>CDDL 1.1</name>
-			<url>https://glassfish.java.net/public/CDDL+GPL_1_1.html</url>
-			<distribution>repo</distribution>
-		</license>
-		<license>
-			<name>GPL2 w/ CPE</name>
-			<url>https://glassfish.java.net/public/CDDL+GPL_1_1.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<scm>
-		<connection>scm:svn:http://svn.java.net/svn/jsr222~svn/tags/jaxb-api-2.2.7</connection>
-		<developerConnection>scm:svn:https://svn.java.net/svn/jsr222~svn/tags/jaxb-api-2.2.7</developerConnection>
-		<url>http://java.net/projects/jsr222/sources/svn/show/tags/jaxb-api-2.2.7</url>
-	</scm>
-
-	<properties>
-		<release.spec.feedback>spec-comments@jsr222.java.net</release.spec.feedback>
-		<release.spec.date>Dec 2009</release.spec.date>
-	</properties>
-
 	<build>
-
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-
 		<plugins>
+			<!-- this plugin is required to ensure that the jaxb-api that is produced includes
+			all class files, not just the ones in the src/main/java -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.0.2</version>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>javax.xml.bind</groupId>
+									<artifactId>jaxb-api</artifactId>
+									<version>2.2.7</version>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
-	<!-- TODO: is this required? -->
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-dependency-plugin</artifactId> -->
-<!-- 				<version>2.5.1</version> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<id>unpack</id> -->
-<!-- 						<phase>process-sources</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>unpack</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<artifactItems> -->
-<!-- 								<artifactItem> -->
-<!-- 									<groupId>javax.xml.bind</groupId> -->
-<!-- 									<artifactId>jaxb-api</artifactId> -->
-<!-- 									<version>2.2.7</version> -->
-<!-- 								</artifactItem> -->
-<!-- 							</artifactItems> -->
-<!-- 							<outputDirectory>${project.build.directory}/classes</outputDirectory> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
+			<!-- This ensures that the META-INF does not include the maven directory extracted from
+			the jaxb-api from maven central -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>delete</id>
+						<phase>process-sources</phase>
+						<configuration>
+							<tasks>
+								<delete dir="${project.build.directory}/classes/META-INF/maven" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -143,59 +107,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		
-		
-		<pluginManagement>
-			<plugins>
-				<!-- use this to tell m2e Maven Eclipse Plugin to 
-					ignore various unsupported plugin executions -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-dependency-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>unpack</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-enforcer-plugin</artifactId>
-										<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>enforce</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
-	
-	<dependencies>
-		<dependency>
-	         <groupId>javax.validation</groupId>
-	         <artifactId>validation-api</artifactId>
-	         <version>1.0.0.GA</version>
-	         <scope>compile</scope>
-		</dependency>
-	</dependencies>
 </project>
