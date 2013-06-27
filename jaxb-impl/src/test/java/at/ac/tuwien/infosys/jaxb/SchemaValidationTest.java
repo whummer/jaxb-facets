@@ -1,5 +1,13 @@
 package at.ac.tuwien.infosys.jaxb;
 
+import java.io.StringReader;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
+
+import org.xml.sax.SAXParseException;
+
 import com.pellcorp.jaxb.test.AbstractTestCase;
 
 import org.junit.AfterClass;
@@ -8,9 +16,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * This class will test if CXF can use the generated schema to perform validation,
- * for now it's just a simple placeholder to make sure stuff is not completely broken.
- * 
+ * This class will test if JAXP and CXF can use the generated schema to perform validation
  */
 public class SchemaValidationTest extends AbstractTestCase {
     private static PersonService client;
@@ -26,9 +32,21 @@ public class SchemaValidationTest extends AbstractTestCase {
         cleanupServers();
     }
     
-    // this test is currently broken due to introduction of xs:annotation attribute support.
     @Test
-    @Ignore
+    public void testValidateGeneratedXsd() throws Exception {
+        String xml = getWsdlSchemaAsString(PersonService.class);
+        Source schemaSource = new StreamSource(new StringReader(xml));
+        
+        try {
+            SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            sf.newSchema(schemaSource);
+            assertTrue(true); // no errors
+        } catch (SAXParseException e) {
+            fail("Expected failure because attribute is on xs:annotation");
+        }
+    }
+    
+    @Test
     public void testInvalidFirstName() {
         Person person = new Person();
         person.setFirstName("jason"); // must have first uppercase character
@@ -40,6 +58,5 @@ public class SchemaValidationTest extends AbstractTestCase {
         } catch (Exception sfe) {
             assertTrue(sfe.getMessage().contains("Unmarshalling Error: cvc-pattern-valid"));
         }
-       
     }
 }

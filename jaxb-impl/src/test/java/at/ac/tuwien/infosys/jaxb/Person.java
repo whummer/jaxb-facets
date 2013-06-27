@@ -17,7 +17,8 @@ import javax.xml.bind.annotation.XmlType;
         attributes = {
             @Attribute(name=XmlSchemaEnhancerTest.ATTR_NAME_1, value=XmlSchemaEnhancerTest.ATTR_VALUE_1, 
                 namespace=XmlSchemaEnhancerTest.ATTR_NAMESPACE_1),
-            @Attribute(name=XmlSchemaEnhancerTest.ATTR_NAME_2, value=XmlSchemaEnhancerTest.ATTR_VALUE_2)
+            @Attribute(name=XmlSchemaEnhancerTest.ATTR_NAME_2, value=XmlSchemaEnhancerTest.ATTR_VALUE_2,
+                namespace=XmlSchemaEnhancerTest.ATTR_NAMESPACE_2)
         }
 )
 public class Person {

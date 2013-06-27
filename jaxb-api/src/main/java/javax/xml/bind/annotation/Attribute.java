@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Attribute {
 
-    String namespace() default "";
+    String namespace();
 
     String name();
 

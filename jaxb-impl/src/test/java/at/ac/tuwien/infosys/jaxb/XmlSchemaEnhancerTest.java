@@ -23,6 +23,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     		"</myInfo>";
     public static final String ATTR_NAME_1 = "attr1";
     public static final String ATTR_NAMESPACE_1 = "http://example.com/attr1";
+    public static final String ATTR_NAMESPACE_2 = "http://example.com/attr2";
     public static final String ATTR_VALUE_1 = "value1";
     public static final String ATTR_NAME_2 = "attr2";
     public static final String ATTR_VALUE_2 = "value2";
@@ -198,10 +199,12 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
 
         addNamespace("ns1", ATTR_NAMESPACE_1);
+        addNamespace("ns2", ATTR_NAMESPACE_2);
+        
         String value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/@ns1:" + ATTR_NAME_1, doc);
         assertEquals(ATTR_VALUE_1, value);
 
-        value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/@" + ATTR_NAME_2, doc);
+        value = engine.evaluate("//xs:complexType[@name='Person']/xs:annotation/@ns2:" + ATTR_NAME_2, doc);
         assertEquals(ATTR_VALUE_2, value);
     }
 
