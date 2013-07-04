@@ -2,7 +2,7 @@
     documentation = @Documentation(XmlSchemaEnhancerTest.DOC_SCHEMALEVEL_1)
 )
 @Documentation(XmlSchemaEnhancerTest.DOC_SCHEMALEVEL_2)
-@AppInfo(XmlSchemaEnhancerTest.APPINFO_SCHEMALEVEL)
+@AppInfo(XmlSchemaEnhancerTest.APPINFO_STRING)
 package at.ac.tuwien.infosys.jaxb.test;
 
 import javax.xml.bind.annotation.*;

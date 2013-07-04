@@ -17,5 +17,9 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 public @interface MaxOccurs {
+
+    public static final String VALIDATION_MESSAGE_KEY = "javax.xml.bind.annotation.MaxOccurs.message";
+
     long value();
+
 }

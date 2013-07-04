@@ -1,11 +1,23 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.StringReader;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
+
+import org.xml.sax.SAXParseException;
 
 import com.pellcorp.jaxb.test.AbstractTestCase;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+
+/**
+ * This class will test if JAXP and CXF can use the generated schema to perform validation
+ */
 public class SchemaValidationTest extends AbstractTestCase {
     private static PersonService client;
     
@@ -18,6 +30,20 @@ public class SchemaValidationTest extends AbstractTestCase {
     @AfterClass
     public static void cleanup() throws Exception {
         cleanupServers();
+    }
+    
+    @Test
+    public void testValidateGeneratedXsd() throws Exception {
+        String xml = getWsdlSchemaAsString(PersonService.class);
+        Source schemaSource = new StreamSource(new StringReader(xml));
+        
+        try {
+            SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            sf.newSchema(schemaSource);
+            assertTrue(true); // no errors
+        } catch (SAXParseException e) {
+            fail("Expected failure because attribute is on xs:annotation");
+        }
     }
     
     @Test

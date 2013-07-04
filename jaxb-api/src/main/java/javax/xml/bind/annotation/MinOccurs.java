@@ -17,5 +17,9 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 public @interface MinOccurs {
+
+    public static final String VALIDATION_MESSAGE_KEY = "javax.xml.bind.annotation.MinOccurs.message";
+
     long value();
+
 }

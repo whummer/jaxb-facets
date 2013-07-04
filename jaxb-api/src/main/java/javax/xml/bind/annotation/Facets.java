@@ -28,6 +28,50 @@ public @interface Facets {
 
     public static final long VOID_LONG = -1;
     public static final String VOID_STRING = "";
+    public static final String VALIDATION_MESSAGE_KEY = "javax.xml.bind.annotation.Facets.message";
+
+    public static enum WhiteSpace {
+        VOID, preserve, replace, collapse
+    }
+
+    @FacetDefinition
+    String[] enumeration() default {};
+
+    @FacetDefinition
+    long fractionDigits() default VOID_LONG;
+
+    @FacetDefinition
+    long length() default VOID_LONG;
+
+    @FacetDefinition
+    String maxExclusive() default VOID_STRING;
+
+    @FacetDefinition
+    String minExclusive() default VOID_STRING;
+
+    @FacetDefinition
+    long maxLength() default VOID_LONG;
+
+    @FacetDefinition
+    long minLength() default VOID_LONG;
+
+    @FacetDefinition
+    String maxInclusive() default VOID_STRING;
+
+    @FacetDefinition
+    String minInclusive() default VOID_STRING;
+
+    @FacetDefinition
+    String pattern() default VOID_STRING;
+
+    @FacetDefinition
+    long totalDigits() default VOID_LONG;
+
+    @FacetDefinition
+    WhiteSpace whiteSpace() default WhiteSpace.VOID;
+
+    public static final long VOID_LONG = -1;
+    public static final String VOID_STRING = "";
 
     public static enum WhiteSpace {
         VOID, preserve, replace, collapse

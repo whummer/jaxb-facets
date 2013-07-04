@@ -24,17 +24,18 @@
 	applies only if the new code is made subject to such option by the copyright 
 	holder. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<groupId>at.ac.tuwien.infosys</groupId>
 		<artifactId>jaxb-facets</artifactId>
-		<version>2.2.7-facets-1.0.2</version>
+		<version>2.2.7-facets-1.0.1</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>javax.xml.bind</groupId>
 	<artifactId>jaxb-api</artifactId>
-	<version>2.2.7-facets-1.0.8</version>
+	<version>2.2.7-facets-1.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>Java Architecture for XML Binding</name>
@@ -43,6 +44,8 @@
 
 	<build>
 		<plugins>
+			<!-- this plugin is required to ensure that the jaxb-api that is produced includes
+			all class files, not just the ones in the src/main/java -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -68,6 +71,8 @@
 				</executions>
 			</plugin>
 
+			<!-- This ensures that the META-INF does not include the maven directory extracted from
+			the jaxb-api from maven central -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
