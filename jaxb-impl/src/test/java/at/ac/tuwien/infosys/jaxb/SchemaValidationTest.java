@@ -58,6 +58,5 @@ public class SchemaValidationTest extends AbstractTestCase {
         } catch (Exception sfe) {
             assertTrue(sfe.getMessage().contains("Unmarshalling Error: cvc-pattern-valid"));
         }
-       
     }
 }
