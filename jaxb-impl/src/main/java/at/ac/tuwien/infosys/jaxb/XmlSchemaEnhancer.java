@@ -781,9 +781,13 @@ public class XmlSchemaEnhancer {
         if (w != null) {
             return w;
         }
+        
         if(typeName.toString().contains("int")) {
-            Thread.dumpStack();
+        	// replace the Thread.dumpStack() with a log statement
+        	// TODO - why is this here?
+        	logger.log(Level.FINE, "Type name contains int", new Exception());
         }
+        
         TypedXmlWriter st = obj._element(new QName(NS_XSD, "simpleType"),
                 TypedXmlWriter.class);
         TypedXmlWriter r = st._element(new QName(NS_XSD, "restriction"),
