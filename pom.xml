@@ -12,7 +12,7 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 
 		<jaxb.facets.api.version>2.2.7-facets-1.0.3</jaxb.facets.api.version>
-		<jaxb.facets.impl.version>2.2.6-facets-1.0.7</jaxb.facets.impl.version>
+		<jaxb.facets.impl.version>2.2.6-facets-1.0.8</jaxb.facets.impl.version>
 	</properties>
 
 	<build>
