@@ -468,16 +468,20 @@ public class XmlSchemaEnhancer {
     protected static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
             javax.xml.bind.annotation.Annotation _anno, Documentation _doc,
             AppInfo _appinfo) {
+    	
+    	// jpell - no point if none of the params is provided.
+    	if (_anno == null && _doc == null && _appinfo == null) {
+    		return null;
+    	}
+    	
         ClassLoader cl = _anno != null ? _anno.getClass().getClassLoader()
                 : _doc != null ? _doc.getClass().getClassLoader()
                         : _appinfo != null ? _appinfo.getClass()
                                 .getClassLoader() : null;
 
-        // jpell:   if none of Annotation, AppInfo or Documentation are not null, whats
-        //          the point of falling back to the system classloader
-        // whummer: Please do not edit - Java7 users have encountered problems here.
-        //          Fallback to system classloader is necessary for compatibility with
-        //          Java7 JAXB bootstrapping/overriding mechanism.
+        // Java7 users have encountered problems here.
+        // Fallback to system classloader is necessary for compatibility with
+        // Java7 JAXB bootstrapping/overriding mechanism.
         if (cl == null) {
             cl = ClassLoader.getSystemClassLoader();
         }
