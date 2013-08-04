@@ -5,8 +5,8 @@ This is a fork of jaxb-facets from http://www.infosys.tuwien.ac.at/staff/hummer/
 
 It aims to automate the creation of facets specific versions of the jaxb-api and jaxb-impl using maven.
 
-A jaxb jira is outstanding to integrate this stuff directly into JAXB RI.  If and when that happens this project
-will be obselete (which we are looking forward to!)
+A jaxb jira is outstanding to integrate this stuff directly into JAXB RI. 
+If and when that happens this project will be obselete (which we are looking forward to!).
 
 http://java.net/jira/browse/JAXB-917
 
@@ -114,3 +114,47 @@ strategy with the maven compiler and surefire plugins.
 		</systemPropertyVariables>
 	</configuration>
 </plugin>
+
+
+Change Log
+----------
+
+- jaxb-impl:2.2.6-facets-1.0.8
+	* compulsory namespace for xsd:annotation attributes
+	* improved schema validation in unit tests
+- jaxb-impl:2.2.6-facets-1.0.7
+	* support for custom attributes in xsd:annotation
+	* support for XML content in xsd:annotation
+	* test classes moved back to jaxb-impl project
+- jaxb-api:2.2.7-facets-1.0.3
+	* minor (changed versions, updated pom.xml file metadata)
+- jaxb-impl:2.2.7-facets-1.0.6
+	* removed com.sun.xml.internal.* references
+	* moved jaxb-impl test classes into separate maven project
+	* code refactoring; removed code duplication in XmlSchemaGenerator
+- jaxb-impl:2.2.7-facets-1.0.5
+	* fixed pom.xml metadata and JAR manifest info
+	* Handling of com.sun.xml.internal.* classes in separate XmlSchemaGenerator
+- jaxb-impl:2.2.7-facets-1.0.4
+	* test utility classes
+	* updated CXF dependency version
+- jaxb-impl:2.2.7-facets-1.0.3
+	* test cases for enum literals support
+- jaxb-api:2.2.7-facets-1.0.2
+	* initial github version
+
+Older versions (legacy from http://dsg.tuwien.ac.at/staff/hummer/tools/jaxb-facets.html):
+
+- 2012-11-09: version 1.0 
+	Minor bug fixes and API changes in @Facets. The type of minInclusive/maxInclusive/minExclusive/maxExclusive has 
+	been changed from long to String, which is needed, e.g., to represent min/max for dates. This version is not API
+	compatible with 0.x versions!
+- 2012-09-05: version 0.4 
+	Support for xsd:annotation, xsd:appinfo, and xsd:documentation
+- 2012-05-27: version 0.3 
+	fixed classloading-related issues; ready for deployment in JBoss
+- 2012-04-15: version 0.2 
+	supports Facets for XML attributes; support for Java 1.7
+- 2011-12-04: version 0.1
+	initial release
+
