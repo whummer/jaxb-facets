@@ -135,7 +135,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
 
         String value = engine.evaluate("//xs:simpleType[@name='Country']//" +
-        		"xs:enumeration[@value='AUS']/xs:annotation/xs:documentation", doc);
+                "xs:enumeration[@value='AUS']/xs:annotation/xs:documentation", doc);
         assertEquals("Australia", value);
 
         value = engine.evaluate("//xs:simpleType[@name='Country']//" +
@@ -145,6 +145,16 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:simpleType[@name='Country']/" +
                 "xs:annotation/xs:documentation", doc);
         assertEquals("The 3-letter ISO 3166-1 codes for countries", value);
+    }
+
+    @Test
+    public void testAdditionalFacetsOnEnum() throws Exception {
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:simpleType[@name='gender']/" +
+        		"xs:restriction/xs:maxLength/@value", doc);
+        assertEquals("20", value);
+
     }
 
     @Test

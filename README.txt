@@ -20,7 +20,7 @@ https://github.com/whummer/mvn
 E.g., see:
 
 https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.3/jaxb-api-2.2.7-facets-1.0.3.jar
-https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.8/jaxb-impl-2.2.6-facets-1.0.8.jar
+https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.9/jaxb-impl-2.2.6-facets-1.0.9.jar
 
 
 Compile & Build
@@ -47,7 +47,7 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.2.6-facets-1.0.8</version>
+            <version>2.2.6-facets-1.0.9</version>
         </dependency>
         ...
     </dependencies>
@@ -119,6 +119,8 @@ strategy with the maven compiler and surefire plugins.
 Change Log
 ----------
 
+- jaxb-impl:2.2.6-facets-1.0.9
+	* support additional facets (e.g., maxLength) on enumeration types
 - jaxb-impl:2.2.6-facets-1.0.8
 	* compulsory namespace for xsd:annotation attributes
 	* improved schema validation in unit tests

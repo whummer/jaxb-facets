@@ -1,11 +1,13 @@
 package at.ac.tuwien.infosys.jaxb;
 
 import javax.xml.bind.annotation.Documentation;
+import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 @Documentation(value = "Gender Type")
 @XmlEnum
+@Facets(maxLength = 20)
 @SuppressWarnings("all")
 public enum Gender {
     @XmlEnumValue(value = "F")

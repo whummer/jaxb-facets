@@ -55,6 +55,8 @@ import com.sun.xml.bind.v2.model.runtime.RuntimeElementPropertyInfo;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestriction;
+import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestrictionModel;
+import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleType;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.ResultFactory;
 import com.sun.xml.txw2.output.TXWResult;
@@ -87,12 +89,18 @@ public class XmlSchemaEnhancer {
     }
 
     public static <T, C> void addFacets(ValuePropertyInfo<T, C> vp,
-            SimpleRestriction restriction) {
+            SimpleRestrictionModel restriction) {
         if (!hasFacets(vp))
             return;
 
         Facets facetsAnno = getFacetsAnnotation(vp);
         addFacets(facetsAnno, restriction);
+    }
+
+    public static <T, C> void addFacets(EnumLeafInfo<T, C> e,
+            SimpleRestrictionModel restriction) {
+        Facets facets = ((Class<?>)e.getType()).getAnnotation(Facets.class);
+        addFacets(facets, (TypedXmlWriter)restriction);
     }
 
     public static <T, C> void addFacets(TypeRef<T, C> t, LocalElement e) {

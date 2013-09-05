@@ -879,7 +879,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
             SimpleRestrictionModel base = st.restriction();
             writeTypeRef(base, e.getBaseType(), "base");
-            
+
             for (EnumConstant c : e.getConstants()) {
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                 NoFixedFacet enumeration = base.enumeration();
@@ -888,6 +888,10 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                  
                 enumeration.value(c.getLexicalValue());
             }
+            //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+            XmlSchemaEnhancer.addFacets(e, base);
+            //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
+
             st.commit();
         }
 

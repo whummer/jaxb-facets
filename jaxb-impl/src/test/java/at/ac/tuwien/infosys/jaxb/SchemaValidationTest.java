@@ -6,14 +6,12 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.xml.sax.SAXParseException;
 
 import com.pellcorp.jaxb.test.AbstractTestCase;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  * This class will test if JAXP and CXF can use the generated schema to perform validation
