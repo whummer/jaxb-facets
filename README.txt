@@ -1,5 +1,5 @@
 JAXB-Facets
------------
+===========
 
 This is a fork of jaxb-facets from http://www.infosys.tuwien.ac.at/staff/hummer/tools/jaxb-facets.html
 
@@ -11,7 +11,7 @@ If and when that happens this project will be obselete (which we are looking for
 http://java.net/jira/browse/JAXB-917
 
 Maven Repository
-----------------
+================
 
 The jaxb-api and jaxb-impl JARs are deployed to a maven repo located here:
 
@@ -20,11 +20,11 @@ https://github.com/whummer/mvn
 E.g., see:
 
 https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.3/jaxb-api-2.2.7-facets-1.0.3.jar
-https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.9/jaxb-impl-2.2.6-facets-1.0.9.jar
+https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.10/jaxb-impl-2.2.6-facets-1.0.10.jar
 
 
 Compile & Build
----------------
+===============
 
 To compile, test and package the code, run a maven build from the project's root directory:
 
@@ -32,7 +32,7 @@ $ mvn clean install
 
 
 Maven Integration
------------------
+=================
 
 To integrate JAXB-Facets into your Maven project, simply add the following repository and dependencies. You need to ensure that there are no other versions of jaxb-api and jaxb-impl on the CLASSPATH.
 
@@ -47,7 +47,7 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.2.6-facets-1.0.9</version>
+            <version>2.2.6-facets-1.0.10</version>
         </dependency>
         ...
     </dependencies>
@@ -62,7 +62,7 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
 </project>
 
 Maven Endorsed Integration
---------------------------
+==========================
 
 In some situations in order to make use of the new jaxb facet in your maven project, you may need to make use of the endorsed 
 strategy with the maven compiler and surefire plugins.
@@ -117,8 +117,14 @@ strategy with the maven compiler and surefire plugins.
 
 
 Change Log
-----------
+==========
 
+- jaxb-impl:2.2.6-facets-1.0.10
+	* support jaxb-facets for source code based schemagen
+	  (e.g., used for "mvn generate-resources)
+	* remaining limitation: package-level annotations do not (yet)
+	  work with the schemagen based generation approach. This is
+	  planned for a future release.
 - jaxb-impl:2.2.6-facets-1.0.9
 	* support additional facets (e.g., maxLength) on enumeration types
 - jaxb-impl:2.2.6-facets-1.0.8

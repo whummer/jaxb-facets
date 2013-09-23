@@ -32,16 +32,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.sun.xml.bind.v2.model.core.ArrayInfo;
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
@@ -51,17 +41,13 @@ import com.sun.xml.bind.v2.model.core.EnumLeafInfo;
 import com.sun.xml.bind.v2.model.core.PropertyInfo;
 import com.sun.xml.bind.v2.model.core.TypeRef;
 import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
-import com.sun.xml.bind.v2.model.runtime.RuntimeElementPropertyInfo;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
-import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestriction;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestrictionModel;
-import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleType;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.ResultFactory;
 import com.sun.xml.txw2.output.TXWResult;
 import com.sun.xml.txw2.output.TXWSerializer;
-import com.sun.xml.txw2.output.XmlSerializer;
 
 /**
  * @author Waldemar Hummer (hummer@infosys.tuwien.ac.at)
@@ -180,24 +166,52 @@ public class XmlSchemaEnhancer {
         addXsdAnnotations(anno, w);
     }
 
+    private static <T> Set<Package> extractPackage(T type) {
+        Set<Package> packages = new HashSet<Package>();
+        if(type instanceof Class<?>) {
+            Class<?> cl = (Class<?>) type;
+            Package pkg = cl.getPackage();
+            packages.add(pkg);
+        } else {
+            /* If jaxb-facets is used in the context of JAXB schemagen,
+             * the incoming parameter 'type' is not Class<?>, but
+             * com.sun.tools.javac.code.Type$ClassType. Since
+             * we don't want a hard-coded dependency on that class 
+             * within jaxb-facets, we use a workaround here. */
+            try {
+                String className = type.toString();
+                String packageName = className.substring(0, className.lastIndexOf("."));
+                Package pkg = Package.getPackage(packageName);
+                if(pkg != null) {
+                    /* TODO: pkg seems to be null here all the time.
+                     * This means that package-level annotations are 
+                     * currently not supported for schemagen-based JAXB,
+                     * because the schemagen mechanism is based on on-the-fly 
+                     * compilation and hence reflection (classes/packages) 
+                     * is not available at runtime. This shall be fixed
+                     * in a future release. */
+                    packages.add(pkg);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.log(Level.WARNING, "Unable to derive package name from class type: " + type, e);
+            }
+        }
+        return packages;
+    }
+
     public static <T, C> void addXsdAnnotations(Set<ClassInfo<T, C>> classes,
             Set<EnumLeafInfo<T, C>> enums, Set<ArrayInfo<T, C>> arrays,
             TypedXmlWriter w) {
         Set<Package> annotatedPackages = new HashSet<Package>();
         for (ClassInfo<T, C> c : classes) {
-            Class<?> cl = (Class<?>) c.getType();
-            Package pkg = cl.getPackage();
-            annotatedPackages.add(pkg);
+            annotatedPackages.addAll(extractPackage(c.getType()));
         }
         for (EnumLeafInfo<T, C> c : enums) {
-            Class<?> cl = (Class<?>) c.getType();
-            Package pkg = cl.getPackage();
-            annotatedPackages.add(pkg);
+            annotatedPackages.addAll(extractPackage(c.getType()));
         }
         for (ArrayInfo<T, C> c : arrays) {
-            Class<?> cl = (Class<?>) c.getType();
-            Package pkg = cl.getPackage();
-            annotatedPackages.add(pkg);
+            annotatedPackages.addAll(extractPackage(c.getType()));
         }
         for (Package p : annotatedPackages) {
             XmlSchemaEnhancer.addXsdAnnotations(p, w);
@@ -610,12 +624,16 @@ public class XmlSchemaEnhancer {
             return info.readAnnotation(MaxOccurs.class);
         } else if (annoClass == MinOccurs.class && info.hasAnnotation(MinOccurs.class)) {
             return info.readAnnotation(MinOccurs.class);
+        } else if (annoClass == Documentation.class && info.hasAnnotation(Documentation.class)) {
+            return info.readAnnotation(Documentation.class);
+        } else if (annoClass == AppInfo.class && info.hasAnnotation(AppInfo.class)) {
+            return info.readAnnotation(AppInfo.class);
         } else if (info.parent() == null) {
             return null;
         } else if (!(info.parent().getType() instanceof Class<?>)) {
             return null;
         }
-        
+
         Class<?> parent = (Class<?>) info.parent().getType();
         String name = info.getName();
         return getAnnotationOfProperty(parent, name, annoClass);
