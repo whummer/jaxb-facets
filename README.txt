@@ -1,5 +1,4 @@
-JAXB-Facets
-===========
+# JAXB-Facets
 
 This is a fork of jaxb-facets from http://www.infosys.tuwien.ac.at/staff/hummer/tools/jaxb-facets.html
 
@@ -10,8 +9,7 @@ If and when that happens this project will be obselete (which we are looking for
 
 http://java.net/jira/browse/JAXB-917
 
-Maven Repository
-================
+## Maven Repository
 
 The jaxb-api and jaxb-impl JARs are deployed to a maven repo located here:
 
@@ -23,19 +21,19 @@ https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7
 https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.10/jaxb-impl-2.2.6-facets-1.0.10.jar
 
 
-Compile & Build
-===============
+## Compile & Build
 
 To compile, test and package the code, run a maven build from the project's root directory:
 
+```
 $ mvn clean install
+```
 
-
-Maven Integration
-=================
+## Maven Integration
 
 To integrate JAXB-Facets into your Maven project, simply add the following repository and dependencies. You need to ensure that there are no other versions of jaxb-api and jaxb-impl on the CLASSPATH.
 
+```xml
 <project ...>
 ...
     <dependencies>
@@ -60,13 +58,72 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
     </repositories>
 ...
 </project>
+```
 
-Maven Endorsed Integration
-==========================
+## JAXB Schemagen Maven Integration
+
+To integrate JAXB-Facets with the schemagen facility of jaxb2-maven-plugin, use the following configuration:
+
+```xml
+<project ...>
+...
+	<build>
+		<plugins>
+			<plugin>
+	    		<groupId>org.codehaus.mojo</groupId>
+	    		<artifactId>jaxb2-maven-plugin</artifactId>
+	    		<version>1.5</version>
+	    		<dependencies>
+	    			<dependency>
+	    				<groupId>com.sun.xml.bind</groupId>
+	    				<artifactId>jaxb-impl</artifactId>
+	    				<version>2.2.6-facets-1.0.10</version>
+					</dependency>
+					<dependency>
+	    				<groupId>javax.xml.bind</groupId>
+	        			<artifactId>jaxb-api</artifactId>
+	        			<version>2.2.7-facets-1.0.3</version>
+	    			</dependency> 
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-xjc</artifactId>
+                        <version>2.2.6</version>
+                        <exclusions>
+                        	<exclusion>
+			    				<groupId>javax.xml.bind</groupId>
+			        			<artifactId>jaxb-api</artifactId>
+                        	</exclusion>
+                        	<exclusion>
+			    				<groupId>com.sun.xml.bind</groupId>
+			    				<artifactId>jaxb-impl</artifactId>
+                        	</exclusion>
+                        </exclusions>
+                	</dependency>
+				</dependencies>
+				<executions>
+	        		<execution>
+	            		<goals>
+	                		<goal>schemagen</goal>
+	            		</goals>
+	            		<phase>generate-resources</phase>
+	            		<configuration>
+	            			...
+	            		</configuration>
+	            	</execution>
+	            </executions>
+			</plugin>
+		</plugins>
+	</build>
+...
+</project>
+```
+
+## Maven Endorsed Integration
 
 In some situations in order to make use of the new jaxb facet in your maven project, you may need to make use of the endorsed 
 strategy with the maven compiler and surefire plugins.
 
+```xml
 <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-dependency-plugin</artifactId>
@@ -94,7 +151,6 @@ strategy with the maven compiler and surefire plugins.
 		</execution>
 	</executions>
 </plugin>
-
 <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-compiler-plugin</artifactId>
@@ -104,7 +160,6 @@ strategy with the maven compiler and surefire plugins.
 		</compilerArguments>
 	</configuration>
 </plugin>
-
 <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-surefire-plugin</artifactId>
@@ -114,10 +169,10 @@ strategy with the maven compiler and surefire plugins.
 		</systemPropertyVariables>
 	</configuration>
 </plugin>
+```
 
 
-Change Log
-==========
+## Change Log
 
 - jaxb-impl:2.2.6-facets-1.0.10
 	* support jaxb-facets for source code based schemagen
