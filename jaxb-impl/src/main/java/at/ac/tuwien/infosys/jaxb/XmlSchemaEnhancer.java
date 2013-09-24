@@ -85,8 +85,14 @@ public class XmlSchemaEnhancer {
 
     public static <T, C> void addFacets(EnumLeafInfo<T, C> e,
             SimpleRestrictionModel restriction) {
-        Facets facets = ((Class<?>)e.getType()).getAnnotation(Facets.class);
-        addFacets(facets, (TypedXmlWriter)restriction);
+        T type = e.getType();
+        if(type instanceof Class<?>) {
+            Facets facets = ((Class<?>)type).getAnnotation(Facets.class);
+            addFacets(facets, (TypedXmlWriter)restriction);
+        } else if(type.getClass().getName().endsWith("ClassType")) {
+            Facets facets = SchemagenUtil.extractAnnotation(type, Facets.class);
+            addFacets(facets, (TypedXmlWriter)restriction);
+        }
     }
 
     public static <T, C> void addFacets(TypeRef<T, C> t, LocalElement e) {
@@ -404,7 +410,7 @@ public class XmlSchemaEnhancer {
         return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
                 appinfo);
     }
-    public static <T> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
+    private static <T> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
             T type) {
         javax.xml.bind.annotation.Annotation anno = null;
         if (type instanceof Class<?>) {
@@ -423,13 +429,18 @@ public class XmlSchemaEnhancer {
             Documentation doc = pkg.getAnnotation(Documentation.class);
             return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
                     appinfo);
+        } else if (type instanceof EnumConstant) {
+            Documentation doc = AnnotationUtils
+                    .getDocumentation((EnumConstant) type);
+            return XmlSchemaEnhancer
+                    .getXsdAnnotationAnnotation(null, doc, null);
+        } else if (type.getClass().getName().endsWith("ClassType")) {
+            anno = SchemagenUtil.extractAnnotation(type, javax.xml.bind.annotation.Annotation.class);
+            AppInfo appinfo = SchemagenUtil.extractAnnotation(type, AppInfo.class);
+            Documentation doc = SchemagenUtil.extractAnnotation(type, Documentation.class);
+            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc, appinfo);
         } else {
-            if (type instanceof EnumConstant) {
-                Documentation doc = AnnotationUtils
-                        .getDocumentation((EnumConstant) type);
-                return XmlSchemaEnhancer
-                        .getXsdAnnotationAnnotation(null, doc, null);
-            }
+            logger.warning("Cannot get @Annotation annotation for unknown type '" + type + "'");
         }
         return null;
     }
@@ -512,18 +523,9 @@ public class XmlSchemaEnhancer {
         annoValues.put("appinfo", new AppInfo[] {});
         annoValues.put("attributes", new Attribute[] {});
         annoValues.put("documentation", new Documentation[] {});
-        InvocationHandler h = new InvocationHandler() {
-            public Object invoke(Object o, Method m, Object[] args)
-                    throws Throwable {
-                return annoValues.get(m.getName());
-            }
-        };
 
-        javax.xml.bind.annotation.Annotation anno = (javax.xml.bind.annotation.Annotation) Proxy
-                .newProxyInstance(
-                        cl,
-                        new Class<?>[] { javax.xml.bind.annotation.Annotation.class },
-                        h);
+        javax.xml.bind.annotation.Annotation anno = AnnotationUtils.
+                createAnnotationProxy(javax.xml.bind.annotation.Annotation.class, annoValues, cl);
 
         boolean hasAnno = false;
 
