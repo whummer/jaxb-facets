@@ -29,7 +29,7 @@
 	<parent>
 		<groupId>at.ac.tuwien.infosys</groupId>
 		<artifactId>jaxb-facets</artifactId>
-		<version>2.2.7-facets-1.0.1</version>
+		<version>2.2.7-facets-1.0.10</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
