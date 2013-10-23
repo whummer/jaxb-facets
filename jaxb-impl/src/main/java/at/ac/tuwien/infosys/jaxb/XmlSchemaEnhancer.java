@@ -14,6 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -835,10 +837,21 @@ public class XmlSchemaEnhancer {
         return anno;
     }
 
-    protected static Map<String, List<String>> getDefinedFacets(
-            Facets facetsAnnotation) throws Exception {
+    /**
+     * Note: we are returning a SortedMap here in order to make the schema 
+     * generation process deterministic. Yossi Cohen (YossiCO@Amdocs.com) 
+     * reported indeterministic behavior (different order of generated XML 
+     * nodes) in the old version where we still used a regular HashMap, 
+     * which does not preserve the order of items...
+     * 
+     * @param facetsAnnotation
+     * @return
+     * @throws Exception
+     */
+    protected static SortedMap<String, List<String>> getDefinedFacets(
+    		Facets facetsAnnotation) throws Exception {
         List<Method> annoMethods = new LinkedList<Method>();
-        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        SortedMap<String, List<String>> result = new TreeMap<String, List<String>>();
 
         if (facetsAnnotation == null)
             return result;
