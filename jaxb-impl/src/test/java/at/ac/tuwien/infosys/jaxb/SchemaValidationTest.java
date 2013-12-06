@@ -40,7 +40,8 @@ public class SchemaValidationTest extends AbstractTestCase {
             sf.newSchema(schemaSource);
             assertTrue(true); // no errors
         } catch (SAXParseException e) {
-            fail("Expected failure because attribute is on xs:annotation");
+        	e.printStackTrace();
+            fail("Schema parsing error. See stack trace for details.");
         }
     }
     

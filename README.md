@@ -174,6 +174,12 @@ strategy with the maven compiler and surefire plugins.
 
 ## Change Log
 
+- jaxb-impl:2.2.6-facets-1.0.11
+	* add location() parameter to @Annotation (INSIDE_ELEMENT, 
+	  OUTSIDE_ELEMENT): For XSD groups (in particular <choice>), 
+	  this allows to place <annotation> either inside the children 
+	  of the group, or into the group itself (as sibling of 
+	  the children of the group).
 - jaxb-impl:2.2.6-facets-1.0.10
 	* support jaxb-facets for source code based schemagen
 	  (e.g., used for "mvn generate-resources)

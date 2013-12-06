@@ -19,6 +19,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.bind.annotation.AnnotationLocation;
 import javax.xml.bind.annotation.AppInfo;
 import javax.xml.bind.annotation.Attribute;
 import javax.xml.bind.annotation.Documentation;
@@ -171,7 +172,7 @@ public class XmlSchemaEnhancer {
             return;
 
         javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(type);
-        addXsdAnnotations(anno, w);
+        addXsdAnnotationsInsideElement(anno, w);
     }
 
     private static <T> Set<Package> extractPackage(T type) {
@@ -232,7 +233,7 @@ public class XmlSchemaEnhancer {
             return;
 
         javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(ci);
-        addXsdAnnotations(anno, w);
+        addXsdAnnotationsInsideElement(anno, w);
     }
 
     public static <T, C> void addXsdAnnotations(
@@ -241,7 +242,7 @@ public class XmlSchemaEnhancer {
             return;
 
         javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(_info);
-        addXsdAnnotations(anno, _attr);
+        addXsdAnnotationsInsideElement(anno, _attr);
     }
 
     public static <T, C> void addXsdAnnotations(TypeRef<T, C> t, LocalElement e) {
@@ -249,11 +250,22 @@ public class XmlSchemaEnhancer {
             return;
 
         javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(t);
-        addXsdAnnotations(anno, e);
+        addXsdAnnotationsInsideElement(anno, e);
+    }
+
+    private static <T, C> void addXsdAnnotationsInsideElement(
+            javax.xml.bind.annotation.Annotation anno, TypedXmlWriter obj) {
+
+    	/* only write the annotation if location == INSIDE_ELEMENT ! */
+    	if(anno.location() == AnnotationLocation.INSIDE_ELEMENT) {
+    		addXsdAnnotations(anno, obj);
+    	}
+
     }
 
     public static <T, C> void addXsdAnnotations(
             javax.xml.bind.annotation.Annotation anno, TypedXmlWriter obj) {
+
         TypedXmlWriter annoEl = getXsdAnnotation(obj, 
                 anno.id(), anno.attributes());
         for (AppInfo info : anno.appinfo()) {
@@ -525,6 +537,7 @@ public class XmlSchemaEnhancer {
         annoValues.put("appinfo", new AppInfo[] {});
         annoValues.put("attributes", new Attribute[] {});
         annoValues.put("documentation", new Documentation[] {});
+        annoValues.put("location", AnnotationLocation.INSIDE_ELEMENT);
 
         javax.xml.bind.annotation.Annotation anno = AnnotationUtils.
                 createAnnotationProxy(javax.xml.bind.annotation.Annotation.class, annoValues, cl);
@@ -537,6 +550,7 @@ public class XmlSchemaEnhancer {
                 annoValues.put("appinfo", _anno.appinfo());
                 annoValues.put("attributes", _anno.attributes());
                 annoValues.put("documentation", _anno.documentation());
+                annoValues.put("location", _anno.location());
                 hasAnno = true;
             }
         } catch (Exception e2) {

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.Annotation;
+import javax.xml.bind.annotation.AnnotationLocation;
 import javax.xml.bind.annotation.AppInfo;
 import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.Facets;
@@ -13,6 +14,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
@@ -79,6 +81,28 @@ public class TestRequest {
     /* Thanks to Uwe Maurer for the following test case..! */
     @XmlElement(required = true)
     public Buddy buddy;
+
+    /* Test <xsd:annotation> on <xsd:choice> INSIDE_ELEMENT */
+    @XmlElements({
+    	@XmlElement(type=Country.class, name="country1"),
+    	@XmlElement(type=Buddy.class, name="buddy1")
+    })
+    @Annotation(
+    	documentation=@Documentation("Country or Buddy INSIDE"), 
+    	location=AnnotationLocation.INSIDE_ELEMENT
+    )
+    public Object countryOrBuddyChoiceAnnoInside;
+
+    /* Test <xsd:annotation> on <xsd:choice> OUTSIDE_ELEMENT */
+    @XmlElements({
+    	@XmlElement(type=Country.class, name="country2"),
+    	@XmlElement(type=Buddy.class, name="buddy2")
+    })
+    @Annotation(
+    	documentation=@Documentation("Country or Buddy OUTSIDE"),
+    	location=AnnotationLocation.OUTSIDE_ELEMENT
+    )
+    public Object countryOrBuddyChoiceAnnoOutside;
 
     @XmlTransient
     public String getFoo() {

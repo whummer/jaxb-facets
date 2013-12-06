@@ -1175,7 +1175,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                             writeOccurs(e,isOptional,repeated);
                         }
-                        
+
                         //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                         XmlSchemaEnhancer.addXsdAnnotations(t, e);
                         XmlSchemaEnhancer.addFacets(t, e);
@@ -1184,7 +1184,15 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 });
             }
 
-            final Tree choice = Tree.makeGroup(GroupKind.CHOICE, children)
+            final Tree choice = 
+
+                    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                    TreeWrapper.wrap(
+            		//jaxb-facets: end added by hummer@infosys.tuwien.ac.at
+            		Tree.makeGroup(GroupKind.CHOICE, children)
+                    //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                    , ep)
+            		//jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                     .makeOptional(!ep.isRequired())
                     .makeRepeated(ep.isCollection()); // see Spec table 8-13
 

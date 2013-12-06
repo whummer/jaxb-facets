@@ -232,4 +232,25 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("/xs:schema/xs:annotation/xs:documentation[2]", doc);
         assertEquals(DOC_SCHEMALEVEL_2, value);
     }
+
+    @Test
+    public void testXSDAnnotationOnChoice() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:choice/xs:element[@name='country1']//xs:documentation/text()", doc);
+        assertEquals("Country or Buddy INSIDE", value);
+
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:choice[xs:element[@name='country1']]/xs:annotation/xs:documentation/text()", doc);
+        assertEquals("", value);
+
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:choice/xs:element[@name='buddy2']//xs:documentation/text()", doc);
+        assertEquals("", value);
+
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:choice/xs:element[@name='country2']//xs:documentation/text()", doc);
+        assertEquals("", value);
+
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:choice[xs:element[@name='country2']]/xs:annotation/xs:documentation/text()", doc);
+        assertEquals("Country or Buddy OUTSIDE", value);
+    }
 }
