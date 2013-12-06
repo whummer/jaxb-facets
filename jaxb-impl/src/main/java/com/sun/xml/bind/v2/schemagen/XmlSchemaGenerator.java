@@ -1199,6 +1199,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
             final QName ename = ep.getXmlName();
             if (ename != null) { // wrapped collection
+            	System.out.println("WRAPPED: " + ename);
                 return new Tree.Term() {
                     protected void write(ContentModelContainer parent, boolean isOptional, boolean repeated) {
                         LocalElement e = parent.element();
@@ -1217,6 +1218,10 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                             e.nillable(true);
                         }
                         writeOccurs(e,!ep.isCollectionRequired(),repeated);
+
+                        //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+                        XmlSchemaEnhancer.addXsdAnnotationsOutsideElement(ep, e);
+                		//jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
                         ComplexType p = e.complexType();
                         choice.write(p);

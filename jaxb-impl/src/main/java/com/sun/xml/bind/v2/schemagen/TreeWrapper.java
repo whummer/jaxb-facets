@@ -71,10 +71,8 @@ public class TreeWrapper<T,C> extends Tree {
                     fieldChildren.setAccessible(true);
                     Tree[] children = (Tree[])fieldChildren.get(wrapped);
 
-                    Annotation anno = elementInfo.readAnnotation(Annotation.class);
-                    if(anno != null && anno.location() == AnnotationLocation.OUTSIDE_ELEMENT) {
-                        XmlSchemaEnhancer.addXsdAnnotations(anno, c);
-                    }
+                    XmlSchemaEnhancer.addXsdAnnotationsOutsideElement(elementInfo, c);
+                    
 
                     for (Tree child : children) {
                         child.write(c,false,false);

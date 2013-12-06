@@ -179,7 +179,9 @@ strategy with the maven compiler and surefire plugins.
 	  OUTSIDE_ELEMENT): For XSD groups (in particular <choice>), 
 	  this allows to place <annotation> either inside the children 
 	  of the group, or into the group itself (as sibling of 
-	  the children of the group).
+	  the children of the group). This can also be used to place
+	  an annotation inside an @XmlElementWrapper, instead of placing
+	  it inside the element which is wrapped.
 - jaxb-impl:2.2.6-facets-1.0.10
 	* support jaxb-facets for source code based schemagen
 	  (e.g., used for "mvn generate-resources)

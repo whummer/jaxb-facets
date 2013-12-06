@@ -39,6 +39,7 @@ import org.w3c.dom.Document;
 import com.sun.xml.bind.v2.model.core.ArrayInfo;
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
 import com.sun.xml.bind.v2.model.core.ClassInfo;
+import com.sun.xml.bind.v2.model.core.ElementPropertyInfo;
 import com.sun.xml.bind.v2.model.core.EnumConstant;
 import com.sun.xml.bind.v2.model.core.EnumLeafInfo;
 import com.sun.xml.bind.v2.model.core.PropertyInfo;
@@ -46,6 +47,7 @@ import com.sun.xml.bind.v2.model.core.TypeRef;
 import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
+import com.sun.xml.bind.v2.schemagen.xmlschema.Particle;
 import com.sun.xml.bind.v2.schemagen.xmlschema.SimpleRestrictionModel;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.ResultFactory;
@@ -251,6 +253,28 @@ public class XmlSchemaEnhancer {
 
         javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(t);
         addXsdAnnotationsInsideElement(anno, e);
+    }
+
+    public static <T, C> void addXsdAnnotationsOutsideElement(
+    		ElementPropertyInfo<T, C> elementInfo, LocalElement el) {
+
+    	/* only write the annotation if location == OUTSIDE_ELEMENT ! */
+    	javax.xml.bind.annotation.Annotation anno = 
+    			elementInfo.readAnnotation(javax.xml.bind.annotation.Annotation.class);
+        if(anno != null && anno.location() == AnnotationLocation.OUTSIDE_ELEMENT) {
+            XmlSchemaEnhancer.addXsdAnnotations(anno, el);
+        }
+    }
+
+    public static <T, C> void addXsdAnnotationsOutsideElement(
+    		ElementPropertyInfo<T, C> elementInfo, Particle c) {
+
+    	/* only write the annotation if location == OUTSIDE_ELEMENT ! */
+    	javax.xml.bind.annotation.Annotation anno = 
+    			elementInfo.readAnnotation(javax.xml.bind.annotation.Annotation.class);
+        if(anno != null && anno.location() == AnnotationLocation.OUTSIDE_ELEMENT) {
+            XmlSchemaEnhancer.addXsdAnnotations(anno, c);
+        }
     }
 
     private static <T, C> void addXsdAnnotationsInsideElement(

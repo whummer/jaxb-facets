@@ -253,4 +253,17 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:choice[xs:element[@name='country2']]/xs:annotation/xs:documentation/text()", doc);
         assertEquals("Country or Buddy OUTSIDE", value);
     }
+
+    @Test
+    public void testXSDAnnotationOnWrapper() throws Exception {
+        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:element[@name='buddies']/xs:annotation/xs:documentation/text()", doc);
+        assertEquals("List of buddies", value);
+
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:element[@name='buddies']//xs:element[@name='buddy']//xs:documentation/text()", doc);
+        assertEquals("", value);
+
+    }
 }
