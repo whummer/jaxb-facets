@@ -17,7 +17,7 @@ https://github.com/whummer/mvn
 
 E.g., see:
 
-https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.3/jaxb-api-2.2.7-facets-1.0.3.jar
+https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.4/jaxb-api-2.2.7-facets-1.0.4.jar
 https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.11/jaxb-impl-2.2.6-facets-1.0.11.jar
 
 
@@ -40,7 +40,7 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.2.7-facets-1.0.3</version>
+            <version>2.2.7-facets-1.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
@@ -82,7 +82,7 @@ To integrate JAXB-Facets with the schemagen facility of jaxb2-maven-plugin, use 
 					<dependency>
 	    				<groupId>javax.xml.bind</groupId>
 	        			<artifactId>jaxb-api</artifactId>
-	        			<version>2.2.7-facets-1.0.3</version>
+	        			<version>2.2.7-facets-1.0.4</version>
 	    			</dependency> 
                     <dependency>
                         <groupId>com.sun.xml.bind</groupId>
@@ -142,7 +142,7 @@ strategy with the maven compiler and surefire plugins.
 					<artifactItem>
 						<groupId>javax.xml.bind</groupId>
 						<artifactId>jaxb-api</artifactId>
-						<version>2.2.6-facets-1.0.3</version>
+						<version>2.2.6-facets-1.0.4</version>
 						<overWrite>true</overWrite>
 						<destFileName>jaxb-api.jar</destFileName>
 					</artifactItem>
@@ -182,6 +182,9 @@ strategy with the maven compiler and surefire plugins.
 	  the children of the group). This can also be used to place
 	  an annotation inside an @XmlElementWrapper, instead of placing
 	  it inside the element which is wrapped.
+- jaxb-api:2.2.7-facets-1.0.4
+	* Added AnnotationLocation class to specify the location of 
+	  generated XSD annotations.
 - jaxb-impl:2.2.6-facets-1.0.10
 	* support jaxb-facets for source code based schemagen
 	  (e.g., used for "mvn generate-resources)
