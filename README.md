@@ -126,7 +126,9 @@ include the specific annotations (@Facets, @Documentation, @Annotation, ...) in 
 generated Java code.
 
 To activate the plugin, use the wsimport wrapper script with the "-jaxb-facets" switch as follows:
+```
 ./bin/wsimport.sh -keep -B-jaxb-facets -d <target_dir> <source_wsdl>
+```
 
 ## Maven Endorsed Integration
 
