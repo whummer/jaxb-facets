@@ -9,7 +9,7 @@ import org.apache.cxf.annotations.SchemaValidation.SchemaValidationType;
 
 import at.ac.tuwien.infosys.jaxb.test.TestRequest;
 
-@WebService(name = "PersonService", targetNamespace = "http://com.pellcorp/service/PersonService")
+@WebService(name = "PersonService", targetNamespace = "http://infosys.tuwien.ac.at/service/PersonService")
 @SchemaValidation(type = SchemaValidationType.BOTH)
 @SuppressWarnings("all")
 public interface PersonService {

@@ -256,7 +256,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
     @Test
     public void testXSDAnnotationOnWrapper() throws Exception {
-        //System.out.println(getWsdlSchemaAsString(PersonService.class));
+    	//System.out.println(getWsdlSchemaAsString(PersonService.class));
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
 
         String value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:element[@name='buddies']/xs:annotation/xs:documentation/text()", doc);

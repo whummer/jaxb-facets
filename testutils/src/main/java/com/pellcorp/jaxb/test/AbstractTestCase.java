@@ -47,7 +47,7 @@ public abstract class AbstractTestCase extends Assert {
         return "http://localhost:" + PORT + "/" + sei.getSimpleName();
     }
     
-    protected static void cleanupServers() {
+    public static void cleanupServers() {
         for (Server server : serverList) {
             server.stop();
         }
@@ -61,16 +61,16 @@ public abstract class AbstractTestCase extends Assert {
 
     protected static String getWsdlSchemaAsString(Class<?> serviceClass) throws IOException {
         String wsdlContent = readWsdl(serviceClass);
+        //System.out.println(wsdlContent);
         return JdomUtils.toString(JdomUtils.getWsdlSchema(wsdlContent));
     }
     
-    protected static Document getWsdlSchemaAsDocument(Class<?> serviceClass) throws IOException {
+    public static Document getWsdlSchemaAsDocument(Class<?> serviceClass) throws IOException {
         String wsdlContent = readWsdl(serviceClass);
-        //System.out.println(wsdlContent);
         return JdomUtils.getWsdlSchemaAsW3CDocument(wsdlContent);
     }
     
-    protected static String readWsdl(Class<?> serviceClass) throws IOException {
+    public static String readWsdl(Class<?> serviceClass) throws IOException {
         return TestUtils.readURL(getAddress(serviceClass) + "?wsdl");
     }
     
@@ -99,7 +99,7 @@ public abstract class AbstractTestCase extends Assert {
         }
     }
 
-    protected static Server createServer(Class<?> serviceInterface, Object serviceImpl)
+    public static Server createServer(Class<?> serviceInterface, Object serviceImpl)
         throws IOException {
         JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(serviceImpl.getClass());

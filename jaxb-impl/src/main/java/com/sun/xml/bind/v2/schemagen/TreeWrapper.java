@@ -2,9 +2,6 @@ package com.sun.xml.bind.v2.schemagen;
 
 import java.lang.reflect.Field;
 
-import javax.xml.bind.annotation.Annotation;
-import javax.xml.bind.annotation.AnnotationLocation;
-
 import at.ac.tuwien.infosys.jaxb.XmlSchemaEnhancer;
 
 import com.sun.xml.bind.v2.model.core.ElementPropertyInfo;

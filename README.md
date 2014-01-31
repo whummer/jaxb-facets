@@ -18,7 +18,7 @@ https://github.com/whummer/mvn
 E.g., see:
 
 https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.4/jaxb-api-2.2.7-facets-1.0.4.jar
-https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.0.11/jaxb-impl-2.2.6-facets-1.0.11.jar
+https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.1.0/jaxb-impl-2.2.6-facets-1.1.0.jar
 
 
 ## Compile & Build
@@ -45,7 +45,7 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.2.6-facets-1.0.11</version>
+            <version>2.2.6-facets-1.1.0</version>
         </dependency>
         ...
     </dependencies>
@@ -77,7 +77,7 @@ To integrate JAXB-Facets with the schemagen facility of jaxb2-maven-plugin, use 
 	    			<dependency>
 	    				<groupId>com.sun.xml.bind</groupId>
 	    				<artifactId>jaxb-impl</artifactId>
-	    				<version>2.2.6-facets-1.0.11</version>
+	    				<version>2.2.6-facets-1.1.0</version>
 					</dependency>
 					<dependency>
 	    				<groupId>javax.xml.bind</groupId>
@@ -117,6 +117,16 @@ To integrate JAXB-Facets with the schemagen facility of jaxb2-maven-plugin, use 
 ...
 </project>
 ```
+
+## Wsimport Integration (WSDL-First Schema Generation)
+
+Starting with version 2.2.6-facets-1.1.0, JAXB-facets supports also WSDL-first generation 
+using 'wsimport'. JAXB-Facets can easily be hooked as a plugin into wsimport in order to
+include the specific annotations (@Facets, @Documentation, @Annotation, ...) in the 
+generated Java code.
+
+To activate the plugin, use the wsimport wrapper script with the "-jaxb-facets" switch as follows:
+./bin/wsimport.sh -keep -B-jaxb-facets -d <target_dir> <source_wsdl>
 
 ## Maven Endorsed Integration
 
@@ -174,6 +184,8 @@ strategy with the maven compiler and surefire plugins.
 
 ## Change Log
 
+- jaxb-impl:2.2.6-facets-1.1.0
+    * Added support for "wsimport" WSDL-first JAXB generation.
 - jaxb-impl:2.2.6-facets-1.0.11
 	* add location() parameter to @Annotation (INSIDE_ELEMENT, 
 	  OUTSIDE_ELEMENT): For XSD groups (in particular <choice>), 

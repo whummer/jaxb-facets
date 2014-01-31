@@ -6,7 +6,7 @@ import at.ac.tuwien.infosys.jaxb.test.TestRequest;
 
 @WebService(endpointInterface = "at.ac.tuwien.infosys.jaxb.PersonService", 
 serviceName = "PersonService", 
-targetNamespace = "http://com.pellcorp/service/PersonService")
+targetNamespace = "http://infosys.tuwien.ac.at/service/PersonService")
 @SuppressWarnings("all")
 public class PersonServiceImpl implements PersonService {
     public void save(Person data) {
