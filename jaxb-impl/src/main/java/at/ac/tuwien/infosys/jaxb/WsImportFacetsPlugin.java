@@ -90,26 +90,28 @@ public class WsImportFacetsPlugin extends Plugin {
 
             if(schema instanceof ParticleImpl) {
                 ParticleImpl p = (ParticleImpl)schema;
-                XSType type = p.getTerm().asElementDecl().getType();
-                if(type.isSimpleType()) {
-                    XSSimpleType stype = type.asSimpleType();
-                    for(String fName : FACET_NAMES) {
-                        XSFacet fValue = stype.getFacet(fName);
-                        if(fValue != null) {
-                            String name = f.getPropertyInfo().getName(false);
-                            JFieldVar var = clazz.fields().get(name);
-                            JAnnotationUse anno = getAnnotation(var, Facets.class);
-                            if(FACET_TYPES.get(fName) == long.class) {
-                                anno.param(fValue.getName(), Long.parseLong(fValue.getValue().value));
-                            } else if(FACET_TYPES.get(fName) == String.class) {
-                                anno.param(fValue.getName(), fValue.getValue().value);
-                            } else if(FACET_TYPES.get(fName) == WhiteSpace.class) {
-                                anno.param(fValue.getName(), WhiteSpace.valueOf(fValue.getValue().value));
-                            } else if(FACET_TYPES.get(fName) == String[].class) {
-                                // TODO for "enumeration" facet - is this needed?
-                            }
-                        }
-                    }
+                if(p.getTerm().isElementDecl()) {
+	                XSType type = p.getTerm().asElementDecl().getType();
+	                if(type.isSimpleType()) {
+	                    XSSimpleType stype = type.asSimpleType();
+	                    for(String fName : FACET_NAMES) {
+	                        XSFacet fValue = stype.getFacet(fName);
+	                        if(fValue != null) {
+	                            String name = f.getPropertyInfo().getName(false);
+	                            JFieldVar var = clazz.fields().get(name);
+	                            JAnnotationUse anno = getAnnotation(var, Facets.class);
+	                            if(FACET_TYPES.get(fName) == long.class) {
+	                                anno.param(fValue.getName(), Long.parseLong(fValue.getValue().value));
+	                            } else if(FACET_TYPES.get(fName) == String.class) {
+	                                anno.param(fValue.getName(), fValue.getValue().value);
+	                            } else if(FACET_TYPES.get(fName) == WhiteSpace.class) {
+	                                anno.param(fValue.getName(), WhiteSpace.valueOf(fValue.getValue().value));
+	                            } else if(FACET_TYPES.get(fName) == String[].class) {
+	                                // TODO for "enumeration" facet - is this needed?
+	                            }
+	                        }
+	                    }
+	                }
                 }
             }
         }
