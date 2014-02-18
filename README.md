@@ -129,6 +129,10 @@ To activate the plugin, use the wsimport wrapper script with the "-jaxb-facets" 
 ```
 ./bin/wsimport.sh -keep -B-jaxb-facets -d <target_dir> <source_wsdl>
 ```
+... and for Windows:
+```
+./bin/wsimport.bat -keep -B-jaxb-facets -Xendorsed -d <target_dir> <source_wsdl>
+```
 
 ## Maven Endorsed Integration
 
