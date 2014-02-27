@@ -85,8 +85,9 @@ public class WsImportFacetsPlugin extends Plugin {
         for(FieldOutline f : ci.getDeclaredFields()) {
             XSComponent schema = f.getPropertyInfo().getSchemaComponent();
 
-            final Map<String,String> prefixToNamespace = new HashMap<String,String>();
-            prefixToNamespace.put("xsd", XmlSchemaEnhancer.NS_XSD);
+            // TODO remove?
+//            final Map<String,String> prefixToNamespace = new HashMap<String,String>();
+//            prefixToNamespace.put("xsd", XmlSchemaEnhancer.NS_XSD);
 
             if(schema instanceof ParticleImpl) {
                 ParticleImpl p = (ParticleImpl)schema;
@@ -112,6 +113,8 @@ public class WsImportFacetsPlugin extends Plugin {
 	                        }
 	                    }
 	                }
+                } else {
+                	// TODO - what to do in this case..?
                 }
             }
         }
