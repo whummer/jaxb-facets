@@ -17,8 +17,8 @@ https://github.com/whummer/mvn
 
 E.g., see:
 
-https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.4/jaxb-api-2.2.7-facets-1.0.4.jar
-https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.1.0/jaxb-impl-2.2.6-facets-1.1.0.jar
+https://raw.github.com/whummer/mvn/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.5/jaxb-api-2.2.7-facets-1.0.5.jar
+https://raw.github.com/whummer/mvn/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.2.0/jaxb-impl-2.2.6-facets-1.2.0.jar
 
 
 ## Compile & Build
@@ -40,12 +40,12 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.2.7-facets-1.0.4</version>
+            <version>2.2.7-facets-1.0.5</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.2.6-facets-1.1.0</version>
+            <version>2.2.6-facets-1.2.0</version>
         </dependency>
         ...
     </dependencies>
@@ -77,12 +77,12 @@ To integrate JAXB-Facets with the schemagen facility of jaxb2-maven-plugin, use 
 	    			<dependency>
 	    				<groupId>com.sun.xml.bind</groupId>
 	    				<artifactId>jaxb-impl</artifactId>
-	    				<version>2.2.6-facets-1.1.0</version>
+	    				<version>2.2.6-facets-1.2.0</version>
 					</dependency>
 					<dependency>
 	    				<groupId>javax.xml.bind</groupId>
 	        			<artifactId>jaxb-api</artifactId>
-	        			<version>2.2.7-facets-1.0.4</version>
+	        			<version>2.2.7-facets-1.0.5</version>
 	    			</dependency> 
                     <dependency>
                         <groupId>com.sun.xml.bind</groupId>
@@ -158,7 +158,7 @@ strategy with the maven compiler and surefire plugins.
 					<artifactItem>
 						<groupId>javax.xml.bind</groupId>
 						<artifactId>jaxb-api</artifactId>
-						<version>2.2.6-facets-1.0.4</version>
+						<version>2.2.6-facets-1.0.5</version>
 						<overWrite>true</overWrite>
 						<destFileName>jaxb-api.jar</destFileName>
 					</artifactItem>
