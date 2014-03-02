@@ -4,10 +4,9 @@ import java.lang.reflect.Field;
 
 import at.ac.tuwien.infosys.jaxb.XmlSchemaEnhancer;
 
-import com.sun.xml.bind.v2.model.core.ElementPropertyInfo;
+import com.sun.xml.bind.v2.model.core.PropertyInfo;
 import com.sun.xml.bind.v2.schemagen.xmlschema.ContentModelContainer;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Particle;
-import com.sun.xml.bind.v2.schemagen.xmlschema.TypeDefParticle;
 
 /**
  * This class is used to intercept the schema generation for group 
@@ -22,14 +21,13 @@ import com.sun.xml.bind.v2.schemagen.xmlschema.TypeDefParticle;
 public class TreeWrapper<T,C> extends Tree {
 
     private Tree wrapped;
-    private ElementPropertyInfo<T,C> elementInfo;
+    private PropertyInfo<T,C> elementInfo;
 
-    public TreeWrapper(Tree t, ElementPropertyInfo<T,C> elementInfo) {
+    private TreeWrapper(Tree t, PropertyInfo<T,C> elementInfo) {
         this.wrapped = t;
         this.elementInfo = elementInfo;
     }
-
-    public static <T,C> Tree wrap(Tree t, ElementPropertyInfo<T,C> elementInfo) {
+    public static <T,C> TreeWrapper<T,C> wrap(Tree t, PropertyInfo<T,C> elementInfo) {
         return new TreeWrapper<T,C>(t, elementInfo);
     }
 
@@ -51,13 +49,14 @@ public class TreeWrapper<T,C> extends Tree {
                 fieldKind.setAccessible(true);
                 Object kind = fieldKind.get(wrapped);
 
-                /*
-                 * Note: We only consider CHOICE groups, because for
-                 * SEQUENCE groups we might run into the situation that
-                 * multiple <annotation> elements are generated (for multiple 
-                 * child elements in the <sequence>), which is invalid.
-                 */
                 if(kind == GroupKind.CHOICE) {
+
+                    /*
+                     * Note: For <annotation>, we only consider CHOICE groups, because 
+                     * for SEQUENCE groups we might run into the situation that
+                     * multiple <annotation> elements are generated (for multiple 
+                     * child elements in the <sequence>), which is invalid.
+                     */
 
                     /* code below is taken from Tree$Group class! */
                     Particle c = (Particle)kind.getClass().getDeclaredMethod(
@@ -69,12 +68,16 @@ public class TreeWrapper<T,C> extends Tree {
                     Tree[] children = (Tree[])fieldChildren.get(wrapped);
 
                     XmlSchemaEnhancer.addXsdAnnotationsOutsideElement(elementInfo, c);
-                    
 
                     for (Tree child : children) {
                         child.write(c,false,false);
                     }
-                    
+
+                    /* write all extension elements that need to go at the END
+                     * of all children within the wrapping element. In particular,
+                     * this affects <xs:assert> which can only appear at the end! */
+                    XmlSchemaEnhancer.addXsdExtensionsAtEnd(elementInfo, c);
+
                 } else {
                     wrapped.write(parent, isOptional, repeated);
                 }
@@ -89,16 +92,12 @@ public class TreeWrapper<T,C> extends Tree {
     }
 
     @Override
-    protected void write(TypeDefParticle ct) {
-        wrapped.write(ct);
-    }
-    @Override
     Tree makeOptional(boolean really) {
-        return really?new Optional(this) :this;
+        return really? TreeWrapper.wrap(new Optional(this), elementInfo) :this;
     }
     @Override
     Tree makeRepeated(boolean really) {
-        return really?new Repeated(this) :this;
+        return really? TreeWrapper.wrap(new Repeated(this), elementInfo) :this;
     }
     @Override
     boolean canBeTopLevel() {

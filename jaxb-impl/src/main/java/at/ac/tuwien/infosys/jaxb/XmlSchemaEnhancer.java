@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,11 +17,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.annotation.AnnotationLocation;
 import javax.xml.bind.annotation.AppInfo;
+import javax.xml.bind.annotation.Assert;
 import javax.xml.bind.annotation.Attribute;
 import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.Facets;
@@ -35,6 +38,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+
+import at.ac.tuwien.infosys.jaxb.AnnotationUtils.AnnotationInvocationHandler;
 
 import com.sun.xml.bind.v2.model.core.ArrayInfo;
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
@@ -67,16 +72,27 @@ public class XmlSchemaEnhancer {
 
     private static final DocumentBuilderFactory XML_FACTORY = DocumentBuilderFactory.newInstance();
 
+	private static final List<Class<? extends Annotation>> EXT_ANNO_CLASSES_AT_START = 
+			new ArrayList<Class<? extends Annotation>>();
+	private static final List<Class<? extends Annotation>> EXT_ANNO_CLASSES_AT_END = 
+			new ArrayList<Class<? extends Annotation>>();
+	static {
+		EXT_ANNO_CLASSES_AT_START.add(javax.xml.bind.annotation.Annotation.class);
+		EXT_ANNO_CLASSES_AT_END.add(Assert.class);
+	}
+
+	public static final AtomicBoolean XSD_11_ENABLED = new AtomicBoolean(true);
+
     public static final Logger logger = Logger
             .getLogger(XmlSchemaEnhancer.class.getName());
 
     public static <T, C> boolean hasExtendedAnnotations(TypeRef<T, C> t) {
-        return hasFacets(t) || hasXsdAnnotations(t);
+        return hasFacets(t) || hasXsdExtensions(t);
     }
 
     public static <T, C> boolean hasExtendedAnnotations(
             AttributePropertyInfo<T, C> info) {
-        return hasFacets(info) || hasXsdAnnotations(info);
+        return hasFacets(info) || hasXsdExtensions(info);
     }
 
     public static <T, C> void addFacets(ValuePropertyInfo<T, C> vp,
@@ -169,49 +185,7 @@ public class XmlSchemaEnhancer {
         }
     }
 
-    public static <T> void addXsdAnnotations(T type, TypedXmlWriter w) {
-        if (!hasXsdAnnotations(type))
-            return;
-
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(type);
-        addXsdAnnotationsInsideElement(anno, w);
-    }
-
-    private static <T> Set<Package> extractPackage(T type) {
-        Set<Package> packages = new HashSet<Package>();
-        if(type instanceof Class<?>) {
-            Class<?> cl = (Class<?>) type;
-            Package pkg = cl.getPackage();
-            packages.add(pkg);
-        } else {
-            /* If jaxb-facets is used in the context of JAXB schemagen,
-             * the incoming parameter 'type' is not Class<?>, but
-             * com.sun.tools.javac.code.Type$ClassType. Since
-             * we don't want a hard-coded dependency on that class 
-             * within jaxb-facets, we use a workaround here. */
-            try {
-                String className = type.toString();
-                String packageName = className.substring(0, className.lastIndexOf("."));
-                Package pkg = Package.getPackage(packageName);
-                if(pkg != null) {
-                    /* TODO: pkg seems to be null here all the time.
-                     * This means that package-level annotations are 
-                     * currently not supported for schemagen-based JAXB,
-                     * because the schemagen mechanism is based on on-the-fly 
-                     * compilation and hence reflection (classes/packages) 
-                     * is not available at runtime. This shall be fixed
-                     * in a future release. */
-                    packages.add(pkg);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.log(Level.WARNING, "Unable to derive package name from class type: " + type, e);
-            }
-        }
-        return packages;
-    }
-
-    public static <T, C> void addXsdAnnotations(Set<ClassInfo<T, C>> classes,
+    public static <T, C> void addXsdExtensions(Set<ClassInfo<T, C>> classes,
             Set<EnumLeafInfo<T, C>> enums, Set<ArrayInfo<T, C>> arrays,
             TypedXmlWriter w) {
         Set<Package> annotatedPackages = new HashSet<Package>();
@@ -225,97 +199,157 @@ public class XmlSchemaEnhancer {
             annotatedPackages.addAll(extractPackage(c.getType()));
         }
         for (Package p : annotatedPackages) {
-            XmlSchemaEnhancer.addXsdAnnotations(p, w);
+            XmlSchemaEnhancer.addXsdExtensionsAtStart(p, w);
         }
     }
 
-    public static <T, C> void addXsdAnnotations(ClassInfo<T, C> ci,
+    public static <T> void addXsdExtensionsAtStart(T type, TypedXmlWriter w) {
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_START) {
+    		if(hasXsdExtension(type, c)) {
+    	        Annotation anno = getXsdExtensionAnnotation(type, c);
+    	        addXsdExtensionInsideElement(anno, w);
+    		}
+    	}
+    }
+    public static <T, C> void addXsdExtensionsAtStart(ClassInfo<T, C> ci,
             TypedXmlWriter w) {
-        if (!hasXsdAnnotations(ci))
-            return;
-
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(ci);
-        addXsdAnnotationsInsideElement(anno, w);
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_START) {
+    		if(hasXsdExtension(ci, c)) {
+    	        Annotation anno = getXsdExtensionAnnotation(ci, c);
+    	        addXsdExtensionInsideElement(anno, w);
+    		}
+    	}
     }
-
-    public static <T, C> void addXsdAnnotations(
+    public static <T, C> void addXsdExtensionsAtStart(
             AttributePropertyInfo<T, C> _info, LocalAttribute _attr) {
-        if (!hasXsdAnnotations(_info))
-            return;
-
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(_info);
-        addXsdAnnotationsInsideElement(anno, _attr);
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_START) {
+    		if(hasXsdExtension(_info, c)) {
+    	        Annotation anno = getXsdExtensionAnnotation(_info, c);
+    	        addXsdExtensionInsideElement(anno, _attr);
+    		}
+    	}
+    }
+    public static <T, C> void addXsdExtensionsAtStart(TypeRef<T, C> t, LocalElement e) {
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_START) {
+    		if(hasXsdExtension(t, c)) {
+    	        Annotation anno = getXsdExtensionAnnotation(t, c);
+    	        addXsdExtensionInsideElement(anno, e);
+    		}
+    	}
     }
 
-    public static <T, C> void addXsdAnnotations(TypeRef<T, C> t, LocalElement e) {
-        if (!hasXsdAnnotations(t))
-            return;
-
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(t);
-        addXsdAnnotationsInsideElement(anno, e);
+    public static <T,C> void addXsdExtensionsAtEnd(ClassInfo<T,C> type, TypedXmlWriter w) {
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_END) {
+    		if(hasXsdExtension(type, c)) {
+    	        Annotation anno = getXsdExtensionAnnotation(type, c);
+    	        addXsdExtensionInsideElement(anno, w);
+    		}
+    	}
+    }
+    public static <T,C> void addXsdExtensionsAtEnd(PropertyInfo<T, C> elementInfo, TypedXmlWriter w) {
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_END) {
+	    	Annotation anno = elementInfo.readAnnotation(c);
+	    	if(anno != null) {
+	    		addXsdExtensionInsideElement(anno, w);
+	    	}
+    	}
     }
 
     public static <T, C> void addXsdAnnotationsOutsideElement(
     		ElementPropertyInfo<T, C> elementInfo, LocalElement el) {
 
+    	/* INFO: For now, this can only affect <xsd:annotation>, i.e., class
+    	 * javax.xml.bind.annotation.Annotation. The other XSD elements are 
+    	 * usually INSIDE the element they belong to... */
+
     	/* only write the annotation if location == OUTSIDE_ELEMENT ! */
     	javax.xml.bind.annotation.Annotation anno = 
     			elementInfo.readAnnotation(javax.xml.bind.annotation.Annotation.class);
         if(anno != null && anno.location() == AnnotationLocation.OUTSIDE_ELEMENT) {
-            XmlSchemaEnhancer.addXsdAnnotations(anno, el);
+            addXsdExtension(anno, el);
         }
     }
 
     public static <T, C> void addXsdAnnotationsOutsideElement(
-    		ElementPropertyInfo<T, C> elementInfo, Particle c) {
+    		PropertyInfo<T, C> elementInfo, Particle c) {
+
+    	/* INFO: For now, this can only affect <xsd:annotation>, i.e., class
+    	 * javax.xml.bind.annotation.Annotation. The other XSD elements are 
+    	 * usually INSIDE the element they belong to... */
 
     	/* only write the annotation if location == OUTSIDE_ELEMENT ! */
     	javax.xml.bind.annotation.Annotation anno = 
     			elementInfo.readAnnotation(javax.xml.bind.annotation.Annotation.class);
         if(anno != null && anno.location() == AnnotationLocation.OUTSIDE_ELEMENT) {
-            XmlSchemaEnhancer.addXsdAnnotations(anno, c);
+            addXsdExtension(anno, c);
         }
     }
 
-    private static <T, C> void addXsdAnnotationsInsideElement(
-            javax.xml.bind.annotation.Annotation anno, TypedXmlWriter obj) {
+    private static <T, C> void addXsdExtensionInsideElement(
+            Annotation anno, TypedXmlWriter obj) {
 
-    	/* only write the annotation if location == INSIDE_ELEMENT ! */
-    	if(anno.location() == AnnotationLocation.INSIDE_ELEMENT) {
-    		addXsdAnnotations(anno, obj);
+    	if(instanceOf(anno, javax.xml.bind.annotation.Annotation.class)) {
+    		javax.xml.bind.annotation.Annotation annoCast = (javax.xml.bind.annotation.Annotation)anno;
+			/* only write the annotation if location == INSIDE_ELEMENT ! */
+	    	if(annoCast.location() == AnnotationLocation.INSIDE_ELEMENT) {
+	    		addXsdExtension(anno, obj);
+	    	}
+    	} else if(instanceOf(anno, Assert.class)) {
+    		addXsdExtension(anno, obj);
+    	} else {
+    		logger.warning("Unexpected annotation type: " + anno.getClass());
     	}
-
     }
 
-    public static <T, C> void addXsdAnnotations(
-            javax.xml.bind.annotation.Annotation anno, TypedXmlWriter obj) {
+    public static <T, C> void addXsdExtension(
+            Annotation annoInst, TypedXmlWriter obj) {
 
-        TypedXmlWriter annoEl = getXsdAnnotation(obj, 
-                anno.id(), anno.attributes());
-        for (AppInfo info : anno.appinfo()) {
-            TypedXmlWriter w = annoEl._element(new QName(NS_XSD, "appinfo"),
-                    TypedXmlWriter.class);
-            if (info.source() != null && !info.source().equals("")) {
-                w._attribute(new QName("source"), info.source());
-            }
-            /* Use XML parser to allow XML content in appinfo */
-            writeXMLOrPCData(w, info.value());
-        }
-        for (Documentation doc : anno.documentation()) {
-            TypedXmlWriter w = annoEl._element(new QName(NS_XSD,
-                    "documentation"), TypedXmlWriter.class);
-            if (doc.source() != null && !doc.source().equals("")) {
-                w._attribute(new QName("source"), doc.source());
-            }
-            if (doc.lang() != null && !doc.lang().equals("")) {
-                w._attribute(new QName(NS_XML, "lang"), doc.lang());
-            }
-            /* Use XML parser to allow XML content in documentation */
-            writeXMLOrPCData(w, doc.value());
-        }
+    	if(instanceOf(annoInst, javax.xml.bind.annotation.Annotation.class)) {
+
+    		javax.xml.bind.annotation.Annotation anno = 
+    				(javax.xml.bind.annotation.Annotation)annoInst;
+        	TypedXmlWriter annoEl = writeXsdAnnotationElement(obj, 
+	                anno.id(), anno.attributes());
+	        for (AppInfo info : anno.appinfo()) {
+	            TypedXmlWriter w = annoEl._element(new QName(NS_XSD, "appinfo"),
+	                    TypedXmlWriter.class);
+	            if (info.source() != null && !info.source().equals("")) {
+	                w._attribute(new QName("source"), info.source());
+	            }
+	            /* Use XML parser to allow XML content in appinfo */
+	            writeXMLOrPCData(w, info.value());
+	        }
+	        for (Documentation doc : anno.documentation()) {
+	            TypedXmlWriter w = annoEl._element(new QName(NS_XSD,
+	                    "documentation"), TypedXmlWriter.class);
+	            if (doc.source() != null && !doc.source().equals("")) {
+	                w._attribute(new QName("source"), doc.source());
+	            }
+	            if (doc.lang() != null && !doc.lang().equals("")) {
+	                w._attribute(new QName(NS_XML, "lang"), doc.lang());
+	            }
+	            /* Use XML parser to allow XML content in documentation */
+	            writeXMLOrPCData(w, doc.value());
+	        }
+    	} else if(instanceOf(annoInst, javax.xml.bind.annotation.Assert.class)) {
+    		Assert anno = (Assert)annoInst;
+
+        	if(checkXSD11Enabled()) {
+	    		writeXsdAssertElement(obj, anno.id(), anno.test(), anno.attributes());
+	    		if(anno.annotation() != null && anno.annotation().length > 0) {
+	    			/* recurse into this same method to write <xsd:annotation>s 
+	    			 * inside this <xsd:assert> */
+	    			for(javax.xml.bind.annotation.Annotation xsdAnno : anno.annotation()) {
+	    				addXsdExtension(xsdAnno, obj);
+	    			}
+	    		}
+        	}
+    	} else {
+    		logger.warning("Unexpected annotation instance: " + annoInst);
+    	}
     }
 
-    /**
+	/**
      * Try parsing a value as an XML root element. Returns a corresponding XML Document 
      * if the string value is a valid XML root element, otherwise null.
      * @param value
@@ -364,24 +398,49 @@ public class XmlSchemaEnhancer {
         new DOMtoTXW(w).convert(value);
     }
 
-    public static <T, C> boolean hasXsdAnnotations(ClassInfo<T, C> ci) {
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(ci);
+    public static <T, C> boolean hasXsdExtensions(ClassInfo<T, C> ci) {
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_START) {
+    		if(hasXsdExtension(ci, c)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    public static <T, C> boolean hasXsdExtensions(TypeRef<T, C> t) {
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_START) {
+    		if(hasXsdExtension(t, c)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    public static <T, C> boolean hasXsdExtensions(AttributePropertyInfo<T, C> info) {
+    	for(Class<? extends Annotation> c : EXT_ANNO_CLASSES_AT_START) {
+    		if(hasXsdExtension(info, c)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+
+    public static <T, C> boolean hasXsdExtension(ClassInfo<T, C> ci, Class<? extends Annotation> annoClass) {
+        Annotation anno = getXsdExtensionAnnotation(ci, annoClass);
         return anno != null;
     }
 
-    public static <T> boolean hasXsdAnnotations(T type) {
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(type);
+    public static <T> boolean hasXsdExtension(T type, Class<? extends Annotation> annoClass) {
+        Annotation anno = getXsdExtensionAnnotation(type, annoClass);
         return anno != null;
     }
 
-    public static <T, C> boolean hasXsdAnnotations(TypeRef<T, C> t) {
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(t);
+    public static <T, C> boolean hasXsdExtension(TypeRef<T, C> t, Class<? extends Annotation> annoClass) {
+        Annotation anno = getXsdExtensionAnnotation(t, annoClass);
         return anno != null;
     }
 
-    public static <T, C> boolean hasXsdAnnotations(
-            AttributePropertyInfo<T, C> ap) {
-        javax.xml.bind.annotation.Annotation anno = getXsdAnnotationAnnotation(ap);
+    public static <T, C> boolean hasXsdExtension(
+            AttributePropertyInfo<T, C> ap, Class<? extends Annotation> annoClass) {
+        Annotation anno = getXsdExtensionAnnotation(ap, annoClass);
         return anno != null;
     }
 
@@ -426,145 +485,295 @@ public class XmlSchemaEnhancer {
 
     /* PRIVATE HELPER METHODS */
 
-    private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            ClassInfo<T, C> ci) {
-        return getXsdAnnotationAnnotation(ci.getType());
+    /**
+     * We need to disable XSD 1.1 features (e.g., <assert>)
+     * if running in wsimport context, otherwise we get
+     * parsing errors later on in the process:
+     * com.sun.tools.ws.wscompile.AbortException
+        at com.sun.tools.ws.processor.modeler.wsdl.JAXBModelBuilder.bind(JAXBModelBuilder.java:144)
+        at com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler.buildJAXBModel(WSDLModeler.java:2244)
+        at com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler.internalBuildModel(WSDLModeler.java:191)
+        at com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler.buildModel(WSDLModeler.java:137)
+        
+     *  Disabling has to be done manually by setting XSD_11_ENABLED
+     */
+	private static boolean checkXSD11Enabled() {
+		return XSD_11_ENABLED.get();
+	}
+
+    private static <T> Set<Package> extractPackage(T type) {
+        Set<Package> packages = new HashSet<Package>();
+        if(type instanceof Class<?>) {
+            Class<?> cl = (Class<?>) type;
+            Package pkg = cl.getPackage();
+            packages.add(pkg);
+        } else {
+            /* If jaxb-facets is used in the context of JAXB schemagen,
+             * the incoming parameter 'type' is not Class<?>, but
+             * com.sun.tools.javac.code.Type$ClassType. Since
+             * we don't want a hard-coded dependency on that class 
+             * within jaxb-facets, we use a workaround here. */
+            try {
+                String className = type.toString();
+                String packageName = className.substring(0, className.lastIndexOf("."));
+                Package pkg = Package.getPackage(packageName);
+                if(pkg != null) {
+                    /* TODO: pkg seems to be null here all the time.
+                     * This means that package-level annotations are 
+                     * currently not supported for schemagen-based JAXB,
+                     * because the schemagen mechanism is based on on-the-fly 
+                     * compilation and hence reflection (classes/packages) 
+                     * is not available at runtime. This shall be fixed
+                     * in a future release. */
+                    packages.add(pkg);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.log(Level.WARNING, "Unable to derive package name from class type: " + type, e);
+            }
+        }
+        return packages;
     }
 
-    private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            EnumConstant c) {
-        Documentation doc = AnnotationUtils
-                .getDocumentation((EnumConstant) c);
-        return XmlSchemaEnhancer
-                .getXsdAnnotationAnnotation(null, doc, null);
+    private static boolean instanceOf(Annotation annoInst,
+			Class<? extends Annotation> clazz) {
+    	if(annoInst == null) {
+    		return false;
+    	}
+		/* if we deal with a java.lang.reflect.Proxy instance,
+		 * things get a bit nasty... 
+		 * FIXME find better approach, and check if needed at all!! */
+		if(Proxy.isProxyClass(annoInst.getClass())) {
+			AnnotationInvocationHandler h = (AnnotationInvocationHandler)
+					AnnotationUtils.PROXY_HANDLERS.get(annoInst);
+			if(h != null) {
+				return isAssignableFrom(clazz, h.annoClass);
+			}
+		}
+		return isAssignableFrom(clazz, annoInst.getClass());
+	}
+    private static boolean isAssignableFrom(Class<?> clazz1, Class<?> clazz2) {
+    	/* Due to possible classloading magic taking place, we simply compare 
+    	 * canonical classnames here (and do not compare classes directly) */
+		if(clazz1.getName().equals(clazz2.getName())) {
+			return true;
+		}
+		/* if we deal with some other class */
+		if(clazz1.isAssignableFrom(clazz2)) {
+			return true;
+		}
+		return false;
+	}
+
+    private static <T, C, AnnoT extends Annotation> AnnoT getXsdExtensionAnnotation(
+            ClassInfo<T, C> ci, Class<AnnoT> annoClass) {
+        return getXsdExtensionAnnotation(ci.getType(), annoClass);
     }
 
-    private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            Class<?> clazz) {
-        javax.xml.bind.annotation.Annotation anno = clazz
-                .getAnnotation(javax.xml.bind.annotation.Annotation.class);
-        AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
-        Documentation doc = clazz.getAnnotation(Documentation.class);
-        return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
-                appinfo);
+    private static <T, C, AnnoT extends Annotation> AnnoT getXsdExtensionAnnotation(
+            EnumConstant c, Class<AnnoT> annoClass) {
+    	if(isAssignableFrom(javax.xml.bind.annotation.Annotation.class, annoClass)) {
+	        Documentation doc = AnnotationUtils
+	                .getAnnoFromEnum((EnumConstant) c, Documentation.class);
+	        return (AnnoT)getXsdAnnotationAnnotation(null, doc, null);
+    	}  else if(isAssignableFrom(Assert.class, annoClass)) {
+	        return (AnnoT)AnnotationUtils.getAnnoFromEnum((EnumConstant) c, annoClass);
+    	} else {
+    		throw new IllegalArgumentException();
+    	}
     }
-    private static <T> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            T type) {
-        javax.xml.bind.annotation.Annotation anno = null;
-        if (type instanceof Class<?>) {
-            Class<?> clazz = (Class<?>) type;
-            anno = clazz
+
+    private static <T, C, AnnoT extends Annotation> AnnoT getXsdExtensionAnnotation(
+            Class<?> clazz, Class<AnnoT> annoClass) {
+    	if(isAssignableFrom(javax.xml.bind.annotation.Annotation.class, annoClass)) {
+            javax.xml.bind.annotation.Annotation anno = clazz
                     .getAnnotation(javax.xml.bind.annotation.Annotation.class);
             AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
             Documentation doc = clazz.getAnnotation(Documentation.class);
-            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
-                    appinfo);
+            return (AnnoT)getXsdAnnotationAnnotation(anno, doc, appinfo);
+    	} else {
+    		throw new IllegalArgumentException("" + annoClass);
+    	}
+    }
+    private static <T, AnnoT extends Annotation> AnnoT getXsdExtensionAnnotation(
+            T type, Class<AnnoT> annoClass) {
+    	AnnoT anno = null;
+        if (type instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) type;
+            anno = (AnnoT)clazz.getAnnotation(annoClass);
+            if(isAssignableFrom(javax.xml.bind.annotation.Annotation.class, annoClass)) {
+	            AppInfo appinfo = clazz.getAnnotation(AppInfo.class);
+	            Documentation doc = clazz.getAnnotation(Documentation.class);
+	            return (AnnoT)getXsdAnnotationAnnotation(
+	            		(javax.xml.bind.annotation.Annotation)anno, doc, appinfo);
+            } else if(isAssignableFrom(Assert.class, annoClass)) {
+            	return (AnnoT)clazz.getAnnotation(Assert.class);
+            } else {
+            	throw new IllegalArgumentException("" + annoClass);
+            }
         } else if (type instanceof Package) {
             Package pkg = (Package) type;
-            anno = pkg
-                    .getAnnotation(javax.xml.bind.annotation.Annotation.class);
-            AppInfo appinfo = pkg.getAnnotation(AppInfo.class);
-            Documentation doc = pkg.getAnnotation(Documentation.class);
-            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc,
-                    appinfo);
+            anno = pkg.getAnnotation(annoClass);
+            if(isAssignableFrom(javax.xml.bind.annotation.Annotation.class, annoClass)) {
+                AppInfo appinfo = pkg.getAnnotation(AppInfo.class);
+                Documentation doc = pkg.getAnnotation(Documentation.class);
+                return (AnnoT)getXsdAnnotationAnnotation(
+                		(javax.xml.bind.annotation.Annotation)anno, doc, appinfo);
+            } else if(isAssignableFrom(Assert.class, annoClass)) {
+            	return (AnnoT)pkg.getAnnotation(Assert.class);
+            } else {
+            	throw new IllegalArgumentException("" + annoClass);
+            }
         } else if (type instanceof EnumConstant) {
-            Documentation doc = AnnotationUtils
-                    .getDocumentation((EnumConstant) type);
-            return XmlSchemaEnhancer
-                    .getXsdAnnotationAnnotation(null, doc, null);
+            if(isAssignableFrom(javax.xml.bind.annotation.Annotation.class, annoClass)) {
+	            Documentation doc = AnnotationUtils
+	                    .getAnnoFromEnum((EnumConstant) type, Documentation.class);
+	            return (AnnoT)XmlSchemaEnhancer
+	                    .getXsdAnnotationAnnotation(null, doc, null);
+            } else if(isAssignableFrom(Assert.class, annoClass)) {
+            	return (AnnoT)AnnotationUtils
+	                    .getAnnoFromEnum((EnumConstant) type, Assert.class);
+            } else {
+            	throw new IllegalArgumentException("" + annoClass);
+            }
         } else if (type.getClass().getName().endsWith("ClassType")) {
-            anno = SchemagenUtil.extractAnnotation(type, javax.xml.bind.annotation.Annotation.class);
-            AppInfo appinfo = SchemagenUtil.extractAnnotation(type, AppInfo.class);
-            Documentation doc = SchemagenUtil.extractAnnotation(type, Documentation.class);
-            return XmlSchemaEnhancer.getXsdAnnotationAnnotation(anno, doc, appinfo);
+            anno = (AnnoT)SchemagenUtil.extractAnnotation(type, annoClass);
+            if(isAssignableFrom(javax.xml.bind.annotation.Annotation.class, annoClass)) {
+	            AppInfo appinfo = SchemagenUtil.extractAnnotation(type, AppInfo.class);
+	            Documentation doc = SchemagenUtil.extractAnnotation(type, Documentation.class);
+	            return (AnnoT)getXsdAnnotationAnnotation(
+	            		(javax.xml.bind.annotation.Annotation)anno, doc, appinfo);
+            } else if(isAssignableFrom(Assert.class, annoClass)) {
+            	return (AnnoT)SchemagenUtil.extractAnnotation(type, Assert.class);
+            } else {
+            	throw new IllegalArgumentException("" + annoClass);
+            }
         } else {
-            logger.warning("Cannot get @Annotation annotation for unknown type '" + type + "'");
+            logger.warning("Cannot get annotation '@" + annoClass + "' for unknown type '" + type + "'");
         }
         return null;
     }
 
-    private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            TypeRef<T, C> t) {
-        return getXsdAnnotationAnnotation(t.getSource());
+    private static <T, C, AnnoT extends Annotation> AnnoT getXsdExtensionAnnotation(
+            TypeRef<T, C> t, Class<AnnoT> annoClass) {
+        return getXsdExtensionAnnotation(t.getSource(), annoClass);
     }
 
-    private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            AttributePropertyInfo<T, C> t) {
-        return getXsdAnnotationAnnotation(t.getSource());
+    private static <T, C, AnnoT extends Annotation> AnnoT getXsdExtensionAnnotation(
+            AttributePropertyInfo<T, C> t, Class<AnnoT> annoClass) {
+        return getXsdExtensionAnnotation(t.getSource(), annoClass);
     }
 
-    private static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            PropertyInfo<T, C> t) {
-        javax.xml.bind.annotation.Annotation anno = null;
-        AppInfo appinfo = null;
-        Documentation doc = null;
+    private static <T, C, AnnoT extends Annotation> AnnoT getXsdExtensionAnnotation(
+            PropertyInfo<T, C> propInfo, Class<AnnoT> annoClass) {
 
-        try {
-            Object value = getAnnotationOfProperty(t,
-                    javax.xml.bind.annotation.Annotation.class);
-            if (value instanceof javax.xml.bind.annotation.Annotation) {
-                anno = (javax.xml.bind.annotation.Annotation) value;
-            }
-        } catch (Exception e2) {
-            logger.log(Level.WARNING,
-                    "Unable to get XSD Annotation annotation from type " + t,
-                    e2);
+        if(isAssignableFrom(javax.xml.bind.annotation.Annotation.class, annoClass)) {
+	        javax.xml.bind.annotation.Annotation anno = null;
+	        AppInfo appinfo = null;
+	        Documentation doc = null;
+	
+	        try {
+	            Object value = getAnnotationOfProperty(propInfo,
+	                    javax.xml.bind.annotation.Annotation.class);
+	            if (value instanceof javax.xml.bind.annotation.Annotation) {
+	                anno = (javax.xml.bind.annotation.Annotation) value;
+	            }
+	        } catch (Exception e2) {
+	            logger.log(Level.WARNING,
+	                    "Unable to get XSD Annotation annotation from type " + propInfo,
+	                    e2);
+	        }
+	
+	        try {
+	            Object value = getAnnotationOfProperty(propInfo, AppInfo.class);
+	            if (value instanceof AppInfo) {
+	                appinfo = (AppInfo) value;
+	            }
+	        } catch (Exception e2) {
+	            logger.log(Level.WARNING,
+	                    "Unable to get XSD AppInfo annotation from type " + propInfo, e2);
+	        }
+	
+	        try {
+	            Object value = getAnnotationOfProperty(propInfo, Documentation.class);
+	            if (value instanceof Documentation) {
+	                doc = (Documentation) value;
+	            }
+	        } catch (Exception e2) {
+	            logger.log(
+	                    Level.WARNING,
+	                    "Unable to get XSD Documentation annotation from type " + propInfo,
+	                    e2);
+	        }
+
+	        AnnoT result = (AnnoT)getXsdAnnotationAnnotation(anno, doc, appinfo);
+	        return result;
+
+        } else if(isAssignableFrom(Assert.class, annoClass)) {
+        	try {
+				return (AnnoT)getAnnotationOfProperty(propInfo, Assert.class);
+			} catch (Exception e) {
+	            logger.log(
+	                    Level.WARNING,
+	                    "Unable to get @javax.xml.bind.annotation.Assert annotation from type " + propInfo,
+	                    e);
+			}
         }
+        throw new IllegalArgumentException("" + annoClass);
 
-        try {
-            Object value = getAnnotationOfProperty(t, AppInfo.class);
-            if (value instanceof AppInfo) {
-                appinfo = (AppInfo) value;
-            }
-        } catch (Exception e2) {
-            logger.log(Level.WARNING,
-                    "Unable to get XSD AppInfo annotation from type " + t, e2);
+    }
+
+    private static ClassLoader selectClassLoader(Object ... objects) {
+    	ClassLoader cl = null;
+    	for(Object o : objects) {
+    		if(o != null) {
+    			cl = o.getClass().getClassLoader();
+    			break;
+    		}
+    	}
+        // Java7 users have encountered problems here.
+        // Fallback to system classloader is necessary for compatibility
+        // with Java7 JAXB bootstrapping/overriding mechanism.
+        if (cl == null) {
+            cl = ClassLoader.getSystemClassLoader();
         }
+        return cl;
+    }
 
-        try {
-            Object value = getAnnotationOfProperty(t, Documentation.class);
-            if (value instanceof Documentation) {
-                doc = (Documentation) value;
-            }
-        } catch (Exception e2) {
-            logger.log(
-                    Level.WARNING,
-                    "Unable to get XSD Documentation annotation from type " + t,
-                    e2);
-        }
+    
+    protected static <T, C> Assert getXsdAssertAnnotation(String id, String test,
+    		String xpathDefaultNamespace, Attribute[] attributes, Annotation[] annotation) {
 
-        return getXsdAnnotationAnnotation(anno, doc, appinfo);
+        final Map<String, Object> annoValues = new HashMap<String, Object>();
+        annoValues.put("id", id);
+        annoValues.put("test", test);
+        annoValues.put("xpathDefaultNamespace", xpathDefaultNamespace);
+        annoValues.put("attributes", attributes);
+        annoValues.put("annotation", annotation);
+        annoValues.put("xpathDefaultNamespace", xpathDefaultNamespace);
+
+        ClassLoader cl = selectClassLoader();
+
+        Assert anno = AnnotationUtils.createAnnotationProxy(Assert.class, annoValues, cl);
+    	return anno;
     }
 
     protected static <T, C> javax.xml.bind.annotation.Annotation getXsdAnnotationAnnotation(
-            javax.xml.bind.annotation.Annotation _anno, Documentation _doc,
-            AppInfo _appinfo) {
+            javax.xml.bind.annotation.Annotation _anno, Documentation _doc, AppInfo _appinfo) {
     	
     	// jpell - no point if none of the params is provided.
     	if (_anno == null && _doc == null && _appinfo == null) {
     		return null;
     	}
     	
-        ClassLoader cl = _anno != null ? _anno.getClass().getClassLoader()
-                : _doc != null ? _doc.getClass().getClassLoader()
-                        : _appinfo != null ? _appinfo.getClass()
-                                .getClassLoader() : null;
-
-        // Java7 users have encountered problems here.
-        // Fallback to system classloader is necessary for compatibility with
-        // Java7 JAXB bootstrapping/overriding mechanism.
-        if (cl == null) {
-            cl = ClassLoader.getSystemClassLoader();
-        }
+        ClassLoader cl = selectClassLoader(_anno, _doc,_appinfo);
 
         final Map<String, Object> annoValues = new HashMap<String, Object>();
+        annoValues.put("id", "");
         annoValues.put("appinfo", new AppInfo[] {});
         annoValues.put("attributes", new Attribute[] {});
         annoValues.put("documentation", new Documentation[] {});
         annoValues.put("location", AnnotationLocation.INSIDE_ELEMENT);
-
-        javax.xml.bind.annotation.Annotation anno = AnnotationUtils.
-                createAnnotationProxy(javax.xml.bind.annotation.Annotation.class, annoValues, cl);
 
         boolean hasAnno = false;
 
@@ -607,6 +816,9 @@ public class XmlSchemaEnhancer {
                     "Unable to get XSD Documentation annotation from type "
                             + _doc, e2);
         }
+
+        javax.xml.bind.annotation.Annotation anno = AnnotationUtils.
+                createAnnotationProxy(javax.xml.bind.annotation.Annotation.class, annoValues, cl);
 
         return hasAnno ? anno : null;
     }
@@ -858,7 +1070,7 @@ public class XmlSchemaEnhancer {
         return r;
     }
 
-    private static <T, C> TypedXmlWriter getXsdAnnotation(TypedXmlWriter obj,
+    private static <T, C> TypedXmlWriter writeXsdAnnotationElement(TypedXmlWriter obj,
             String annoID, Attribute[] otherAttributes) {
         TypedXmlWriter anno = obj._element(new QName(NS_XSD, "annotation"),
                 TypedXmlWriter.class);
@@ -873,6 +1085,27 @@ public class XmlSchemaEnhancer {
             }
         }
         return anno;
+    }
+
+    private static <T, C> TypedXmlWriter writeXsdAssertElement(TypedXmlWriter obj,
+            String id, String test, Attribute[] otherAttributes) {
+
+        TypedXmlWriter ass = obj._element(new QName(NS_XSD, "assert"),
+                TypedXmlWriter.class);
+        if (id != null && !id.trim().isEmpty()) {
+            ass._attribute(new QName("id"), id);
+        }
+        if (test != null && !test.trim().isEmpty()) {
+            ass._attribute(new QName("test"), test);
+        }
+        if (otherAttributes != null && otherAttributes.length > 0) {
+            for(Attribute attr : otherAttributes) {
+                // namespace is compulsory
+                QName attrName = new QName(attr.namespace(), attr.name());
+                ass._attribute(attrName, attr.value());
+            }
+        }
+        return ass;
     }
 
     /**

@@ -125,11 +125,13 @@ public class WsImportFacetsPlugin extends Plugin {
         if(anno != null) {
             AnnotationImpl annoImpl = (AnnotationImpl)anno;
             BindInfo annoInfo = (BindInfo)annoImpl.getAnnotation();
-            final String doc = annoInfo.getDocumentation();
-            if(doc != null) {
-                JAnnotationUse jAnno = getAnnotation(ci.implClass, Annotation.class);
-                JAnnotationUse annoUse = jAnno.annotationParam("documentation", Documentation.class);
-                annoUse.param("value", doc);
+            if(annoInfo != null) {
+	            final String doc = annoInfo.getDocumentation();
+	            if(doc != null) {
+	                JAnnotationUse jAnno = getAnnotation(ci.implClass, Annotation.class);
+	                JAnnotationUse annoUse = jAnno.annotationParam("documentation", Documentation.class);
+	                annoUse.param("value", doc);
+	            }
             }
         }
     }

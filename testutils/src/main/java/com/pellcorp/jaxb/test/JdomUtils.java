@@ -1,11 +1,13 @@
 package com.pellcorp.jaxb.test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.XMLConstants;
@@ -23,6 +25,9 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.DOMOutputter;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public final class JdomUtils {
 
@@ -59,12 +64,19 @@ public final class JdomUtils {
         return new String(baos.toByteArray());
     }
 
+    public static org.jdom2.Document parse(String xmlSource) throws JDOMException, IOException {
+    	return parse(new ByteArrayInputStream(xmlSource.getBytes()));
+    }
+
+    public static org.jdom2.Document parse(InputStream xml) throws JDOMException, IOException {
+    	SAXBuilder builder = new SAXBuilder();
+        return builder.build(xml);
+    }
+
     public static org.jdom2.Document getWsdlSchema(InputStream wsdlXml)
             throws IOException {
         try {
-            SAXBuilder builder = new SAXBuilder();
-
-            org.jdom2.Document doc = builder.build(wsdlXml);
+            org.jdom2.Document doc = parse(wsdlXml);
             return getWsdlSchema(doc);
         } catch (JDOMException e) {
             throw new IOException(e);
@@ -128,13 +140,16 @@ public final class JdomUtils {
 
     public static org.w3c.dom.Document getWsdlSchemaAsW3CDocument(
             InputStream xml) throws IOException {
+        return jdomToDom(getWsdlSchema(xml));
+    }
+
+    public static Document jdomToDom(org.jdom2.Document doc) {
+        DOMOutputter domOutputer = new DOMOutputter();
         try {
-            org.jdom2.Document doc = getWsdlSchema(xml);
-            DOMOutputter domOutputer = new DOMOutputter();
-            return domOutputer.output(doc);
-        } catch (JDOMException e) {
-            throw new IOException(e);
-        }
+			return domOutputer.output(doc);
+		} catch (JDOMException e) {
+            throw new RuntimeException(e);
+		}
     }
 
     public static org.w3c.dom.Document getWsdlSchemaAsW3CDocument(String xml)
@@ -147,4 +162,21 @@ public final class JdomUtils {
             throw new IOException(e);
         }
     }
+
+	public static Document toDocument(org.w3c.dom.Element element) {
+		try {
+			return jdomToDom(parse(toString(element)));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings("all")
+	public static <T extends Node> List<T> toList(NodeList list) {
+		List<T> result = new LinkedList<T>();
+		for(int i = 0; i < list.getLength(); i ++) {
+			result.add((T)list.item(i));
+		}
+		return result;
+	}
 }

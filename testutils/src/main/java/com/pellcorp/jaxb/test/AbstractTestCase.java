@@ -5,25 +5,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.XMLConstants;
 
-import org.w3c.dom.Document;
-
 import org.apache.cxf.annotations.SchemaValidation.SchemaValidationType;
+import org.apache.cxf.common.jaxb.JAXBContextCache;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.testutil.common.TestUtil;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.junit.Assert;
+import org.w3c.dom.Document;
 
 public abstract class AbstractTestCase extends Assert {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTestCase.class);
@@ -32,7 +31,7 @@ public abstract class AbstractTestCase extends Assert {
     protected static NamespaceContext ctx;
     protected static XpathEngine engine = XMLUnit.newXpathEngine();
     
-    protected static final String PORT = TestUtil.getPortNumber(AbstractTestCase.class);
+    private static final AtomicInteger PORT_COUNTER = new AtomicInteger(9001);
     private static List<Server> serverList = new ArrayList<Server>();
     
     static {
@@ -44,13 +43,17 @@ public abstract class AbstractTestCase extends Assert {
     }
     
     protected static String getAddress(Class<?> sei) {
-        return "http://localhost:" + PORT + "/" + sei.getSimpleName();
+    	return "http://localhost:" + PORT_COUNTER.get() + "/" + sei.getSimpleName();
     }
     
     public static void cleanupServers() {
         for (Server server : serverList) {
+        	LOGGER.info("Stopping server: " + server.getEndpoint().getEndpointInfo().getAddress());
+        	server.getEndpoint().clear();
             server.stop();
+            server.destroy();
         }
+        serverList.clear();
     }
 
     protected static void addNamespace(String prefix, String uri) {
@@ -99,8 +102,11 @@ public abstract class AbstractTestCase extends Assert {
         }
     }
 
-    public static Server createServer(Class<?> serviceInterface, Object serviceImpl)
-        throws IOException {
+    public static Server createServer(Class<?> serviceInterface, Object serviceImpl) {
+    	
+    	/* IMPORTANT: Clean JAXB caches! */
+    	JAXBContextCache.clearCaches();
+
         JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(serviceImpl.getClass());
         String address = getAddress(serviceInterface);
@@ -111,4 +117,5 @@ public abstract class AbstractTestCase extends Assert {
         serverList.add(server);
         return server;
     }
+
 }

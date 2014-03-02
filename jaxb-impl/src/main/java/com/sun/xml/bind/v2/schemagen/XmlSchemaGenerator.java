@@ -685,7 +685,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                 // add <documentation> to <schema> top level element (package-level @Documentation)
-                XmlSchemaEnhancer.addXsdAnnotations(classes, enums, arrays, schema);
+                XmlSchemaEnhancer.addXsdExtensions(classes, enums, arrays, schema);
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                 
                 // refer to other schemas
@@ -874,7 +874,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             writeName(e,st);
 
             //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-            XmlSchemaEnhancer.addXsdAnnotations(e.getType(), st);
+            XmlSchemaEnhancer.addXsdExtensionsAtStart(e.getType(), st);
             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
             SimpleRestrictionModel base = st.restriction();
@@ -883,7 +883,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             for (EnumConstant c : e.getConstants()) {
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
                 NoFixedFacet enumeration = base.enumeration();
-                XmlSchemaEnhancer.addXsdAnnotations(c, enumeration);
+                XmlSchemaEnhancer.addXsdExtensionsAtStart(c, enumeration);
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                  
                 enumeration.value(c.getLexicalValue());
@@ -915,7 +915,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                     writeName(c, st);
                     
                     //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                    XmlSchemaEnhancer.addXsdAnnotations(c, st);
+                    XmlSchemaEnhancer.addXsdExtensionsAtStart(c, st);
                     //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
                     if(vp.isCollection()) {
@@ -950,7 +950,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         ct._final("extension restriction");
 
                     //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                    XmlSchemaEnhancer.addXsdAnnotations(c, ct);
+                    XmlSchemaEnhancer.addXsdExtensionsAtStart(c, ct);
                     //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
                     SimpleExtension se = ct.simpleContent().extension();
@@ -993,7 +993,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 ct._abstract(true);
 
             //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-            XmlSchemaEnhancer.addXsdAnnotations(c, ct);
+            XmlSchemaEnhancer.addXsdExtensionsAtStart(c, ct);
             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
 
             // these are where we write content model and attributes
@@ -1028,8 +1028,9 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         ct.mixed(true);
                     }
                     Tree t = buildPropertyContentModel(p);
-                    if(t!=null)
+                    if(t!=null) {
                         children.add(t);
+                    }
                 }
 
                 Tree top = Tree.makeGroup( c.isOrdered() ? GroupKind.SEQUENCE : GroupKind.ALL, children);
@@ -1047,6 +1048,9 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             if( c.hasAttributeWildcard()) {
                 contentModel.anyAttribute().namespace("##other").processContents("skip");
             }
+            //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
+            XmlSchemaEnhancer.addXsdExtensionsAtEnd(c, contentModel);
+    		//jaxb-facets: end added by hummer@infosys.tuwien.ac.at
             ct.commit();
         }
 
@@ -1177,7 +1181,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                         }
 
                         //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                        XmlSchemaEnhancer.addXsdAnnotations(t, e);
+                        XmlSchemaEnhancer.addXsdExtensionsAtStart(t, e);
                         XmlSchemaEnhancer.addFacets(t, e);
                         //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                     }
@@ -1199,7 +1203,6 @@ public final class XmlSchemaGenerator<T,C,F,M> {
 
             final QName ename = ep.getXmlName();
             if (ename != null) { // wrapped collection
-            	System.out.println("WRAPPED: " + ename);
                 return new Tree.Term() {
                     protected void write(ContentModelContainer parent, boolean isOptional, boolean repeated) {
                         LocalElement e = parent.element();
@@ -1329,7 +1332,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
             }
 
             //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-            XmlSchemaEnhancer.addXsdAnnotations(ap, localAttribute);
+            XmlSchemaEnhancer.addXsdExtensionsAtStart(ap, localAttribute);
             XmlSchemaEnhancer.addFacets(ap, localAttribute);
             //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
         }

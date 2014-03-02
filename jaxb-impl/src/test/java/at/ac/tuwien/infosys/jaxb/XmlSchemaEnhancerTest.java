@@ -1,13 +1,12 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import org.w3c.dom.Document;
-
-import com.pellcorp.jaxb.test.AbstractTestCase;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.w3c.dom.Document;
+
+import com.pellcorp.jaxb.test.AbstractTestCase;
 
 public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
@@ -30,6 +29,9 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
     @BeforeClass
     public static void startServers() throws Exception {
+    	/* enable XSD 1.1 features */
+    	XmlSchemaEnhancer.XSD_11_ENABLED.set(true);
+
         createServer(PersonService.class, new PersonServiceImpl());
         createServer(PersonServiceNoNS.class, new PersonServiceNoNSImpl());
     }
@@ -264,6 +266,16 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
 
         value = engine.evaluate("//xs:complexType[@name='TestRequest']//xs:element[@name='buddies']//xs:element[@name='buddy']//xs:documentation/text()", doc);
         assertEquals("", value);
+
+    }
+
+    @Test
+    public void testXSDAssertOnWrapper() throws Exception {
+    	//System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:assert/@test", doc);
+        assertTrue(value != null && !value.trim().equals(""));
 
     }
 }

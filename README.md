@@ -190,6 +190,11 @@ strategy with the maven compiler and surefire plugins.
 
 ## Change Log
 
+- jaxb-impl:2.2.6-facets-1.2.0
+    * Initial support for xs:assert elements (defined in XML Schema 1.1).
+    * Refactorings due to newly introduced XML Schema 1.1 features.
+- jaxb-api:2.2.7-facets-1.0.5
+	* Added @Assert annotation to define xs:assert elements.
 - jaxb-impl:2.2.6-facets-1.1.0
     * Added support for "wsimport" WSDL-first JAXB generation.
 - jaxb-impl:2.2.6-facets-1.0.11

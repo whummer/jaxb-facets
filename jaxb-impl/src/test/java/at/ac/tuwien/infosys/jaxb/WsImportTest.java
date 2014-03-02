@@ -24,6 +24,9 @@ public class WsImportTest {
 
     @BeforeClass
     public static void startServers() throws Exception {
+    	/* disable XSD 1.1 features! */
+    	XmlSchemaEnhancer.XSD_11_ENABLED.set(false);
+
         AbstractTestCase.createServer(PersonService.class, new PersonServiceImpl());
         tmpDir = createTempDirectory();
         wsdl = generateTempWsdl();
@@ -31,7 +34,11 @@ public class WsImportTest {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        AbstractTestCase.cleanupServers();
+    	/* re-enable XSD 1.1 features */
+    	XmlSchemaEnhancer.XSD_11_ENABLED.set(true);
+
+    	AbstractTestCase.cleanupServers();
+
         /* clean up */
         for(File dir : Arrays.asList(wsdl.getParentFile(), tmpDir)) {
             FileUtils.deleteDirectory(dir);

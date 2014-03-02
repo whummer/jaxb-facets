@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.Annotation;
 import javax.xml.bind.annotation.AnnotationLocation;
 import javax.xml.bind.annotation.AppInfo;
+import javax.xml.bind.annotation.Assert;
 import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.MaxOccurs;
@@ -35,6 +36,7 @@ import at.ac.tuwien.infosys.jaxb.test.ChartType;
 @Documentation("doc 3")
 @AppInfo(source = "src 1", value = "appinfo 1")
 @SuppressWarnings("all")
+@Assert(test = "not(bar1) or not(bar2)")
 public class TestRequest {
     @XmlAttribute
     public ChartType type;
