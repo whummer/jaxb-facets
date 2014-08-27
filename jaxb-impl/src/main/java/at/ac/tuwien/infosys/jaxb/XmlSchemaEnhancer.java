@@ -69,6 +69,8 @@ import com.sun.xml.txw2.output.TXWSerializer;
 public class XmlSchemaEnhancer {
     public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
     public static final String NS_XML = "http://www.w3.org/XML/1998/namespace";
+    
+    private static ValidationFacetsFilter facetFilter = new ValidationFacetsFilter();
 
     private static final DocumentBuilderFactory XML_FACTORY = DocumentBuilderFactory.newInstance();
 
@@ -872,12 +874,18 @@ public class XmlSchemaEnhancer {
     private static <T, C> Object getAnnotationOfProperty(
             PropertyInfo<T, C> info, Class<? extends Annotation> annoClass)
             throws Exception {
-        if (annoClass == Facets.class && info.hasAnnotation(Facets.class)) {
-            return info.readAnnotation(Facets.class);
+        if (annoClass == Facets.class) {
+            Object result = facetFilter.filterAnnotation(annoClass, info.readAnnotation(Facets.class), info);
+            if (result != null) {
+                return result;
+            }
         } else if (annoClass == MaxOccurs.class && info.hasAnnotation(MaxOccurs.class)) {
             return info.readAnnotation(MaxOccurs.class);
-        } else if (annoClass == MinOccurs.class && info.hasAnnotation(MinOccurs.class)) {
-            return info.readAnnotation(MinOccurs.class);
+        } else if (annoClass == MinOccurs.class) {
+            Object result = facetFilter.filterAnnotation(annoClass, info.readAnnotation(MinOccurs.class), info);
+            if (result != null) {
+                return result;
+            }
         } else if (annoClass == Documentation.class && info.hasAnnotation(Documentation.class)) {
             return info.readAnnotation(Documentation.class);
         } else if (annoClass == AppInfo.class && info.hasAnnotation(AppInfo.class)) {
@@ -900,7 +908,7 @@ public class XmlSchemaEnhancer {
             Field field = findAnnotatedField(parent, fieldName);
             if (field == null)
                 return null;
-            Object a = getAnnotation(field, annoClass);
+            Object a = facetFilter.filterAnnotation(annoClass, getAnnotation(field, annoClass), field);
             return (T) a;
         } catch (Exception e) {
             throw new RuntimeException("Could not get annotation '"
@@ -1188,10 +1196,10 @@ public class XmlSchemaEnhancer {
         result[result.length - 1] = second;
         return result;
     }
+        
     
     
-    
-    
+
     
     /* COMPATIBILITY METHODS TO DEAL WITH com.sun.xml.internal.bind.* */
     
