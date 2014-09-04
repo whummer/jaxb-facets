@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>at.ac.tuwien.infosys</groupId>
+    <artifactId>jaxb-facets</artifactId>
+    <version>2.2.7-facets</version>
+    <packaging>pom</packaging>
+
+	<build>
+		<!-- use this to tell m2e Maven Eclipse Plugin to 
+			ignore the maven-dependency-plugin execution -->
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<jaxb.facets.api.version>2.2.7-facets-1.0.2</jaxb.facets.api.version>
+		<jaxb.facets.impl.version>2.2.6-facets-1.0.6</jaxb.facets.impl.version>
+	</properties>
+
+	<parent>
+        <groupId>net.java</groupId>
+        <artifactId>jvnet-parent</artifactId>
+        <version>1</version>
+    </parent>
+
+    <modules>
+		<module>testutils</module>
+		<module>jaxb-api</module>
+		<module>jaxb-impl</module>
+    </modules>
+	
+    <distributionManagement>
+		<repository>
+			<id>github-repo-releases</id>
+			<uniqueVersion>false</uniqueVersion>
+			<url>https://raw.github.com/whummer/mvn/master/releases</url>
+		</repository>
+	    <snapshotRepository>
+	        <id>github-repo-snapshots</id>
+	        <url>https://raw.github.com/whummer/mvn/master/snapshots</url>
+	    </snapshotRepository>
+	</distributionManagement>
+
+    <repositories>
+		<repository>
+			<id>jaxb-facets</id>
+			<url>https://raw.github.com/whummer/mvn/master/releases</url>
+		</repository>
+	</repositories>
+</project>

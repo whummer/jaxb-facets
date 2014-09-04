@@ -27,25 +27,6 @@ public final class AnnotationUtils {
 			new IdentityHashMap<Object, AnnotationUtils.AnnotationInvocationHandler>();
 
     /**
-     * Private constructor.
-     */
-    private AnnotationUtils() {
-    }
-
-    /**
-     * Utility method to instantiate a proxy for a given annotation
-     * class, using a map of values used for the new annotation instance.
-     * Uses the classloader of annoClass (first parameter).
-     * @param annoClass
-     * @param annoValues
-     * @return
-     */
-    public static <T extends Annotation> T createAnnotationProxy(
-            Class<T> annoClass, Map<String, Object> annoValues) {
-        return createAnnotationProxy(annoClass, annoValues, annoClass.getClassLoader());
-    }
-
-    /**
      * Generic annotation handler to instantiate annotation objects
      * via java.lang.reflect.Proxy mechanism.
      */
@@ -77,6 +58,58 @@ public final class AnnotationUtils {
 					annoClass.getName().replace("interface ", "") +
 					", " + annoValues + "]";
 		}
+    }
+
+    /**
+     * Private constructor.
+     */
+    private AnnotationUtils() {
+    }
+
+    public static <T extends Annotation> Map<String,Object> getAnnotationValues(Class<T> annoClass, T anno) {
+    	Map<String, Object> annoValues = new HashMap<String,Object>();
+    	for(Method m : annoClass.getDeclaredMethods()) {
+    		try {
+    			Object value = null;
+    			if(anno != null) {
+    				value = m.invoke(anno);
+    			} else {
+    				value = m.getDefaultValue();
+    			}
+    			//logger.info("Annotation value: " + m.getName() + " = " + value);
+        		annoValues.put(m.getName(), value);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+    	}
+    	return annoValues;
+    }
+    
+
+    /**
+     * Utility method to instantiate a proxy for a given annotation
+     * class and annotation instance.
+     * @param annoClass
+     * @param annoValueDefaults
+     * @return
+     */
+    public static <T extends Annotation> T createAnnotationProxy(
+            Class<T> annoClass, T annoValueDefaults) {
+    	Map<String, Object> annoValues = getAnnotationValues(annoClass, annoValueDefaults);
+        return createAnnotationProxy(annoClass, annoValues, annoClass.getClassLoader());
+    }
+
+    /**
+     * Utility method to instantiate a proxy for a given annotation
+     * class, using a map of values used for the new annotation instance.
+     * Uses the classloader of annoClass (first parameter).
+     * @param annoClass
+     * @param annoValues
+     * @return
+     */
+    public static <T extends Annotation> T createAnnotationProxy(
+            Class<T> annoClass, Map<String, Object> annoValues) {
+        return createAnnotationProxy(annoClass, annoValues, annoClass.getClassLoader());
     }
 
     /**

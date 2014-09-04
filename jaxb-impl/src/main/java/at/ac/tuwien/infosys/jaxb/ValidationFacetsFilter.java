@@ -5,6 +5,9 @@ import com.sun.xml.bind.v2.model.annotation.AnnotationSource;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.DecimalMax;
@@ -52,6 +55,8 @@ import javax.xml.bind.annotation.MinOccurs;
  *   {@link javax.validation.constraints.NotNull } is present.<br>
  * 
  * @author Varga Bence (vbence@czentral.org)
+ * @author Waldemar Hummer (whummer@hummer.io)
+ * @since  JAXB-Facets 1.3.0
  */
 public class ValidationFacetsFilter {
     
@@ -95,22 +100,20 @@ public class ValidationFacetsFilter {
      */
     private Facets filterFacets(Facets original, AnnotationSource info) {
 
-        FacetsWrapper wrapper = (original == null)
-                ? new FacetsWrapper()
-                : new FacetsWrapper(original);
-        
+    	Map<String, Object> annoValues = new HashMap<String, Object>(
+    			AnnotationUtils.getAnnotationValues(Facets.class, original));
+
         boolean override = false;
         
         if (original == null || original.enumeration().length == 0) {
             
             if (info.readAnnotation(AssertFalse.class) != null) {
                 override = true;
-                wrapper.enumeration = new String[] { "false", "0" };
+                annoValues.put("enumeration", new String[] { "false", "0" });
 
             } else if (info.readAnnotation(AssertTrue.class) != null) {
                 override = true;
-                wrapper.enumeration = new String[] { "true", "1" };
-            
+                annoValues.put("enumeration", new String[] { "true", "1" });
             }
         }
         
@@ -118,7 +121,7 @@ public class ValidationFacetsFilter {
 
             if (info.readAnnotation(Digits.class) != null) {
                 override = true;
-                wrapper.fractionDigits = info.readAnnotation(Digits.class).fraction();
+                annoValues.put("fractionDigits", (Long)(long)info.readAnnotation(Digits.class).fraction());
             }
         }
 
@@ -128,7 +131,7 @@ public class ValidationFacetsFilter {
                 Size size = info.readAnnotation(Size.class);
                 if (size.max() == size.min()) {
                     override = true;
-                    wrapper.length = size.max();
+                    annoValues.put("length", (Long)(long)size.max());
                 }
             }
         }
@@ -137,7 +140,7 @@ public class ValidationFacetsFilter {
             
             if (info.readAnnotation(Size.class) != null) {
                 override = true;
-                wrapper.maxLength = info.readAnnotation(Size.class).max();
+                annoValues.put("maxLength", (Long)(long)info.readAnnotation(Size.class).max());
             }
         }
         
@@ -145,7 +148,7 @@ public class ValidationFacetsFilter {
             
             if (info.readAnnotation(Size.class) != null) {
                 override = true;
-                wrapper.minLength = info.readAnnotation(Size.class).min();
+                annoValues.put("minLength", (Long)(long)info.readAnnotation(Size.class).min());
             }
         }
         
@@ -153,10 +156,10 @@ public class ValidationFacetsFilter {
             
             if (info.readAnnotation(DecimalMax.class) != null) {
                 override = true;
-                wrapper.maxInclusive = info.readAnnotation(DecimalMax.class).value();
+                annoValues.put("maxInclusive", info.readAnnotation(DecimalMax.class).value());
             } else if (info.readAnnotation(Max.class) != null) {
                 override = true;
-                wrapper.maxInclusive = Long.toString(info.readAnnotation(Max.class).value());
+                annoValues.put("maxInclusive", Long.toString(info.readAnnotation(Max.class).value()));
             }
                 
         }
@@ -165,10 +168,10 @@ public class ValidationFacetsFilter {
             
             if (info.readAnnotation(DecimalMin.class) != null) {
                 override = true;
-                wrapper.minInclusive = info.readAnnotation(DecimalMin.class).value();
+                annoValues.put("minInclusive", info.readAnnotation(DecimalMin.class).value());
             } else if (info.readAnnotation(Min.class) != null) {
                 override = true;
-                wrapper.minInclusive = Long.toString(info.readAnnotation(Min.class).value());
+                annoValues.put("minInclusive", Long.toString(info.readAnnotation(Min.class).value()));
             }
                 
         }
@@ -177,7 +180,7 @@ public class ValidationFacetsFilter {
 
             if (info.readAnnotation(Pattern.class) != null) {
                 override = true;
-                wrapper.pattern = info.readAnnotation(Pattern.class).regexp();
+                annoValues.put("pattern", info.readAnnotation(Pattern.class).regexp());
             }
             
         }
@@ -186,12 +189,12 @@ public class ValidationFacetsFilter {
 
             if (info.readAnnotation(Digits.class) != null) {
                 override = true;
-                wrapper.totalDigits = info.readAnnotation(Digits.class).integer() + 
-                        info.readAnnotation(Digits.class).fraction();
+                annoValues.put("totalDigits", (Long)(long)(info.readAnnotation(Digits.class).integer() + 
+                        info.readAnnotation(Digits.class).fraction()));
             }
         }
         
-        return override ? wrapper : original;
+        return override ? AnnotationUtils.createAnnotationProxy(Facets.class, annoValues) : original;
     }
     
     /**
@@ -201,11 +204,13 @@ public class ValidationFacetsFilter {
      * @return Processed Annotation or null if no information available.
      */
     private MinOccurs filterMinOccurs(MinOccurs original, AnnotationSource info) {
-        
+
+    	Map<String, Object> annoValues = new HashMap<String, Object>(
+    			AnnotationUtils.getAnnotationValues(MinOccurs.class, original));
+
         if (original == null && info.readAnnotation(NotNull.class) != null) {
-            MinOccursWrapper mov = new MinOccursWrapper();
-            mov.value = 1;
-            return mov;
+            annoValues.put("value", 1L);
+            return AnnotationUtils.createAnnotationProxy(MinOccurs.class, annoValues);
         } else {
             return original;
         }
@@ -233,134 +238,6 @@ public class ValidationFacetsFilter {
             return element.isAnnotationPresent(type);
         }
         
-    }
-    
-    static class FacetsWrapper implements Facets {
-
-        public String[] enumeration = {};
-
-        public long fractionDigits = VOID_LONG;
-
-        public long length = VOID_LONG;
-
-        public String maxExclusive = VOID_STRING;
-
-        public String minExclusive = VOID_STRING;
-
-        public long maxLength = VOID_LONG;
-
-        public long minLength = VOID_LONG;
-
-        public String maxInclusive = VOID_STRING;
-
-        public String minInclusive = VOID_STRING;
-
-        public String pattern = VOID_STRING;
-
-        public long totalDigits = VOID_LONG;
-
-        public WhiteSpace whiteSpace = WhiteSpace.VOID;
-
-        public FacetsWrapper() {
-        }
-
-        public FacetsWrapper(Facets original) {
-            this.enumeration = original.enumeration();
-            this.fractionDigits = original.fractionDigits();
-            this.length = original.length();
-            this.maxExclusive = original.maxExclusive();
-            this.minExclusive = original.minExclusive();
-            this.maxLength = original.maxLength();
-            this.minLength = original.minLength();
-            this.maxInclusive = original.maxInclusive();
-            this.minInclusive = original.minInclusive();
-            this.pattern = original.pattern();
-            this.totalDigits = original.totalDigits();
-            this.whiteSpace = original.whiteSpace();
-        }
-
-
-        @Override
-        public String[] enumeration() {
-            return enumeration;
-        }
-
-        @Override
-        public long fractionDigits() {
-            return fractionDigits;
-        }
-
-        @Override
-        public long length() {
-            return length;
-        }
-
-        @Override
-        public String maxExclusive() {
-            return maxExclusive;
-        }
-
-        @Override
-        public String minExclusive() {
-            return minExclusive;
-        }
-
-        @Override
-        public long maxLength() {
-            return maxLength;
-        }
-
-        @Override
-        public long minLength() {
-            return minLength;
-        }
-
-        @Override
-        public String maxInclusive() {
-            return maxInclusive;
-        }
-
-        @Override
-        public String minInclusive() {
-            return minInclusive;
-        }
-
-        @Override
-        public String pattern() {
-            return pattern;
-        }
-
-        @Override
-        public long totalDigits() {
-            return totalDigits;
-        }
-
-        @Override
-        public WhiteSpace whiteSpace() {
-            return whiteSpace;
-        }
-
-        @Override
-        public Class<? extends Annotation> annotationType() {
-            return Facets.class;
-        }
-
-    }
-
-    static class MinOccursWrapper implements MinOccurs {
-
-        public long value;
-
-        @Override
-        public long value() {
-            return value;
-        }
-
-        @Override
-        public Class<? extends Annotation> annotationType() {
-            return MinOccurs.class;
-        }
-
     }
 
 }
