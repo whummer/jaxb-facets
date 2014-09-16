@@ -82,18 +82,6 @@
 		<module>jaxb-api</module>
 		<module>jaxb-impl</module>
     </modules>
-	
-<!--     <distributionManagement> -->
-<!-- 		<repository> -->
-<!-- 			<id>github-repo-releases</id> -->
-<!-- 			<uniqueVersion>false</uniqueVersion> -->
-<!-- 			<url>https://raw.github.com/whummer/mvn/master/releases</url> -->
-<!-- 		</repository> -->
-<!-- 	    <snapshotRepository> -->
-<!-- 	        <id>github-repo-snapshots</id> -->
-<!-- 	        <url>https://raw.github.com/whummer/mvn/master/snapshots</url> -->
-<!-- 	    </snapshotRepository> -->
-<!-- 	</distributionManagement> -->
 
     <repositories>
 		<repository>
