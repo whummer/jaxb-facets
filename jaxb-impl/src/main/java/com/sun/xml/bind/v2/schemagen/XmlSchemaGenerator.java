@@ -1316,7 +1316,7 @@ public final class XmlSchemaGenerator<T,C,F,M> {
                 localAttribute.name(ap.getXmlName().getLocalPart());
 
                 //jaxb-facets: begin added by hummer@infosys.tuwien.ac.at
-                if(!XmlSchemaEnhancer.hasExtendedAnnotations(ap)) {
+                if(!XmlSchemaEnhancer.hasFacets(ap)) {
                 //jaxb-facets: end added by hummer@infosys.tuwien.ac.at
                     writeAttributeTypeRef(ap, localAttribute);
                 }

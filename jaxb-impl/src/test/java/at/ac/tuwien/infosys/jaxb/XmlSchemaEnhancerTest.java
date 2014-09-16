@@ -176,7 +176,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testMemberAnnotationMinMaxOccurs() throws Exception {
         //System.out.println(getWsdlSchemaAsString(PersonService.class));
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
@@ -185,7 +185,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         String maxOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='lastName']/@maxOccurs", doc);
         assertEquals("1", minOccurs);
         assertEquals("3", maxOccurs);
-        
+
         minOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='firstName']/@minOccurs", doc);
         maxOccurs = engine.evaluate("//xs:complexType[@name='Applicant']/xs:sequence/xs:element[@name='firstName']/@maxOccurs", doc);
         assertEquals("1", minOccurs);
@@ -275,6 +275,17 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
 
         String value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:assert/@test", doc);
+        assertTrue(value != null && !value.trim().equals(""));
+
+    }
+
+    @Test
+    public void testXSDTypeOnAttributeWithAnnotation() throws Exception {
+    	//System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:complexType[@name='simpleDuration']/"
+        		+ "xs:attribute[@name='from']/@type", doc);
         assertTrue(value != null && !value.trim().equals(""));
 
     }
