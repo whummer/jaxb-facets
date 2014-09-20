@@ -34,7 +34,7 @@ public abstract class AbstractValidationConstraintTest {
     
     private NSContext context;
     
-    public AbstractValidationConstraintTest(Class cls) {
+    public AbstractValidationConstraintTest(Class<?> cls) {
         this.schemaDocument = createSchemaDocument(cls);
         context = new NSContext();
 
@@ -43,7 +43,7 @@ public abstract class AbstractValidationConstraintTest {
         xpath.setNamespaceContext(context);
     }
     
-    protected final Document createSchemaDocument(Class cls) {
+    protected final Document createSchemaDocument(Class<?> cls) {
         
         Document doc;
         
@@ -109,7 +109,7 @@ public abstract class AbstractValidationConstraintTest {
         }
 
         @Override
-        public Iterator getPrefixes(String string) {
+        public Iterator<?> getPrefixes(String string) {
             return registry.keySet().iterator();
         }
         

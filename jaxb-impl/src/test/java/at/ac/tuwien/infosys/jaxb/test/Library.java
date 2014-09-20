@@ -51,5 +51,5 @@ public class Library {
         private Book book;
     }
 
-    private static final String ISB_REGEX = "ISB-(\\d{3})-\\d-(\\d{2})-(\\d{6})-\\1";
+    private static final String ISB_REGEX = "ISB-(\\d{3})-\\d-(\\d{2})-(\\d{6})";
 }
