@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import javax.xml.bind.annotation.MaxOccurs;
 import javax.xml.bind.annotation.MinOccurs;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,9 +49,12 @@ import com.sun.xml.bind.v2.model.core.ClassInfo;
 import com.sun.xml.bind.v2.model.core.ElementPropertyInfo;
 import com.sun.xml.bind.v2.model.core.EnumConstant;
 import com.sun.xml.bind.v2.model.core.EnumLeafInfo;
+import com.sun.xml.bind.v2.model.core.ID;
+import com.sun.xml.bind.v2.model.core.NonElement;
 import com.sun.xml.bind.v2.model.core.PropertyInfo;
 import com.sun.xml.bind.v2.model.core.TypeRef;
 import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
+import com.sun.xml.bind.v2.model.impl.ClassInfoImpl;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Particle;
@@ -857,7 +862,11 @@ public class XmlSchemaEnhancer {
 
     private static <T, C> Facets getFacetsAnnotation(
             AttributePropertyInfo<T, C> t) {
-        if (!t.getTarget().isSimpleType())
+    	/* make sure this is either
+    	 *  - a simple type like string, or
+    	 *  - an IDREF, which is also considered a simple type
+    	 */
+        if (!t.getTarget().isSimpleType() && t.getSource().id() != ID.IDREF)
             return null;
 
         try {
@@ -876,7 +885,7 @@ public class XmlSchemaEnhancer {
             throws Exception {
         if (annoClass == Facets.class) {
             Object result = facetFilter.filterAnnotation(annoClass, info.readAnnotation(Facets.class), info);
-            if (result != null) {
+        	if (result != null) {
                 return result;
             }
         } else if (annoClass == MaxOccurs.class && info.hasAnnotation(MaxOccurs.class)) {
@@ -1046,7 +1055,13 @@ public class XmlSchemaEnhancer {
     private static <T, C> TypedXmlWriter getRestriction(
             AttributePropertyInfo<T, C> info, TypedXmlWriter obj,
             TypedXmlWriter w) {
-        return getRestriction(info.getTarget().getTypeName(), obj, w);
+    	QName restrName = info.getTarget().getTypeName();
+    	if(info.getSource().id() == ID.ID) {
+    		restrName = new QName(NS_XSD, "ID");
+    	} else if(info.getSource().id() == ID.IDREF) {
+    		restrName = new QName(NS_XSD, "IDREF");
+        }
+        return getRestriction(restrName, obj, w);
     }
     private static <T, C> TypedXmlWriter getRestriction(
             ValuePropertyInfo<T, C> info, TypedXmlWriter obj, TypedXmlWriter w) {

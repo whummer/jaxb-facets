@@ -89,6 +89,10 @@ public class TestRequest {
     @XmlElement(required = true)
     public SimpleDuration duration;
 
+    /* Thanks to Martin Petrovsky for the following test case..! */
+    @XmlElement(required = true)
+    public Library library;
+
     /* Test <xsd:annotation> on <xsd:choice> INSIDE_ELEMENT */
     @XmlElements({
     	@XmlElement(type=Country.class, name="country1"),

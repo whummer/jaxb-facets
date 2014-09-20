@@ -2,7 +2,6 @@ package at.ac.tuwien.infosys.jaxb;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -287,6 +286,26 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         String value = engine.evaluate("//xs:complexType[@name='simpleDuration']/"
         		+ "xs:attribute[@name='from']/@type", doc);
         assertTrue(value != null && !value.trim().equals(""));
+
+    }
+
+    @Test
+    public void testXSDPatternOnIDREF() throws Exception {
+    	//System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        //System.out.println(XMLUtils.toString(engine.getMatchingNodes("//xs:complexType[@name='loan']", doc).item(0)));
+        //System.out.println(XMLUtils.toString(engine.getMatchingNodes("//xs:complexType[@name='book']", doc).item(0)));
+        String value1 = engine.evaluate("//xs:complexType[@name='book']/"
+        		+ "xs:attribute[@name='isbn']//xs:restriction/@base", doc);
+        assertTrue(value1 != null && value1.trim().endsWith(":ID"));
+        String value = engine.evaluate("//xs:complexType[@name='loan']/"
+        		+ "xs:attribute[@name='book']//xs:restriction/@base", doc);
+        assertTrue(value != null && value.trim().endsWith(":IDREF"));
+        String value2 = engine.evaluate("//xs:complexType[@name='loanWithISBN']/"
+        		+ "xs:attribute[@name='isbn']//xs:restriction/@base", doc);
+        assertTrue(value2 != null && value2.trim().endsWith(":IDREF"));
+        
 
     }
 }

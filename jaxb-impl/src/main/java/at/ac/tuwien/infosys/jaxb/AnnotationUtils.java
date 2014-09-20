@@ -43,7 +43,7 @@ public final class AnnotationUtils {
 		public Object invoke(Object o, Method m, Object[] args)
                 throws Throwable {
             if(m.getName().equals("toString") && !annoValues.containsKey(m.getName())) {
-                return "annotation @" + annoClass.getName() + "(...)";
+                return "annotation @" + annoClass.getName() + "(" + annoValues + ")";
             } else if(m.getName().equals("hashCode")) {
                 return annoClass.hashCode() + annoValues.hashCode();
             } else if(!annoValues.containsKey(m.getName())) {
