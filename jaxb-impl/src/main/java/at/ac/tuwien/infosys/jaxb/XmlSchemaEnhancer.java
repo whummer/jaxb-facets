@@ -937,12 +937,6 @@ public class XmlSchemaEnhancer {
         }
     }
 
-    protected static Object getAnnotationOfProperty(ClassType ct, String name,
-			Class<? extends Annotation> annoClass) {
-    	// TODO
-		return null;
-	}
-
     private static Field findAnnotatedField(Class<?> parent, String fieldName) {
         Field field = null;
         for (Field f : parent.getDeclaredFields()) {
