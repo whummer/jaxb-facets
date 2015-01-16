@@ -1,8 +1,6 @@
 
 package at.ac.tuwien.infosys.jaxb;
 
-import com.sun.xml.bind.v2.model.annotation.AnnotationSource;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
@@ -20,6 +18,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.MinOccurs;
+
+import com.sun.xml.bind.v2.model.annotation.AnnotationSource;
 
 /**
  * Processes JAXB-Facets annotation objects and provides default values from
@@ -104,9 +104,15 @@ public class ValidationFacetsFilter {
     			AnnotationUtils.getAnnotationValues(Facets.class, original));
 
         boolean override = false;
-        
-        if (original == null || original.enumeration().length == 0) {
-            
+
+        String[] enums = new String[0];
+        try {
+    		enums = original.enumeration();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (enums.length <= 0) {
             if (info.readAnnotation(AssertFalse.class) != null) {
                 override = true;
                 annoValues.put("enumeration", new String[] { "false", "0" });
@@ -116,8 +122,15 @@ public class ValidationFacetsFilter {
                 annoValues.put("enumeration", new String[] { "true", "1" });
             }
         }
-        
-        if (original == null || original.fractionDigits() == Facets.VOID_LONG) {
+
+        long fractions = Facets.VOID_LONG;
+        try {
+        	fractions = original.fractionDigits();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (fractions == Facets.VOID_LONG) {
 
             if (info.readAnnotation(Digits.class) != null) {
                 override = true;
@@ -125,7 +138,14 @@ public class ValidationFacetsFilter {
             }
         }
 
-        if (original == null || original.length() == Facets.VOID_LONG) {
+        long length = Facets.VOID_LONG;
+        try {
+        	length = original.length();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (length == Facets.VOID_LONG) {
             
             if (info.readAnnotation(Size.class) != null) {
                 Size size = info.readAnnotation(Size.class);
@@ -135,24 +155,45 @@ public class ValidationFacetsFilter {
                 }
             }
         }
-    
-        if (original == null || original.maxLength() == Facets.VOID_LONG) {
+
+        long maxLength = Facets.VOID_LONG;
+        try {
+        	maxLength = original.maxLength();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (maxLength == Facets.VOID_LONG) {
             
             if (info.readAnnotation(Size.class) != null) {
                 override = true;
                 annoValues.put("maxLength", (Long)(long)info.readAnnotation(Size.class).max());
             }
         }
-        
-        if (original == null || original.minLength() == Facets.VOID_LONG) {
+
+        long minLength = Facets.VOID_LONG;
+        try {
+        	minLength = original.minLength();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (minLength == Facets.VOID_LONG) {
             
             if (info.readAnnotation(Size.class) != null) {
                 override = true;
                 annoValues.put("minLength", (Long)(long)info.readAnnotation(Size.class).min());
             }
         }
-        
-        if (original == null || Facets.VOID_STRING.equals(original.maxInclusive())) {
+
+        String maxInclusive = Facets.VOID_STRING;
+        try {
+        	maxInclusive = original.maxInclusive();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (Facets.VOID_STRING.equals(maxInclusive)) {
             
             if (info.readAnnotation(DecimalMax.class) != null) {
                 override = true;
@@ -163,8 +204,15 @@ public class ValidationFacetsFilter {
             }
                 
         }
-        
-        if (original == null || Facets.VOID_STRING.equals(original.minInclusive())) {
+
+        String minInclusive = Facets.VOID_STRING;
+        try {
+        	minInclusive = original.minInclusive();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (Facets.VOID_STRING.equals(minInclusive)) {
             
             if (info.readAnnotation(DecimalMin.class) != null) {
                 override = true;
@@ -175,8 +223,15 @@ public class ValidationFacetsFilter {
             }
                 
         }
-        
-        if (original == null || Facets.VOID_STRING.equals(original.pattern())) {
+
+        String pattern = Facets.VOID_STRING;
+        try {
+        	pattern = original.pattern();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (Facets.VOID_STRING.equals(pattern)) {
 
             if (info.readAnnotation(Pattern.class) != null) {
                 override = true;
@@ -184,8 +239,15 @@ public class ValidationFacetsFilter {
             }
             
         }
-        
-        if (original == null || original.totalDigits() == Facets.VOID_LONG) {
+
+        long totalDigits = Facets.VOID_LONG;
+        try {
+        	totalDigits = original.totalDigits();
+		} catch (Exception e) {
+			/* swallow */
+		}
+
+        if (totalDigits == Facets.VOID_LONG) {
 
             if (info.readAnnotation(Digits.class) != null) {
                 override = true;

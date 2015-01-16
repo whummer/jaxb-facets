@@ -72,7 +72,13 @@ public final class AnnotationUtils {
     		try {
     			Object value = null;
     			if(anno != null) {
-    				value = m.invoke(anno);
+    				try {
+        				value = m.invoke(anno);
+					} catch (Exception e) {
+						/* this may occur sometimes with our annotation proxying mechanism.
+						 * --> Fallback to default values. */
+						value = m.getDefaultValue();
+					}
     			} else {
     				value = m.getDefaultValue();
     			}

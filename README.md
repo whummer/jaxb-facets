@@ -18,7 +18,7 @@ https://github.com/whummer/mvn
 E.g., see:
 
 https://raw.github.com/whummer/jaxb-facets/master/releases/javax/xml/bind/jaxb-api/2.2.7-facets-1.0.5/jaxb-api-2.2.7-facets-1.0.5.jar
-https://raw.github.com/whummer/jaxb-facets/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.3.0/jaxb-impl-2.2.6-facets-1.3.0.jar
+https://raw.github.com/whummer/jaxb-facets/master/releases/com/sun/xml/bind/jaxb-impl/2.2.6-facets-1.3.1/jaxb-impl-2.2.6-facets-1.3.1.jar
 
 
 ## Compile & Build
@@ -45,7 +45,7 @@ To integrate JAXB-Facets into your Maven project, simply add the following repos
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.2.6-facets-1.3.0</version>
+            <version>2.2.6-facets-1.3.1</version>
         </dependency>
         ...
     </dependencies>
@@ -77,7 +77,7 @@ To integrate JAXB-Facets with the schemagen facility of jaxb2-maven-plugin, use 
 	    			<dependency>
 	    				<groupId>com.sun.xml.bind</groupId>
 	    				<artifactId>jaxb-impl</artifactId>
-	    				<version>2.2.6-facets-1.3.0</version>
+	    				<version>2.2.6-facets-1.3.1</version>
 					</dependency>
 					<dependency>
 	    				<groupId>javax.xml.bind</groupId>
@@ -190,6 +190,9 @@ strategy with the maven compiler and surefire plugins.
 
 ## Change Log
 
+- jaxb-impl:2.2.6-facets-1.3.1
+    * fix support for command-line "schemagen" schema generation.
+      Fix issue github.com/whummer/jaxb-facets/issues/23
 - jaxb-impl:2.2.6-facets-1.3.0
     * support for javax bean validation (JSR 303) constraints, which are 
       now included in generated schema (integrated pull request #20).

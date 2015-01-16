@@ -5,7 +5,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ import javax.xml.bind.annotation.MaxOccurs;
 import javax.xml.bind.annotation.MinOccurs;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +41,9 @@ import org.w3c.dom.Document;
 
 import at.ac.tuwien.infosys.jaxb.AnnotationUtils.AnnotationInvocationHandler;
 
+import com.sun.tools.javac.code.Attribute.TypeCompound;
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Type.ClassType;
 import com.sun.xml.bind.v2.model.core.ArrayInfo;
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
 import com.sun.xml.bind.v2.model.core.ClassInfo;
@@ -50,11 +51,9 @@ import com.sun.xml.bind.v2.model.core.ElementPropertyInfo;
 import com.sun.xml.bind.v2.model.core.EnumConstant;
 import com.sun.xml.bind.v2.model.core.EnumLeafInfo;
 import com.sun.xml.bind.v2.model.core.ID;
-import com.sun.xml.bind.v2.model.core.NonElement;
 import com.sun.xml.bind.v2.model.core.PropertyInfo;
 import com.sun.xml.bind.v2.model.core.TypeRef;
 import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
-import com.sun.xml.bind.v2.model.impl.ClassInfoImpl;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalAttribute;
 import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Particle;
@@ -905,12 +904,24 @@ public class XmlSchemaEnhancer {
             return null;
         }
 
-        Class<?> parent = (Class<?>) info.parent().getType();
         String name = info.getName();
-        return getAnnotationOfProperty(parent, name, annoClass);
+    	Object type = info.parent().getType();
+    	if(info.parent().getType() instanceof ClassType) {
+    		/* We are (most likely) executing in the scope of a schemagen run. It seems
+    		 * that at this point it is sufficient to return null from this method. This 
+    		 * is covered by a test case named "SchemgenTest", and seems to work. */
+        	return null;
+        }
+
+        if(type instanceof Class<?>) {
+	        Class<?> parent = (Class<?>) info.parent().getType();
+	        return getAnnotationOfProperty(parent, name, annoClass);
+        } else {
+        	throw new RuntimeException("Unexpected type of property parent: " + info.parent().getType());
+        }
     }
 
-    protected static <T extends Annotation> T getAnnotationOfProperty(
+	protected static <T extends Annotation> T getAnnotationOfProperty(
             Class<?> parent, String fieldName, Class<T> annoClass)
             throws Exception {
         try {
@@ -925,6 +936,12 @@ public class XmlSchemaEnhancer {
                     + " of class " + parent, e);
         }
     }
+
+    protected static Object getAnnotationOfProperty(ClassType ct, String name,
+			Class<? extends Annotation> annoClass) {
+    	// TODO
+		return null;
+	}
 
     private static Field findAnnotatedField(Class<?> parent, String fieldName) {
         Field field = null;
@@ -1166,7 +1183,12 @@ public class XmlSchemaEnhancer {
             }
             /* end additional code */
 
-            Object value = m.invoke(facetsAnnotation);
+            Object value = null;
+            try {
+				value = m.invoke(facetsAnnotation);
+			} catch (Exception e) {
+				// sometimes happens due to our proxying mechanism, especially for javac/schemagen.
+			}
             Object defaultValue = m.getDefaultValue();
             if (value != null && !value.equals(defaultValue)) {
 

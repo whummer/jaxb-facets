@@ -1,6 +1,10 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.Facets;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 @XmlType(name = "TimeZoneOffset")
 @XmlAccessorType(XmlAccessType.FIELD)
