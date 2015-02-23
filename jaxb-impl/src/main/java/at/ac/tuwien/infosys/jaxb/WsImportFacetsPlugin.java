@@ -1,10 +1,5 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import javax.xml.bind.annotation.Annotation;
 import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.Facets;
@@ -37,27 +32,6 @@ import com.sun.xml.xsom.impl.ParticleImpl;
  * @since JAXB-Facets 1.1.0
  */
 public class WsImportFacetsPlugin extends Plugin {
-
-    /** types of available facets */
-    @SuppressWarnings("all")
-    public static final Map<String,Class<?>> FACET_TYPES = new HashMap<String,Class<?>>(){
-    {
-        put("enumeration", String[].class);
-        put("length", long.class);
-        put("pattern", String.class);
-        put("whiteSpace", WhiteSpace.class);
-        put("totalDigits", long.class);
-        put("fractionDigits", long.class);
-        put("maxExclusive", String.class);
-        put("minExclusive", String.class);
-        put("maxInclusive", String.class);
-        put("minInclusive", String.class);
-        put("maxLength", long.class);
-        put("minLength", long.class);
-    }};
-
-    /** list of available facets */
-    public static final Set<String> FACET_NAMES = new HashSet<String>(FACET_TYPES.keySet());
 
     public String getOptionName() {
         return "jaxb-facets";
@@ -95,19 +69,21 @@ public class WsImportFacetsPlugin extends Plugin {
 	                XSType type = p.getTerm().asElementDecl().getType();
 	                if(type.isSimpleType()) {
 	                    XSSimpleType stype = type.asSimpleType();
-	                    for(String fName : FACET_NAMES) {
+	                    for(String fName : Constants.FACET_NAMES) {
 	                        XSFacet fValue = stype.getFacet(fName);
 	                        if(fValue != null) {
 	                            String name = f.getPropertyInfo().getName(false);
 	                            JFieldVar var = clazz.fields().get(name);
 	                            JAnnotationUse anno = getAnnotation(var, Facets.class);
-	                            if(FACET_TYPES.get(fName) == long.class) {
+
+	                            Class<?> typeClazz = Constants.FACET_TYPES.get(fName);
+	                            if(typeClazz == long.class) {
 	                                anno.param(fValue.getName(), Long.parseLong(fValue.getValue().value));
-	                            } else if(FACET_TYPES.get(fName) == String.class) {
+	                            } else if(typeClazz == String.class) {
 	                                anno.param(fValue.getName(), fValue.getValue().value);
-	                            } else if(FACET_TYPES.get(fName) == WhiteSpace.class) {
+	                            } else if(typeClazz == WhiteSpace.class) {
 	                                anno.param(fValue.getName(), WhiteSpace.valueOf(fValue.getValue().value));
-	                            } else if(FACET_TYPES.get(fName) == String[].class) {
+	                            } else if(typeClazz == String[].class) {
 	                                // TODO for "enumeration" facet - is this needed?
 	                            }
 	                        }

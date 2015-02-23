@@ -1,5 +1,6 @@
 package at.ac.tuwien.infosys.jaxb.test;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import at.ac.tuwien.infosys.jaxb.Country;
+import at.ac.tuwien.infosys.jaxb.DecimalAdaptor;
 import at.ac.tuwien.infosys.jaxb.TimeZoneOffset;
 
 @XmlRootElement(name = "foo")
@@ -90,6 +92,13 @@ public class TestRequest {
     /* Thanks to Martin Petrovsky for the following test case..! */
     @XmlElement(required = true)
     public Library library;
+
+    /* Thanks to Yossi Cohen for the following test case..!
+     * See https://github.com/whummer/jaxb-facets/issues/24 */
+    @XmlElement(name = "salary", type = BigDecimal.class)
+    @javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(DecimalAdaptor.class)
+    @javax.xml.bind.annotation.Facets(minInclusive="1000.1", maxInclusive="9999.2")
+    public BigDecimal salary;
 
     /* Test <xsd:annotation> on <xsd:choice> INSIDE_ELEMENT */
     @XmlElements({

@@ -1,5 +1,6 @@
 package at.ac.tuwien.infosys.jaxb;
 
+import org.apache.cxf.common.util.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -305,7 +306,20 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         String value2 = engine.evaluate("//xs:complexType[@name='loanWithISBN']/"
         		+ "xs:attribute[@name='isbn']//xs:restriction/@base", doc);
         assertTrue(value2 != null && value2.trim().endsWith(":IDREF"));
-        
+    }
+
+    @Test
+    public void testFacetWithJaxbAdapterAndExplicitType() throws Exception {
+    	//System.out.println(getWsdlSchemaAsString(PersonService.class));
+        Document doc = getWsdlSchemaAsDocument(PersonService.class);
+
+        String value = engine.evaluate("//xs:complexType[@name='TestRequest']//"
+        		+ "xs:element[@name='salary']//xs:restriction/@base", doc);
+        assertTrue(value.endsWith(":decimal"));
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']//"
+        		+ "xs:element[@name='salary']//xs:restriction//xs:maxInclusive/@value", doc);
+        assertEquals(value, "9999.2");
 
     }
+
 }
