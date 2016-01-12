@@ -1,6 +1,5 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import org.apache.cxf.common.util.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
