@@ -190,6 +190,8 @@ strategy with the maven compiler and surefire plugins.
 
 ## Change Log
 
+- jaxb-impl:2.2.11-facets-1.4.0
+    * upgrade to JAXB version 2.2.11. Should fix issues with spring boot 1.3.1 (see issue #29)
 - jaxb-impl:2.2.6-facets-1.3.1
     * fix support for command-line "schemagen" schema generation.
       Fix issue github.com/whummer/jaxb-facets/issues/23
