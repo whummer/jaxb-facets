@@ -256,6 +256,10 @@
 					<groupId>com.sun.xml.ws</groupId>
 					<artifactId>jaxws-rt</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
