@@ -47,7 +47,7 @@
 			</xs:complexType>
 			<xs:complexType name="TestRequest">
 				<xs:annotation id="id123">
-					<xs:appinfo source="src 1">appinfo 1</xs:appinfo>
+					<xs:appinfo source="src 1"><foo xmlns="myns123">appinfo 1</foo></xs:appinfo>
 					<xs:documentation source="src 1" xml:lang="en">doc 1</xs:documentation>
 					<xs:documentation>doc 2</xs:documentation>
 					<xs:documentation>doc 3</xs:documentation>
@@ -91,7 +91,7 @@
 				<xs:attribute name="type" type="tns:chartType" />
 				<xs:attribute name="foo">
 					<xs:annotation>
-						<xs:appinfo source="src 1">appinfo 1</xs:appinfo>
+						<xs:appinfo source="src 1"><bar xmlns="myns123">appinfo 1</bar></xs:appinfo>
 						<xs:documentation>&lt;b>string foo&lt;/b></xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>

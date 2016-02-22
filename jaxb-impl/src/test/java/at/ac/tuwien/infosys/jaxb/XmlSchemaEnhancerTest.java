@@ -1,6 +1,5 @@
 package at.ac.tuwien.infosys.jaxb;
 
-import org.apache.cxf.common.util.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -87,7 +86,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         //System.out.println(getWsdlSchemaAsString(PersonService.class));
         Document doc = getWsdlSchemaAsDocument(PersonService.class);
         
-        String value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:appinfo[@source='src 1']", doc);
+        String value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:appinfo[@source='src 1']/*[local-name()='foo']", doc);
         assertEquals("appinfo 1", value);
         
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:annotation[@id='id123']/xs:documentation[@source='src 1']", doc);
@@ -102,7 +101,7 @@ public class XmlSchemaEnhancerTest extends AbstractTestCase {
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:sequence/xs:element[@name='bar']/xs:annotation/xs:documentation/b", doc);
         assertEquals("string bar", value);
         
-        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:appinfo[@source='src 1']", doc);
+        value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:appinfo[@source='src 1']/*[local-name()='bar']", doc);
         assertEquals("appinfo 1", value);
         
         value = engine.evaluate("//xs:complexType[@name='TestRequest']/xs:attribute[@name='foo']/xs:annotation/xs:documentation/b", doc);

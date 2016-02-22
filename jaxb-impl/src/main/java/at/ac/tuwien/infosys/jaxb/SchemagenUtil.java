@@ -61,7 +61,7 @@ public class SchemagenUtil {
     }
 
     /**
-     * 
+     * Extract an annotation from a type info.
      * @param type
      * @param annoType
      * @return

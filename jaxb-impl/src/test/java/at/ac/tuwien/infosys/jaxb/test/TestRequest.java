@@ -34,7 +34,7 @@ import at.ac.tuwien.infosys.jaxb.TimeZoneOffset;
     @Documentation(value = "doc 1", lang = "en", source = "src 1"), @Documentation("doc 2")
 })
 @Documentation("doc 3")
-@AppInfo(source = "src 1", value = "appinfo 1")
+@AppInfo(source = "src 1", value = "<foo xmlns=\"myns123\">appinfo 1</foo>")
 @SuppressWarnings("all")
 @Assert(test = "not(bar1) or not(bar2)")
 public class TestRequest {
@@ -43,7 +43,7 @@ public class TestRequest {
     @XmlAttribute
     @Facets(length = 100, pattern = "[a-z]+")
     @Documentation("<b>string foo</b>")
-    @AppInfo(source = "src 1", value = "appinfo 1")
+    @AppInfo(source = "src 1", value = "<bar xmlns=\"myns123\">appinfo 1</bar>")
     private String foo;
     @XmlAttribute
     @Annotation(documentation = {

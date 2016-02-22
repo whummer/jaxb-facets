@@ -86,6 +86,7 @@ public class WsImportTest {
         assertTrue(file1.matches("(?s).*@Facets\\(.*maxExclusive\\s*=\\s*\"840\".*"));
         assertTrue(file1.matches("(?s).*@Facets\\(.*minInclusive\\s*=\\s*\"2012-12-24T12:00:00Z\".*"));
         assertTrue(file1.matches("(?s).*@Documentation\\(.*\"doc 3\".*"));
+        assertTrue(file1.matches("(?s).*@AppInfo\\(.*\"<.*foo.*appinfo 1</.*foo>\".*"));
 
         // TODO: add more checks
     }

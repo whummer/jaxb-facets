@@ -82,7 +82,6 @@ public final class AnnotationUtils {
     			} else {
     				value = m.getDefaultValue();
     			}
-    			//logger.info("Annotation value: " + m.getName() + " = " + value);
         		annoValues.put(m.getName(), value);
 			} catch (Exception e) {
 				throw new RuntimeException(e);

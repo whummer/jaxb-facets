@@ -1,6 +1,7 @@
 package at.ac.tuwien.infosys.jaxb;
 
 import javax.xml.bind.annotation.Annotation;
+import javax.xml.bind.annotation.AppInfo;
 import javax.xml.bind.annotation.Documentation;
 import javax.xml.bind.annotation.Facets;
 import javax.xml.bind.annotation.Facets.WhiteSpace;
@@ -17,6 +18,8 @@ import com.sun.tools.xjc.generator.bean.ClassOutlineImpl;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
+import com.sun.tools.xjc.reader.xmlschema.bindinfo.BIDeclaration;
+import com.sun.tools.xjc.reader.xmlschema.bindinfo.BIXPluginCustomization;
 import com.sun.tools.xjc.reader.xmlschema.bindinfo.BindInfo;
 import com.sun.xml.xsom.XSAnnotation;
 import com.sun.xml.xsom.XSComponent;
@@ -59,10 +62,6 @@ public class WsImportFacetsPlugin extends Plugin {
         for(FieldOutline f : ci.getDeclaredFields()) {
             XSComponent schema = f.getPropertyInfo().getSchemaComponent();
 
-            // TODO remove?
-//            final Map<String,String> prefixToNamespace = new HashMap<String,String>();
-//            prefixToNamespace.put("xsd", XmlSchemaEnhancer.NS_XSD);
-
             if(schema instanceof ParticleImpl) {
                 ParticleImpl p = (ParticleImpl)schema;
                 if(p.getTerm().isElementDecl()) {
@@ -102,11 +101,30 @@ public class WsImportFacetsPlugin extends Plugin {
             AnnotationImpl annoImpl = (AnnotationImpl)anno;
             BindInfo annoInfo = (BindInfo)annoImpl.getAnnotation();
             if(annoInfo != null) {
+            	/* add @Documentation annotation */
 	            final String doc = annoInfo.getDocumentation();
+	            JAnnotationUse jAnno = null;
 	            if(doc != null) {
-	                JAnnotationUse jAnno = getAnnotation(ci.implClass, Annotation.class);
+	                jAnno = getAnnotation(ci.implClass, Annotation.class);
 	                JAnnotationUse annoUse = jAnno.annotationParam("documentation", Documentation.class);
 	                annoUse.param("value", doc);
+	            }
+
+	            /* add @AppInfo annotation */
+	            for(BIDeclaration decl : annoInfo.getDecls()) {
+	            	if(decl instanceof BIXPluginCustomization) {
+	            		if(jAnno == null) {
+	            			jAnno = getAnnotation(ci.implClass, Annotation.class);
+	            		}
+	            		JAnnotationUse annoUseAppInfo = jAnno.annotationParam("appinfo", AppInfo.class);
+	            		BIXPluginCustomization plc = (BIXPluginCustomization) decl;
+	            		annoUseAppInfo.param("value", XmlUtil.toStringWithStrippedNamespaces(plc.element));
+	            		/*
+	            		 * TODO: <appinfo>'s source=".." attribute is not available due to limitations in JAXB/XJC:
+	            		 * http://grepcode.com/file/repo1.maven.org/maven2/com.sun.xml.bind/jaxb-xjc/2.2.5/com/sun/tools/xjc/reader/xmlschema/bindinfo/BindInfo.java?av=f#148
+	            		 */
+	            		
+	            	}
 	            }
             }
         }
