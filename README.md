@@ -9,6 +9,102 @@ If and when that happens this project will be obselete (which we are looking for
 
 http://java.net/jira/browse/JAXB-917
 
+## Quick Summary
+
+Jaxb-facets allows to define specialized annotations on schema Java classes and properties ...
+
+```java
+package foo;
+import java.util.List;
+import javax.xml.bind.annotation.*;
+
+@XmlType(name = "TestType")
+@Annotation(id = "anno1", documentation = {
+    @Documentation(value = "doc 1", lang = "en", source = "src 1"),
+    @Documentation("doc 2")
+})
+@AppInfo(source = "src 2", value = "<custom xmlns=\"myns123\">Custom app info</custom>")
+@Assert(id="assert1", test = "not(foo) or not(bar)")
+public class TestType {
+    @XmlAttribute
+    @Facets(length = 100, pattern = "[a-z]+")
+    @Documentation("<b>string attribute</b>")
+    @AppInfo(source = "src 1", value = "<foo xmlns=\"myns123\">appinfo 1</foo>")
+    private String foo;
+
+    @XmlElement
+    @MinOccurs(2)
+    @MaxOccurs(10)
+    @Facets(pattern = "[0-9]+")
+    @Documentation("<b>list of strings</b>")
+    private List<String> bar;
+
+    //...
+}
+```
+
+... and automatically generates corresponding XSD documents:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="testType">
+    <xs:annotation id="anno1">
+      <xs:appinfo source="src 2">
+        <ns1:custom xmlns:ns1="myns123">Custom app info</ns1:custom>
+      </xs:appinfo>
+      <xs:documentation source="src 1" xml:lang="en">doc 1</xs:documentation>
+      <xs:documentation>doc 2</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="bar" minOccurs="2" maxOccurs="10">
+        <xs:annotation>
+          <xs:documentation>
+            <b>list of strings</b>
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="foo">
+      <xs:annotation>
+        <xs:appinfo source="src 1">
+          <ns2:bar xmlns:ns2="myns123">appinfo 1</ns2:bar>
+        </xs:appinfo>
+        <xs:documentation>
+          <b>string attribute</b>
+        </xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="100"/>
+          <xs:pattern value="[a-z]+"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:assert id="assert1" test="not(foo) or not(bar)"/>
+  </xs:complexType>
+</xs:schema>
+```
+
+You can generate schema files by running the following commands:
+
+```
+mvn install -DskipTests
+./bin/schemagen.sh -d /tmp/output_directory/ -cp jaxb-impl/target/test-classes/:jaxb-api/target/classes/ path/to/your/code/TestType.java
+```
+
+The procedure also works in the other direction, generating Java source code from existing XSD schemas
+with facets and annotations. Currently this only works if the XSD schema is embedded into a WSDL file (see [here](https://github.com/whummer/jaxb-facets/issues/32#issuecomment-228537951) for a minimum working example):
+
+```
+./bin/wsimport.sh -keep -B-jaxb-facets -d /tmp/output_directory path/to/your/code/tmpservice.wsdl
+```
+
 ## Maven Repository
 
 The jaxb-api and jaxb-impl JARs are deployed to a maven repo located here:
