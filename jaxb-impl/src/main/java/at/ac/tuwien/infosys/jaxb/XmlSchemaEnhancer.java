@@ -568,7 +568,6 @@ public class XmlSchemaEnhancer {
                     packages.add(pkg);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.log(Level.WARNING, "Unable to derive package name from class type: " + type, e);
             }
         }

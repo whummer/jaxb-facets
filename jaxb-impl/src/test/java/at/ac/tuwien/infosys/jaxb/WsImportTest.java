@@ -36,7 +36,6 @@ public class WsImportTest {
     public static void cleanup() throws Exception {
     	/* re-enable XSD 1.1 features */
     	XmlSchemaEnhancer.XSD_11_ENABLED.set(true);
-
     	AbstractTestCase.cleanupServers();
 
         /* clean up */

@@ -17,6 +17,12 @@ import at.ac.tuwien.infosys.jaxb.test.XmlTestType;
 
 import com.pellcorp.jaxb.test.TestUtils;
 
+/**
+ * This class contains end-to-end tests which run the schemagen.sh
+ * executable to generate schema files from Java source code files.
+ *
+ * @author Waldemar Hummer
+ */
 public class SchemagenTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(WsImportTest.class);
 
@@ -81,8 +87,12 @@ public class SchemagenTest {
         String file1 = TestUtils.readFile(schemaFile);
         /* '(?s)' in regex means Pattern.DOTALL */
         assertTrue(file1.matches("(?s).*:minInclusive value=\"100\".*"));
-
-        // TODO: add more checks
+        assertTrue(file1.matches("(?s).*<[a-z0-9]+:documentation.*source=\"src 1\".*>doc 1</[a-z0-9]+:documentation>.*"));
+        assertTrue(file1.matches("(?s).*<[a-z0-9]+:documentation>doc 2</[a-z0-9]+:documentation>.*"));
+        assertTrue(file1.matches("(?s).*<[a-z0-9]+:foo xmlns:[a-z0-9]+=\"myns123\">appinfo 1</[a-z0-9]+:foo>.*"));
+        assertTrue(file1.matches("(?s).*<[a-z0-9]+:pattern value=\"\\[a-z\\]\\+\"/>.*"));
+        assertTrue(file1.matches("(?s).*<b>list of strings</b>.*"));
+        assertTrue(file1.matches("(?s).*<[a-z0-9]+:element name=\"bar\" minOccurs=\"2\".*"));
     }
 
     private static File createTempDirectory() throws IOException {
