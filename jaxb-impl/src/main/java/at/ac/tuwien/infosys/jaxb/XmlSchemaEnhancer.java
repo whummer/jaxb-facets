@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.xml.bind.annotation.AnnotationLocation;
 import javax.xml.bind.annotation.AppInfo;
 import javax.xml.bind.annotation.Assert;
@@ -42,9 +43,6 @@ import org.w3c.dom.Document;
 
 import at.ac.tuwien.infosys.jaxb.AnnotationUtils.AnnotationInvocationHandler;
 
-import com.sun.tools.javac.code.Attribute.TypeCompound;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Type.ClassType;
 import com.sun.xml.bind.v2.model.core.ArrayInfo;
 import com.sun.xml.bind.v2.model.core.AttributePropertyInfo;
 import com.sun.xml.bind.v2.model.core.ClassInfo;
@@ -83,6 +81,7 @@ public class XmlSchemaEnhancer {
 			new ArrayList<Class<? extends Annotation>>();
 	private static final List<Class<? extends Annotation>> EXT_ANNO_CLASSES_AT_END = 
 			new ArrayList<Class<? extends Annotation>>();
+	
 	static {
 		EXT_ANNO_CLASSES_AT_START.add(javax.xml.bind.annotation.Annotation.class);
 		EXT_ANNO_CLASSES_AT_END.add(Assert.class);
@@ -131,12 +130,22 @@ public class XmlSchemaEnhancer {
         TypedXmlWriter restriction = getRestriction(t, e, null);
         if(t.getTarget().getType() instanceof Class<?>) {
             addFacets(facetsAnno, restriction, (Class<?>)t.getTarget().getType());
-        } else if(t.getTarget().getType() instanceof ClassType) {
-        	ClassType ct = (ClassType)t.getTarget().getType();
+        } else if(isClassType(t.getTarget().getType())) {
             addFacets(facetsAnno, restriction, (Class<?>)null);
         }
     }
 
+    private static boolean isClassType(Object type) {
+    	//return type.getClass().getName().equals("com.sun.tools.javac.code.Type$ClassType");
+    	if (type instanceof DeclaredType) {
+    		DeclaredType dc = (DeclaredType) type;
+    		if (dc.getKind() == TypeKind.DECLARED) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     public static <T, C> void addFacets(AttributePropertyInfo<T, C> info,
             LocalAttribute attr) {
         if (!hasFacets(info))
@@ -939,7 +948,7 @@ public class XmlSchemaEnhancer {
 
         String name = info.getName();
     	Object type = info.parent().getType();
-    	if(info.parent().getType() instanceof ClassType) {
+    	if (isClassType(info.parent().getType())) {
     		/* We are (most likely) executing in the scope of a schemagen run. It seems
     		 * that at this point it is sufficient to return null from this method. 
     		 * This is also covered by a test case named "SchemagenTest", and 
