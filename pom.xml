@@ -20,14 +20,10 @@
       </license>
     </licenses>
 
-	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
-
-		<jaxb.facets.api.version>2.2.11-facets-1.1.0</jaxb.facets.api.version>
-		<jaxb.facets.impl.version>2.2.11-facets-1.4.0</jaxb.facets.impl.version>
 	</properties>
 
 	<build>
